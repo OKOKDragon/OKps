@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 /*
 此静态库的导出头文件
