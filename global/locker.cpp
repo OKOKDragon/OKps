@@ -1,5 +1,4 @@
-﻿#include ".\locker.hpp"
-#include <random>
+#include ".\locker.hpp"
 
 namespace OKps
 {
