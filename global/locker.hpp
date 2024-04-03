@@ -1,13 +1,6 @@
-﻿#pragma once
+#pragma once
 
 #include ".\base.hpp"
-#include <atomic>
-#include <thread>
-#include <memory>
-#include <set>
-#include <map>
-#include <vector>
-#include <stack>
 
 namespace OKps
 {
@@ -123,7 +116,7 @@ namespace OKps
         static inline ::std::set<::std::size_t> MEMBER_id_pool;
         static inline ::std::atomic_bool MEMBER_id_pool_lock = false;
         static ::std::size_t INNER_init_id();
-        const size_t MEMBER_lock_id;
+        const ::std::size_t MEMBER_lock_id;
 
     public:
         /*
