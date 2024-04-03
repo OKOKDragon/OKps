@@ -1,11 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#include <string>
-#include <vector>
 #include ".\base.hpp"
-#include <locale>
-#include <codecvt>
-#include <map>
 
 /*
 可以用 std::locale::global(std::locale("zh_CN.UTF-8")); 将本地码设置为utf8编码的简体中文
