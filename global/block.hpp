@@ -1,10 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#include <iostream>
 #include ".\base.hpp"
-#include <string>
-#include <map>
-#include <memory>
 
 namespace OKps
 {
@@ -33,7 +29,7 @@ namespace OKps
             if (input.size() % sizeof(data_type) != 0)
             {
 
-                throw std::invalid_argument(std::string("输入的字节流不可能是完整的") + typeid(data_type).name() + "数组");
+                throw std::invalid_argument(std::string("输入的字节流不可能是完整的") + typeid(data_type).name() + "类型数组");
             }
             else
             {
@@ -79,7 +75,18 @@ namespace OKps
             }
             return result;
         }
-        data_type & at(const size_t position) const
+        data_type & at(const size_t position)
+        {
+            if (position < this->MEMBER_size)
+            {
+                return this->data[position];
+            }
+            else
+            {
+                throw std::out_of_range("访问的位置超出内存块范围");
+            }
+        }
+        data_type const & at(const size_t position) const
         {
             if (position < this->MEMBER_size)
             {
@@ -91,7 +98,7 @@ namespace OKps
             }
         }
         template <typename another_type>
-        another_type & at(const size_t position) const
+        another_type & at(const size_t position)
         {
             if ((position + 1) * sizeof(another_type) > (this->MEMBER_size * sizeof(data_type)))
             {
@@ -103,16 +110,42 @@ namespace OKps
                 return ((another_type *)(this->data))[position];
             }
         }
-        data_type & operator[](const size_t position) const
+        template <typename another_type>
+        another_type const & at(const size_t position) const
+        {
+            if ((position + 1) * sizeof(another_type) > (this->MEMBER_size * sizeof(data_type)))
+            {
+
+                throw std::out_of_range("访问的位置超出内存块范围");
+            }
+            else
+            {
+                return ((another_type *)(this->data))[position];
+            }
+        }
+        data_type & operator[](const size_t position)
+        {
+            return this->at(position);
+        }
+        data_type const & operator[](const size_t position) const
         {
             return this->at(position);
         }
         template <typename another_type>
-        another_type & operator[](const size_t position) const
+        another_type & operator[](const size_t position)
         {
             return this->at<another_type>(position);
         }
-        data_type * operator&() const noexcept
+        template <typename another_type>
+        another_type const & operator[](const size_t position) const
+        {
+            return this->at<another_type>(position);
+        }
+        data_type * operator&()  noexcept
+        {
+            return this->data;
+        }
+        data_type const * operator&() const noexcept
         {
             return this->data;
         }
