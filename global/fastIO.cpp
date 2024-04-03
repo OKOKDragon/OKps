@@ -1,5 +1,4 @@
-﻿#include ".\fastIO.hpp"
-#include <iostream>
+#include ".\fastIO.hpp"
 
 namespace OKps::file
 {
