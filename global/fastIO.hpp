@@ -1,11 +1,5 @@
-﻿#pragma once
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <filesystem>
-#include <vector>
-#include <set>
-#include <memory>
+#pragma once
+
 #include ".\base.hpp"
 
 namespace OKps::file
