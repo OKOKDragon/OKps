@@ -1,10 +1,5 @@
-﻿#pragma once
+#pragma once
 
-#include <map>
-#include <string>
-#include <any>
-#include <functional>
-#include <type_traits>
 #include ".\base.hpp"
 
 namespace OKps::global
