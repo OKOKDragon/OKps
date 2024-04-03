@@ -1,11 +1,5 @@
-﻿#pragma once
+#pragma once
 
-#include <vector>
-#include <memory>
-#include <string>
-#include <stack>
-#include <queue>
-#include <map>
 #include ".\aes.hpp"
 #include ".\block.hpp"
 
@@ -89,13 +83,11 @@ namespace OKps
             : MEMBER_data(origin.MEMBER_data)
         {
         }
-        /*
-        裸指针input的对象将被移动
-        调用此构造函数后不能再使用input
-        */
-        safe_data(data_type * input)
+
+        safe_data(safe_data && origin)
+            :MEMBER_data(std::move(origin.MEMBER_data))
         {
-            this->set(input);
+
         }
         /*
         input对象将被移动
@@ -137,16 +129,10 @@ namespace OKps
         void set(data_type && input)
         {
             block<data_type> TEMP_content = block<data_type>(1);
-            TEMP_content.at(0) = input;
+            TEMP_content.at(0) = std::move(input);
             this->MEMBER_data = (std::string)TEMP_content;
             basic_aes_device::random_Cipher(this->MEMBER_data);
         }
-        void set(data_type * input)
-        {
-            block<data_type> TEMP_content = block<data_type>(1);
-            TEMP_content.at(0) = std::move(*input);
-            this->MEMBER_data = (std::string)TEMP_content;
-            basic_aes_device::random_Cipher(this->MEMBER_data);
-        }
+
     };
 }
