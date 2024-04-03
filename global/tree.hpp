@@ -1,9 +1,6 @@
-﻿#pragma once
+#pragma once
+
 #include ".\base.hpp"
-#include <vector>
-#include <memory>
-#include <stack>
-#include <queue>
 
 namespace OKps
 {
@@ -21,7 +18,12 @@ namespace OKps
         using CREF_tree = binary_tree const &;
         using PTR_tree = binary_tree *;
         using CPTR_tree = binary_tree const *;
-
+        using UPTR_data = std::unique_ptr<data_type>;
+        using CUPTR_data = std::unique_ptr<data_type const>;
+        using SPTR_data = std::shared_ptr<data_type>;
+        using CSPTR_data = std::shared_ptr<data_type const>;
+        using WPTR_data = std::weak_ptr<data_type>;
+        using CWPTR_data = std::weak_ptr<data_type const>;
     // 二叉树节点
         class node : public base
         /*
@@ -32,12 +34,7 @@ namespace OKps
         {
             friend class binary_tree;
         private:
-            using UPTR_data = std::unique_ptr<data_type>;
-            using CUPTR_data = std::unique_ptr<data_type const>;
-            using SPTR_data = std::shared_ptr<data_type>;
-            using CSPTR_data = std::shared_ptr<data_type const>;
-            using WPTR_data = std::weak_ptr<data_type>;
-            using CWPTR_data = std::weak_ptr<data_type const>;
+
             using UPTR_node = std::unique_ptr<node>;
             using CUPTR_node = std::unique_ptr<node const>;
             using NPTR_node = node *;
@@ -716,12 +713,12 @@ namespace OKps
             {
                 return not((*this) == right);
             }
-            typename node::SPTR_data data()
+            SPTR_data data()
             {
                 auto temp_node = this->ERROR_invalid_node();
                 return temp_node->data();
             }
-            typename node::CSPTR_data data()const
+            CSPTR_data data()const
             {
                 auto temp_node = this->ERROR_invalid_node();
                 return temp_node->data();
@@ -905,7 +902,7 @@ namespace OKps
 
         // 作为遍历函数的返回值
         // 因为1次遍历就可以获取树的所有信息
-        class tree_information final : public basic_no_heap
+        class tree_information final : public base_no_allocate
         {
             friend class binary_tree;
         private:
@@ -1406,6 +1403,17 @@ namespace OKps
             auto temp_root = root.ERROR_invalid_node();
 
             return binary_tree::front_traversal(temp_root);
+        }
+//按前序遍历的顺序构造二叉树
+        void front_construct(std::vector<data_type> const & origin)
+        {
+
+
+        }
+        void front_construct(std::vector<SPTR_data> const & origin)
+        {
+
+
         }
     };
 
