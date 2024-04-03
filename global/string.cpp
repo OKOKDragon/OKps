@@ -1,6 +1,4 @@
-﻿#include ".\string.hpp"
-#include <memory>
-#include <iostream>
+#include ".\string.hpp"
 
 /*
 禁用C4996警告
