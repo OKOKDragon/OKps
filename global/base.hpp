@@ -152,6 +152,9 @@ namespace OKps::base
 	/*
 	处理函数基类
 	可以用作回调函数的标准类型，而不用 lambda 配合模板的形式
+	例如，想要在函数 f 中使用回调函数 h，则可以写成
+	result_type f(handler& h, parameter& p);
+	其中h.handle()函数相当于回调函数，p是其参数
 	*/
 	class handler
 	{
@@ -166,6 +169,10 @@ namespace OKps::base
 		virtual bool operator !=(handler const&)const noexcept;
 		virtual handler& self()noexcept;
 		virtual handler const& self()const noexcept;
+		/*
+		用智能指针的形式接收参数，是因为有可能想要用空指针代表无参数；
+		但是又不希望不小心写出错误的 delete 或其他错误的指针操作，所以避免使用裸指针。
+		*/
 		virtual void handle(std::unique_ptr<parameter> const&) = 0;
 	};
 	/*

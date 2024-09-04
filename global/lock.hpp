@@ -1,6 +1,17 @@
 ﻿#pragma once
+
 #include <atomic>
 #include <thread>
+#include <map>
+#include <set>
+#include <random>
+#include <mutex>
+
+/*
+此文件原本准备实现一个运行期死锁检测机制
+但实现时才发现c++标准库有免死锁算法 std::lock 函数和 std::scoped_lock 包装器，不需要自己实现
+*/
+
 namespace OKps
 {
 
@@ -23,7 +34,7 @@ namespace OKps
         void operator=(const simple_spin_lock &) = delete;
         void operator=(simple_spin_lock &&) = delete;
         /*
-        如果锁处于上锁状态，则析构函数会一直阻塞，直到解锁
+        如果锁处于上锁状态，则析构函数会解锁
         */
         ~simple_spin_lock()noexcept;
 
@@ -37,5 +48,7 @@ namespace OKps
         */
         std::thread::id const & owner_thread() const noexcept;
     };
+
+
 
 }

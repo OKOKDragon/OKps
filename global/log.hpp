@@ -5,6 +5,10 @@
 
 namespace OKps
 {
+	/*
+	极简代码日志
+	由1个代码位置信息和1个字符串提示信息组成
+	*/
 	class log final
 	{
 	private:

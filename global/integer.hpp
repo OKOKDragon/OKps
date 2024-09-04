@@ -5,6 +5,15 @@
 
 namespace OKps
 {
+    /*
+    无限精度整数
+    实现参考了 openssl 和 java jdk 的代码
+
+    虽然有很多成熟的高精度数学库，但它们大多数是c语言的，
+    要不然就是几乎完全用c语言风格写的c++。
+    我希望能充分利用c++的运算符重载、类型别名、枚举类、异常，而且不要像c语言一样处处手动初始化内存、手动创建和销毁上下文、使用复杂的宏定义和宏函数。
+    因此我从头实现了这个高精度整数类。
+    */
     class integer final
     {
     public:
@@ -258,6 +267,14 @@ namespace OKps
             divide_result(divide_result const&origin);
         };
         divide_result divide_and_module(integer const& right)const;
+
+        void operator +=(integer const& right);
+        void operator ++();
+        void operator -=(integer const& right);
+        void operator --();
+        void operator *=(integer const& right);
+        void operator /=(integer const& right);
+        void operator %=(integer const& right);
     };
 
 }

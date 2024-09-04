@@ -1365,4 +1365,33 @@ namespace OKps
 
         return result;
     }
+
+    void integer::operator +=(integer const& right)
+    {
+        (*this) = (*this) + right;
+    }
+    void integer::operator ++()
+    {
+        (*this) += integer(1, sign_type::positive);
+    }
+    void integer::operator -=(integer const& right)
+    {
+        (*this) = (*this) - right;
+    }
+    void integer::operator --()
+    {
+        (*this) -= integer(1, sign_type::positive);
+    }
+    void integer::operator *=(integer const& right)
+    {
+        (*this) = (*this) * right;
+    }
+    void integer::operator /=(integer const& right)
+    {
+        (*this) = (*this) / right;
+    }
+    void integer::operator %=(integer const& right)
+    {
+        (*this) = (*this) % right;
+    }
 }
