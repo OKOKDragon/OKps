@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <typeinfo>
 
 #include ".\fundamental.hpp"
 
@@ -621,7 +622,7 @@ namespace OKps::base
 	integer<value_type> integer<value_type>::operator <<(integer<std::size_t> const& shift)const
 	{
 
-		if (shift.value() >= bit_per_byte * integer::size)
+		if (shift.value() >= integer::bit_length)
 		{
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
@@ -636,7 +637,7 @@ namespace OKps::base
 	void integer<value_type>::operator <<=(integer<std::size_t> const& shift)
 	{
 
-		if (shift.value() >= bit_per_byte * integer::size)
+		if (shift.value() >= integer::bit_length)
 		{
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
@@ -651,7 +652,7 @@ namespace OKps::base
 	integer<value_type> integer<value_type>::operator >>(integer<std::size_t> const& shift)const
 	{
 
-		if (shift.value() >= bit_per_byte * integer::size)
+		if (shift.value() >= integer::bit_length)
 		{
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
@@ -666,7 +667,7 @@ namespace OKps::base
 	void integer<value_type>::operator >>=(integer<std::size_t> const& shift)
 	{
 
-		if (shift.value() >= bit_per_byte * integer::size)
+		if (shift.value() >= integer::bit_length)
 		{
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()

@@ -2,7 +2,6 @@
 
 #include <type_traits>
 
-#include ".\base.hpp"
 #include ".\bits.hpp"
 
 /*
