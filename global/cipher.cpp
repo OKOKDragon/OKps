@@ -42,7 +42,7 @@ namespace OKps::crypt
         , MEMBER_crypt_aes(std::move(origin.MEMBER_crypt_aes))
     {
     }
-    void cipher::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const& temp_route, const std::size_t thread_count)const
+    void cipher::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count)const
     {
         if (not this->MEMBER_rsa)
         {
@@ -57,7 +57,7 @@ namespace OKps::crypt
             throw std::invalid_argument(hint);
         }
         AES::file_device TEMP_cipher;
-        
+
         if (this->MEMBER_aes.size() == 1)
         {
             TEMP_cipher.encrypt(origin_route, result_route, this->MEMBER_aes[0].key(), thread_count);
@@ -66,7 +66,7 @@ namespace OKps::crypt
         std::random_device random_seed;                                 // 用于生成随机数种子
         std::mt19937 random_engine(random_seed());                      // 随机数生成器
         std::uniform_int_distribution<std::uintmax_t> distribution(std::numeric_limits<std::uintmax_t>::min(), std::numeric_limits<std::uintmax_t>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
-        
+
         if (not fs::exists(temp_route))
         {
             fs::create_directory(temp_route);
@@ -92,12 +92,12 @@ namespace OKps::crypt
         fs::remove(TEMP_route);
 
     }
-    void cipher::decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const& temp_route, const std::size_t thread_count)const
+    void cipher::decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count)const
     {
         if (not this->MEMBER_rsa)
         {
             throw std::logic_error("此密钥已失效，禁止访问");
-        }     
+        }
         namespace fs = std::filesystem;
         if (not fs::is_directory(temp_route))
         {
@@ -107,7 +107,7 @@ namespace OKps::crypt
             throw std::invalid_argument(hint);
         }
         AES::file_device TEMP_cipher;
-       
+
         if (this->MEMBER_aes.size() == 1)
         {
             TEMP_cipher.decrypt(origin_route, result_route, this->MEMBER_aes[0].key(), thread_count);
@@ -187,7 +187,7 @@ namespace OKps::crypt
         this->MEMBER_aes.resize(this->MEMBER_crypt_aes.size());
         for (std::size_t count_1 = 0;count_1 < this->MEMBER_aes.size();count_1++)
         {
-            AES::byte_device::TYPE_key temp_aes_key;
+            AES::byte_device::key_type temp_aes_key;
             for (std::size_t count_2 = 0;count_2 < AES::byte_device::key_length;count_2++)
             {
                 auto temp_real_aes_key = this->MEMBER_rsa->decrypt(this->MEMBER_crypt_aes[count_1][count_2]);

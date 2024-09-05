@@ -42,8 +42,8 @@ namespace OKps
 			virtual void operator =(handler &&)noexcept;
 			virtual ~handler()noexcept;
 		protected:
-			using TYPE_arg = std::unique_ptr<parameter> const &;
-			virtual void handle(TYPE_arg) = 0;
+			using argument_type = std::unique_ptr<parameter> const &;
+			virtual void handle(argument_type) = 0;
 		};
 
 	private:
@@ -71,7 +71,7 @@ namespace OKps
 		//删除命令
 		void erase(std::string const & order);
 		//使用参数para执行命令order
-		void execute(std::string const & order, handler::TYPE_arg para)const;
+		void execute(std::string const & order, handler::argument_type para)const;
 
 		handler const & find(std::string const & order)const;
 		handler & find(std::string const order);

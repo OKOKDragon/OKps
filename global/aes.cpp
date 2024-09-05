@@ -145,7 +145,7 @@ namespace OKps::AES
         this->KeyExpansion(key);
     }
 
-    byte_device::byte_device(byte_device::TYPE_key const & key)noexcept
+    byte_device::byte_device(byte_device::key_type const & key)noexcept
         :MEMBER_key(key)
     {
         std::byte buffer[16];
@@ -259,7 +259,7 @@ namespace OKps::AES
         input[15] = state[3][3];
     }
 
-    byte_device::TYPE_key const & byte_device::key() const noexcept
+    byte_device::key_type const & byte_device::key() const noexcept
     {
         return this->MEMBER_key;
     }
@@ -846,7 +846,7 @@ namespace OKps::AES
 
     }
 
-    void byte_device::align_encrypt(TYPE_byte & origin)const
+    void byte_device::align_encrypt(byte_type & origin)const
     {
         std::size_t count = 0;
         while (count + 16 <= origin.size())
@@ -894,7 +894,7 @@ namespace OKps::AES
 
     }
 
-    void byte_device::align_decrypt(TYPE_byte & origin)const
+    void byte_device::align_decrypt(byte_type & origin)const
     {
         if (origin.size() % 16 != 1)
         {
@@ -912,7 +912,7 @@ namespace OKps::AES
             origin.pop_back();
         }
     }
-    void file_device::decrypt(const std::string & origin_route, const std::string & result_route, const TYPE_key & key, const std::size_t thread_count)
+    void file_device::decrypt(const std::string & origin_route, const std::string & result_route, const key_type & key, const std::size_t thread_count)
     {
         this->decrypt((TYPE_path)origin_route, (TYPE_path)result_route, key, thread_count);
     }
@@ -1050,12 +1050,12 @@ namespace OKps::AES
         }
     }
 
-    byte_device::TYPE_key byte_device::random_aes_key()
+    byte_device::key_type byte_device::random_aes_key()
     {
         std::random_device seed;                                 // 用于生成随机数种子
         std::mt19937 random_engine(seed());                      // 随机数生成器
         std::uniform_int_distribution<unsigned int> distribution(0, unsigned int(std::numeric_limits<unsigned char>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
-        byte_device::TYPE_key result;
+        byte_device::key_type result;
 
         for (std::size_t counter = 0; counter < (std::size_t)16; counter++)
         {
@@ -1065,14 +1065,14 @@ namespace OKps::AES
         return result;
     }
 
-    byte_device::TYPE_key byte_device::random_encrypt(byte_device::TYPE_byte & origin)
+    byte_device::key_type byte_device::random_encrypt(byte_device::byte_type & origin)
     {
         auto key = byte_device::random_aes_key();
         auto worker = byte_device(key);
         worker.align_encrypt(origin);
         return key;
     }
-    byte_device::TYPE_key byte_device::random_encrypt(std::string & origin)
+    byte_device::key_type byte_device::random_encrypt(std::string & origin)
     {
         auto key = byte_device::random_aes_key();
         auto worker = byte_device(key);
@@ -1101,7 +1101,7 @@ namespace OKps::AES
 
     void file_device::encrypt(const std::string & origin_route,
         const std::string & result_route,
-        const file_device::TYPE_key & key,
+        const file_device::key_type & key,
         const std::size_t thread_count)
     {
         this->encrypt((TYPE_path)origin_route, (TYPE_path)result_route, key, thread_count);
@@ -1244,7 +1244,7 @@ namespace OKps::AES
         TYPE_writter const & result,
         const std::size_t begin,
         const std::size_t block_number,
-        const TYPE_key & key)
+        const key_type & key)
         : begin(begin)
         , block_number(block_number)
         , key(key)
@@ -1348,7 +1348,7 @@ namespace OKps::AES
             origin[count + 15] = value_cast(buffer[15]);
         }
     }
-    void byte_device::encrypt(TYPE_byte & origin)const
+    void byte_device::encrypt(byte_type & origin)const
     {
 
         std::byte buffer[byte_device::key_length];
@@ -1399,7 +1399,7 @@ namespace OKps::AES
             origin[count + 15] = buffer[15];
         }
     }
-    void file_device::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const TYPE_key & key, const std::size_t thread_count)
+    void file_device::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count)
     {
         this->MEMBER_error = std::current_exception();
         this->MEMBER_file_size = std::filesystem::file_size(origin_route);
@@ -1439,7 +1439,7 @@ namespace OKps::AES
             std::rethrow_exception(this->MEMBER_error);
         }
     }
-    void file_device::decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const TYPE_key & key, const std::size_t thread_count)
+    void file_device::decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count)
     {
         this->MEMBER_error = std::current_exception();
         this->MEMBER_file_size = std::filesystem::file_size(origin_route);
@@ -1538,7 +1538,7 @@ namespace OKps::AES
         }
 
     }
-    void byte_device::decrypt(TYPE_byte & origin)const
+    void byte_device::decrypt(byte_type & origin)const
     {
 
         std::byte buffer[byte_device::key_length];

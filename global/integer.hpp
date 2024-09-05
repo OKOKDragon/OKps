@@ -17,16 +17,16 @@ namespace OKps
     class integer final
     {
     public:
-        using TYPE_half_number = std::uint32_t;//TYPE_full_number的一半大小的无符号整型类型
+        using value_type = std::uint32_t;//TYPE_full_number的一半大小的无符号整型类型
     private:
-        static inline constexpr std::size_t const half_length = sizeof(TYPE_half_number) * bit_per_byte;
+        static inline constexpr std::size_t const half_length = sizeof(value_type) * bit_per_byte;
         using TYPE_full_number = std::uint64_t;//最大的内置无符号整型类型
         static inline constexpr std::size_t const full_length = sizeof(TYPE_full_number) * bit_per_byte;
         static_assert(sizeof(TYPE_full_number) == sizeof(std::uintmax_t));//保证TYPE_full_number是内置类型中最大的无符号整型
-        static_assert(std::is_unsigned_v<TYPE_half_number> and std::is_unsigned_v<TYPE_full_number>, "数组的元素类型必须是无符号整型");
-        static_assert(sizeof(TYPE_full_number) == sizeof(TYPE_half_number) * 2, "为了获取乘法溢出，数组的元素类型的长度必须是最大内置整型的一半");
+        static_assert(std::is_unsigned_v<value_type> and std::is_unsigned_v<TYPE_full_number>, "数组的元素类型必须是无符号整型");
+        static_assert(sizeof(TYPE_full_number) == sizeof(value_type) * 2, "为了获取乘法溢出，数组的元素类型的长度必须是最大内置整型的一半");
     public:
-        using TYPE_number = std::vector<TYPE_half_number>;
+        using number_type = std::vector<value_type>;
 
         //正负性符号
         enum class sign_type
@@ -38,22 +38,22 @@ namespace OKps
 
         static inline constexpr TYPE_full_number const base = (TYPE_full_number)1 << half_length;//TYPE_half_number类型所能表示的不同无符号整数的数量，也就是我们的大整数数组使用的进制
     private:
-        static inline constexpr TYPE_half_number const half_base = (TYPE_half_number)1 << (half_length - 1);//base的一半
+        static inline constexpr value_type const half_base = (value_type)1 << (half_length - 1);//base的一半
         sign_type MEMBER_sign;//符号位
-        TYPE_number MEMBER_number;//用2进制存储的整数，无符号
+        number_type MEMBER_number;//用2进制存储的整数，无符号
     public:
         //构造值为0的大整数
         integer();
         ~integer()noexcept;
         //如果输入的数值number是0，则一定会生成值为0的大整数
         integer(TYPE_full_number const number, sign_type const sign)noexcept;
-        integer(TYPE_number const & number, sign_type sign);
+        integer(number_type const & number, sign_type sign);
         sign_type const & sign()const noexcept;
-        TYPE_number const & number()const noexcept;
+        number_type const & number()const noexcept;
     private:
         static std::vector<integer> INNER_init_known_prime(std::uintmax_t const prime_count);
         static inline std::vector<integer> const MEMBER_known_prime = INNER_init_known_prime((std::uintmax_t)1024 * (std::uintmax_t)64);
-        integer(TYPE_number && number, sign_type sign)noexcept;
+        integer(number_type && number, sign_type sign)noexcept;
 
         /*
         实现Miller Rabin算法判断素数
@@ -61,13 +61,13 @@ namespace OKps
         */
         static bool INNER_Miller_Rabin(integer const & num, std::uintmax_t const check_times = 1024);
         //两个无符号数相加
-        static TYPE_number INNER_add_number(TYPE_number const & left, TYPE_number const & right);
+        static number_type INNER_add_number(number_type const & left, number_type const & right);
 
         /*
         较大数减去较小数，双方均无符号
         会去除结果中的前置0
         */
-        static TYPE_number INNER_subtract_number(TYPE_number const & big, TYPE_number const & little);
+        static number_type INNER_subtract_number(number_type const & big, number_type const & little);
         //两个大数比较的结果
         enum class compare_result
         {
@@ -86,7 +86,7 @@ namespace OKps
         去掉数组中所有前置的0
         如果数组中原来全是0，也不会留下一个0来占位，也就是说会得到空数组，这是因为我们规定用空数组来唯一地表示0
         */
-        static void INNER_erase_leading_zero(TYPE_number & val)noexcept;
+        static void INNER_erase_leading_zero(number_type & val)noexcept;
 
     public:
 
@@ -145,13 +145,13 @@ namespace OKps
         /*
         用简单的模拟竖式方法实现的乘法
         */
-        static TYPE_number INNER_simple_multiply_number(TYPE_number const & left, TYPE_number const & right);
+        static number_type INNER_simple_multiply_number(number_type const & left, number_type const & right);
 
         //两个大整数的乘法
-        static TYPE_number INNER_multiply_number(TYPE_number const & left, TYPE_number const & right);
+        static number_type INNER_multiply_number(number_type const & left, number_type const & right);
         //大整数和无符号内置类型整数之间的乘法
-        static TYPE_number INNER_multiply_number(TYPE_number const & left, TYPE_half_number const right);
-        static TYPE_number INNER_simple_multiply_number(TYPE_number const & left, TYPE_half_number const right, std::size_t const after_zero/*后置0的数量*/);
+        static number_type INNER_multiply_number(number_type const & left, value_type const right);
+        static number_type INNER_simple_multiply_number(number_type const & left, value_type const right, std::size_t const after_zero/*后置0的数量*/);
     public:
         /*
         判断大整数是不是素数
@@ -195,7 +195,7 @@ namespace OKps
         令 x = this 的 pow 次方，求 x % mod
         */
         integer power_mod(integer const & pow/*指数*/, integer const & mod/*除数*/)const;
-        integer power(integer const& pow)const;
+        integer power(integer const & pow)const;
         /*
         扩展欧几里得算法
         返回值是left和right的最大公约数
@@ -222,13 +222,13 @@ namespace OKps
         class INNER_divide_result final
         {
         private:
-            TYPE_number MEMBER_divide;//除法结果，即商
-            TYPE_number MEMBER_module;//取模结果，即余数
+            number_type MEMBER_divide;//除法结果，即商
+            number_type MEMBER_module;//取模结果，即余数
         public:
-            INNER_divide_result(TYPE_number && divide, TYPE_number && mod)noexcept;
-            INNER_divide_result(TYPE_number const & divide, TYPE_number const & mod);
-            TYPE_number const & divide()const noexcept;
-            TYPE_number const & mod()const noexcept;
+            INNER_divide_result(number_type && divide, number_type && mod)noexcept;
+            INNER_divide_result(number_type const & divide, number_type const & mod);
+            number_type const & divide()const noexcept;
+            number_type const & mod()const noexcept;
             INNER_divide_result(INNER_divide_result && origin)noexcept;
             INNER_divide_result(INNER_divide_result const &) = delete;
             ~INNER_divide_result()noexcept;
@@ -237,19 +237,19 @@ namespace OKps
         无符号非0大数的除法
         left必须比right大
         */
-        static INNER_divide_result INNER_divide_number(TYPE_number const & left, TYPE_number const & right);
+        static INNER_divide_result INNER_divide_number(number_type const & left, number_type const & right);
         /*
         无符号大整数left除以无符号内置类型整数right
         不检查right是否为0
         要求left>right
         */
-        static INNER_divide_result INNER_divide_number(TYPE_number const & left, TYPE_half_number const right);
+        static INNER_divide_result INNER_divide_number(number_type const & left, value_type const right);
         /*
         使用Knuth提出的试商法实现的大数除法
         除数right的绝对值数组的长度必须超过2
         */
-        static INNER_divide_result INNER_Knuth_divide(TYPE_number const & left, TYPE_number const & right,bool debug=false);
-        static std::pair<integer, integer> INNER_divide_and_module(integer const& left, integer const& right);
+        static INNER_divide_result INNER_Knuth_divide(number_type const & left, number_type const & right, bool debug = false);
+        static std::pair<integer, integer> INNER_divide_and_module(integer const & left, integer const & right);
     public:
         class divide_result final
         {
@@ -258,23 +258,23 @@ namespace OKps
             std::unique_ptr<integer const> MEMBER_divide;//除法结果，即商
             std::unique_ptr<integer const> MEMBER_module;//取模结果，即余数
 
-            divide_result(integer&& divide, integer&& mod)noexcept;
-            divide_result(integer const& divide, integer const& mod);
+            divide_result(integer && divide, integer && mod)noexcept;
+            divide_result(integer const & divide, integer const & mod);
         public:
-            integer const& divide()const noexcept;
-            integer const& mod()const noexcept;
-            divide_result(divide_result&& origin)noexcept;
-            divide_result(divide_result const&origin);
+            integer const & divide()const noexcept;
+            integer const & mod()const noexcept;
+            divide_result(divide_result && origin)noexcept;
+            divide_result(divide_result const & origin);
         };
-        divide_result divide_and_module(integer const& right)const;
+        divide_result divide_and_module(integer const & right)const;
 
-        void operator +=(integer const& right);
+        void operator +=(integer const & right);
         void operator ++();
-        void operator -=(integer const& right);
+        void operator -=(integer const & right);
         void operator --();
-        void operator *=(integer const& right);
-        void operator /=(integer const& right);
-        void operator %=(integer const& right);
+        void operator *=(integer const & right);
+        void operator /=(integer const & right);
+        void operator %=(integer const & right);
     };
 
 }

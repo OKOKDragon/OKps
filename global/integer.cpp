@@ -14,7 +14,7 @@ namespace OKps
     integer::~integer()noexcept
     {
     }
-    integer::integer(TYPE_number && number, sign_type sign)noexcept
+    integer::integer(number_type && number, sign_type sign)noexcept
         :MEMBER_sign(sign)
         , MEMBER_number(std::move(number))
     {
@@ -29,7 +29,7 @@ namespace OKps
             this->MEMBER_sign = sign_type::zero;
         }
     }
-    integer::integer(TYPE_number const & number, sign_type sign)
+    integer::integer(number_type const & number, sign_type sign)
         :MEMBER_sign(sign)
         , MEMBER_number(number)
     {
@@ -45,39 +45,42 @@ namespace OKps
         }
     }
     integer::INNER_divide_result::~INNER_divide_result()noexcept
-    {}
-    integer::divide_result::divide_result(integer&& divide, integer&& mod)noexcept
+    {
+    }
+    integer::divide_result::divide_result(integer && divide, integer && mod)noexcept
         :MEMBER_divide(std::make_unique<integer>(std::move(divide)))
-        ,MEMBER_module(std::make_unique<integer>(std::move(mod)))
-    {}
-    integer::divide_result::divide_result(integer const& divide, integer const& mod)
+        , MEMBER_module(std::make_unique<integer>(std::move(mod)))
+    {
+    }
+    integer::divide_result::divide_result(integer const & divide, integer const & mod)
         :MEMBER_divide(std::make_unique<integer>(divide))
         , MEMBER_module(std::make_unique<integer>(mod))
     {
     }
-    integer::divide_result integer::divide_and_module(integer const& right)const
+    integer::divide_result integer::divide_and_module(integer const & right)const
     {
         auto result = INNER_divide_and_module(*this, right);
         return integer::divide_result(std::move(result.first), std::move(result.second));
     }
-    integer const& integer::divide_result::divide()const noexcept
+    integer const & integer::divide_result::divide()const noexcept
     {
         return *(this->MEMBER_divide);
     }
-    integer const& integer::divide_result::mod()const noexcept
+    integer const & integer::divide_result::mod()const noexcept
     {
         return *(this->MEMBER_module);
     }
-    integer::divide_result::divide_result(divide_result&& origin)noexcept
+    integer::divide_result::divide_result(divide_result && origin)noexcept
         :MEMBER_divide(std::move(origin.MEMBER_divide))
-        ,MEMBER_module(std::move(origin.MEMBER_module))
+        , MEMBER_module(std::move(origin.MEMBER_module))
     {
     }
-    integer::divide_result::divide_result(divide_result const& origin)
+    integer::divide_result::divide_result(divide_result const & origin)
         :MEMBER_divide(std::make_unique<integer>(*(origin.MEMBER_divide)))
         , MEMBER_module(std::make_unique<integer>(*(origin.MEMBER_module)))
-    {}
-    integer::TYPE_number integer::INNER_add_number(TYPE_number const & left, TYPE_number const & right)
+    {
+    }
+    integer::number_type integer::INNER_add_number(number_type const & left, number_type const & right)
     {
         if (left.size() == 0)
         {
@@ -87,8 +90,8 @@ namespace OKps
         {
             return left;
         }
-        TYPE_number const * REF_long;
-        TYPE_number const * REF_short;
+        number_type const * REF_long;
+        number_type const * REF_short;
 
         // 若left数组长度短于right数组, 则交换两个数组
         if (left.size() < right.size())
@@ -103,7 +106,7 @@ namespace OKps
         }
         auto xIndex = REF_long->size();
         auto yIndex = REF_short->size();
-        TYPE_number result;
+        number_type result;
         result.resize(xIndex);
         TYPE_full_number sum = 0;
         /*
@@ -116,7 +119,7 @@ namespace OKps
             xIndex--;
             yIndex--;
             sum = (TYPE_full_number)((*REF_long)[xIndex]) + (TYPE_full_number)((*REF_short)[yIndex]) + (sum >> half_length);
-            result[xIndex] = (TYPE_half_number)sum;
+            result[xIndex] = (value_type)sum;
         }
 
         //复制较长的数，并传播进位
@@ -124,21 +127,21 @@ namespace OKps
         {
             xIndex--;
             sum = (TYPE_full_number)((*REF_long)[xIndex]) + (sum >> half_length);
-            result[xIndex] = (TYPE_half_number)sum;
+            result[xIndex] = (value_type)sum;
         }
 
         //必要时扩充数组
-        if ((TYPE_half_number)(sum >> half_length) != 0)
+        if ((value_type)(sum >> half_length) != 0)
         {
-            result.insert(result.begin(), (TYPE_half_number)(sum >> half_length));
+            result.insert(result.begin(), (value_type)(sum >> half_length));
         }
         return result;
     }
 
-    integer::TYPE_number integer::INNER_subtract_number(TYPE_number const & big, TYPE_number const & little)
+    integer::number_type integer::INNER_subtract_number(number_type const & big, number_type const & little)
     {
         auto bigIndex = big.size();
-        TYPE_number result;
+        number_type result;
         result.resize(bigIndex);
         auto littleIndex = little.size();
         bool carry = false;//是否有借位
@@ -210,7 +213,7 @@ namespace OKps
     {
         return this->MEMBER_sign;
     }
-    integer::TYPE_number const & integer::number()const noexcept
+    integer::number_type const & integer::number()const noexcept
     {
         return this->MEMBER_number;
     }
@@ -239,7 +242,7 @@ namespace OKps
         return compare_result::same;
     }
 
-    void integer::INNER_erase_leading_zero(TYPE_number & val)noexcept
+    void integer::INNER_erase_leading_zero(number_type & val)noexcept
     {
         auto itor = val.begin();
         while (itor != val.end() and *itor == 0)
@@ -286,8 +289,8 @@ namespace OKps
             {
                 break;
             }
-            TYPE_half_number temp_number;
-            for (std::size_t count_2 = 0;count_2 < sizeof(TYPE_half_number) / sizeof(char);count_2++)
+            value_type temp_number;
+            for (std::size_t count_2 = 0;count_2 < sizeof(value_type) / sizeof(char);count_2++)
             {
                 if (position >= temp_input.size())
                 {
@@ -329,7 +332,7 @@ namespace OKps
         {
             return integer();//返回0
         }
-        TYPE_number resultMag;
+        number_type resultMag;
         //用较大的数减较小的数
         if (cmp == compare_result::bigger)
         {
@@ -397,7 +400,7 @@ namespace OKps
         {
             return integer();
         }
-        TYPE_number resultMag;
+        number_type resultMag;
         if (cmp == compare_result::bigger)
         {
             resultMag = INNER_subtract_number(this->MEMBER_number, right.MEMBER_number);
@@ -456,7 +459,7 @@ namespace OKps
             return integer(INNER_multiply_number(this->MEMBER_number, right.MEMBER_number), sign_type::negative);
         }
     }
-    integer::TYPE_number integer::INNER_multiply_number(TYPE_number const & left, TYPE_number const & right)
+    integer::number_type integer::INNER_multiply_number(number_type const & left, number_type const & right)
     {
         /*
         java标准库的BigInteger类会根据大数的长度选择不同的乘法实现
@@ -465,10 +468,10 @@ namespace OKps
         */
         return INNER_simple_multiply_number(left, right);
     }
-    integer::TYPE_number integer::INNER_simple_multiply_number(TYPE_number const & left, TYPE_number const & right)
+    integer::number_type integer::INNER_simple_multiply_number(number_type const & left, number_type const & right)
     {
-        TYPE_number const * REF_long;
-        TYPE_number const * REF_short;
+        number_type const * REF_long;
+        number_type const * REF_short;
         if (left.size() < right.size())
         {
             REF_short = &left;
@@ -479,7 +482,7 @@ namespace OKps
             REF_short = &right;
             REF_long = &left;
         }
-        TYPE_number result;
+        number_type result;
         auto position = REF_short->size();
         while (position > 0)
         {
@@ -489,40 +492,40 @@ namespace OKps
         }
         return result;
     }
-    integer::TYPE_number integer::INNER_simple_multiply_number(TYPE_number const & left, TYPE_half_number const right, std::size_t const after_zero/*后置0的数量*/)
+    integer::number_type integer::INNER_simple_multiply_number(number_type const & left, value_type const right, std::size_t const after_zero/*后置0的数量*/)
     {
         if (right == 0)
         {
-            TYPE_number result;
+            number_type result;
             return result;
         }
         TYPE_full_number carrier = 0;
-        TYPE_number result;
+        number_type result;
         result.resize(left.size());
         auto position = left.size();
         while (position > 0)
         {
             position--;
             carrier = ((TYPE_full_number)(left[position])) * ((TYPE_full_number)right) + (carrier >> half_length);
-            result[position] = (TYPE_half_number)carrier;
+            result[position] = (value_type)carrier;
         }
-        if ((TYPE_half_number)(carrier >> half_length) != 0)
+        if ((value_type)(carrier >> half_length) != 0)
         {
-            result.insert(result.begin(), (TYPE_half_number)(carrier >> half_length));
+            result.insert(result.begin(), (value_type)(carrier >> half_length));
         }
         result.insert(result.end(), after_zero, 0);
         return result;
     }
-    integer::INNER_divide_result::INNER_divide_result(TYPE_number && divide, TYPE_number && module)noexcept
+    integer::INNER_divide_result::INNER_divide_result(number_type && divide, number_type && module)noexcept
         :MEMBER_divide(divide)
         , MEMBER_module(module)
     {
     }
-    integer::TYPE_number const & integer::INNER_divide_result::divide()const noexcept
+    integer::number_type const & integer::INNER_divide_result::divide()const noexcept
     {
         return this->MEMBER_divide;
     }
-    integer::TYPE_number const & integer::INNER_divide_result::mod()const noexcept
+    integer::number_type const & integer::INNER_divide_result::mod()const noexcept
     {
         return this->MEMBER_module;
     }
@@ -555,7 +558,7 @@ namespace OKps
         {
             sign = sign_type::negative;
         }
-        TYPE_number mag;//结果的值
+        number_type mag;//结果的值
         if (cmp == compare_result::same)
         {
             mag.resize(1);
@@ -600,7 +603,7 @@ namespace OKps
         }
 
     }
-    integer integer::power(integer const& pow)const
+    integer integer::power(integer const & pow)const
     {
         if (pow.MEMBER_sign == sign_type::negative)
         {
@@ -622,7 +625,7 @@ namespace OKps
         }
         return result;
     }
-    std::pair<integer, integer> integer::INNER_divide_and_module(integer const& left, integer const& right)
+    std::pair<integer, integer> integer::INNER_divide_and_module(integer const & left, integer const & right)
     {
         if (right.MEMBER_sign == sign_type::zero)
         {
@@ -646,12 +649,12 @@ namespace OKps
         {
             sign = sign_type::negative;
         }
-        TYPE_number div_mag;//商的值
+        number_type div_mag;//商的值
         if (cmp == compare_result::same)
         {
             div_mag.resize(1);
             div_mag[0] = 1;
-            return std::make_pair(integer(div_mag,sign), integer());
+            return std::make_pair(integer(div_mag, sign), integer());
         }
         else
         {
@@ -660,7 +663,7 @@ namespace OKps
             //auto const mod_mag = mag.module();//余数的值
             if (mag.mod().size() != 0)
             {
-                return std::make_pair(integer(div_mag, sign),integer(mag.mod(), left.MEMBER_sign));
+                return std::make_pair(integer(div_mag, sign), integer(mag.mod(), left.MEMBER_sign));
             }
             else
             {
@@ -668,9 +671,9 @@ namespace OKps
             }
         }
     }
-    integer::INNER_divide_result integer::INNER_divide_number(TYPE_number const & left, TYPE_half_number const right)
+    integer::INNER_divide_result integer::INNER_divide_number(number_type const & left, value_type const right)
     {
-        TYPE_number divide;
+        number_type divide;
         divide.resize(left.size());
 
         TYPE_full_number carrier = 0;
@@ -678,24 +681,24 @@ namespace OKps
         {
             carrier <<= half_length;
             carrier += (TYPE_full_number)(left[count]);
-            divide[count] = (TYPE_half_number)(carrier / (TYPE_full_number)right);
+            divide[count] = (value_type)(carrier / (TYPE_full_number)right);
             carrier %= (TYPE_full_number)right;
         }
         INNER_erase_leading_zero(divide);
-        TYPE_number mod;
+        number_type mod;
         if (carrier != 0)
         {
             mod.resize(1);
-            mod[0] = (TYPE_half_number)carrier;
+            mod[0] = (value_type)carrier;
         }
         return INNER_divide_result(divide, mod);
     }
-    integer::INNER_divide_result::INNER_divide_result(TYPE_number const & divide, TYPE_number const & mod)
+    integer::INNER_divide_result::INNER_divide_result(number_type const & divide, number_type const & mod)
         :MEMBER_divide(divide)
         , MEMBER_module(mod)
     {
     }
-    integer::INNER_divide_result integer::INNER_divide_number(TYPE_number const & left, TYPE_number const & right)
+    integer::INNER_divide_result integer::INNER_divide_number(number_type const & left, number_type const & right)
     {
         if (right.size() == 1)
         {
@@ -703,21 +706,21 @@ namespace OKps
         }
         return INNER_Knuth_divide(left, right);
     }
-    integer::INNER_divide_result integer::INNER_Knuth_divide(TYPE_number const & left, TYPE_number const & right,bool debug)
+    integer::INNER_divide_result integer::INNER_Knuth_divide(number_type const & left, number_type const & right, bool debug)
     {
         auto u = left;//被除数
         auto v = right;//除数
         auto const n = v.size();//n是数组v的长度
         auto const m = u.size() - n;//m+n是数组u的长度
         auto const d = base / ((TYPE_full_number)(v[0]) + 1);//因为v[0] > 0，所以 base / (v[0]+1) <= half_base，也就是说d可以用half_number类型存储
-        if (debug and (TYPE_half_number)(d >> half_length) != 0)
+        if (debug and (value_type)(d >> half_length) != 0)
         {
             throw std::logic_error("d值不能用half_number类型表示，不符合预期。检查Knuth除法算法的实现。");
         }
         {
-            TYPE_number TEMP_d;
+            number_type TEMP_d;
             TEMP_d.resize(1);
-            TEMP_d[0] = (TYPE_half_number)d;
+            TEMP_d[0] = (value_type)d;
             u = INNER_multiply_number(u, TEMP_d);
             if (u.size() == m + n)
             {
@@ -735,7 +738,7 @@ namespace OKps
             }
         }
         decltype(u.size()) j = 0;//循环变量
-        TYPE_number q;//商
+        number_type q;//商
         q.resize(m + 1);
         TYPE_full_number q_;//每一位商的估计值
         //每一位商的准确值就在q_、q_1和q_2之中
@@ -760,7 +763,7 @@ namespace OKps
                     goto FLOW_test;
                 }
             }
-            TYPE_number TEMP_u_mag;//复制数组{u[j],···,u[j+n]}
+            number_type TEMP_u_mag;//复制数组{u[j],···,u[j+n]}
             TEMP_u_mag.resize(n + 1);
             for (std::size_t count_1 = 0;count_1 <= n;count_1++)
             {
@@ -795,7 +798,7 @@ namespace OKps
         }
         INNER_erase_leading_zero(q);
         INNER_erase_leading_zero(u);
-        auto TEMP_1 = INNER_divide_number(u, (TYPE_half_number)d);
+        auto TEMP_1 = INNER_divide_number(u, (value_type)d);
         if (debug and TEMP_1.mod().size() != 0)
         {
             throw std::logic_error("数组u进行反规范化时，余数不为0。检查Knuth试商算法的实现");
@@ -869,29 +872,29 @@ namespace OKps
         {
             case number_system::bin:
             {
-                input_base = integer((TYPE_half_number)2, sign_type::positive);
+                input_base = integer((value_type)2, sign_type::positive);
                 break;
             }
             case number_system::dec:
             {
-                input_base = integer((TYPE_half_number)10, sign_type::positive);
+                input_base = integer((value_type)10, sign_type::positive);
                 break;
             }
             case number_system::oct:
             {
-                input_base = integer((TYPE_half_number)8, sign_type::positive);
+                input_base = integer((value_type)8, sign_type::positive);
                 break;
             }
             case number_system::hex:
             {
-                input_base = integer((TYPE_half_number)10, sign_type::positive);
+                input_base = integer((value_type)10, sign_type::positive);
                 break;
             }
         }
         for (size_t i = 0; i < input.size(); ++i)
         {
             (*this) = (*this) * input_base;
-            (*this) = (*this) + integer((TYPE_half_number)(OKps::from_char(input[i], system)), sign_type::positive);//如果input有非数字的字符，则会在此处抛出异常
+            (*this) = (*this) + integer((value_type)(OKps::from_char(input[i], system)), sign_type::positive);//如果input有非数字的字符，则会在此处抛出异常
         }
         if (this->MEMBER_sign != sign_type::zero)
         {
@@ -909,22 +912,22 @@ namespace OKps
         {
             case number_system::bin:
             {
-                input_base = integer((TYPE_half_number)2, sign_type::positive);
+                input_base = integer((value_type)2, sign_type::positive);
                 break;
             }
             case number_system::dec:
             {
-                input_base = integer((TYPE_half_number)10, sign_type::positive);
+                input_base = integer((value_type)10, sign_type::positive);
                 break;
             }
             case number_system::oct:
             {
-                input_base = integer((TYPE_half_number)8, sign_type::positive);
+                input_base = integer((value_type)8, sign_type::positive);
                 break;
             }
             case number_system::hex:
             {
-                input_base = integer((TYPE_half_number)10, sign_type::positive);
+                input_base = integer((value_type)10, sign_type::positive);
                 break;
             }
         }
@@ -986,8 +989,8 @@ namespace OKps
             this->MEMBER_sign = sign_type::zero;
             return;
         }
-        TYPE_half_number const high = (TYPE_half_number)(number >> half_length);
-        TYPE_half_number const low = (TYPE_half_number)number;
+        value_type const high = (value_type)(number >> half_length);
+        value_type const low = (value_type)number;
         if (high == 0)
         {
             this->MEMBER_number.resize(1);
@@ -1001,9 +1004,9 @@ namespace OKps
         }
 
     }
-    integer::TYPE_number integer::INNER_multiply_number(TYPE_number const & left, TYPE_half_number const right)
+    integer::number_type integer::INNER_multiply_number(number_type const & left, value_type const right)
     {
-        TYPE_number TEMP_right;
+        number_type TEMP_right;
         if (right == 0)
         {
             return TEMP_right;
@@ -1261,11 +1264,11 @@ namespace OKps
         {
             return integer();
         }
-        OKps::integer::TYPE_number num;
+        OKps::integer::number_type num;
         std::random_device seed;                                 // 用于生成随机数种子
         std::mt19937 random_engine(seed());                      // 随机数生成器
-        std::uniform_int_distribution<OKps::integer::TYPE_half_number> distribution_1(0, std::numeric_limits<OKps::integer::TYPE_half_number>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
-        std::uniform_int_distribution<OKps::integer::TYPE_half_number> distribution_2(1, std::numeric_limits<OKps::integer::TYPE_half_number>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
+        std::uniform_int_distribution<OKps::integer::value_type> distribution_1(0, std::numeric_limits<OKps::integer::value_type>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
+        std::uniform_int_distribution<OKps::integer::value_type> distribution_2(1, std::numeric_limits<OKps::integer::value_type>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
         num.resize(length);
         num[0] = distribution_2(random_engine);
         for (std::size_t count = 1;count < length;count++)
@@ -1359,14 +1362,14 @@ namespace OKps
 
         for (std::size_t count = 0;count < prime_count;count++)
         {
-            prime_file.read((char*)(&temp), sizeof(std::uintmax_t));
+            prime_file.read((char *)(&temp), sizeof(std::uintmax_t));
             result[count] = integer(temp, sign_type::positive);
         }
 
         return result;
     }
 
-    void integer::operator +=(integer const& right)
+    void integer::operator +=(integer const & right)
     {
         (*this) = (*this) + right;
     }
@@ -1374,7 +1377,7 @@ namespace OKps
     {
         (*this) += integer(1, sign_type::positive);
     }
-    void integer::operator -=(integer const& right)
+    void integer::operator -=(integer const & right)
     {
         (*this) = (*this) - right;
     }
@@ -1382,15 +1385,15 @@ namespace OKps
     {
         (*this) -= integer(1, sign_type::positive);
     }
-    void integer::operator *=(integer const& right)
+    void integer::operator *=(integer const & right)
     {
         (*this) = (*this) * right;
     }
-    void integer::operator /=(integer const& right)
+    void integer::operator /=(integer const & right)
     {
         (*this) = (*this) / right;
     }
-    void integer::operator %=(integer const& right)
+    void integer::operator %=(integer const & right)
     {
         (*this) = (*this) % right;
     }

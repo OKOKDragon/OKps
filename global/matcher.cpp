@@ -87,7 +87,7 @@ namespace OKps
 		}
 	}
 	//执行命令
-	void order_matcher::execute(std::string const & order, handler::TYPE_arg para)const
+	void order_matcher::execute(std::string const & order, handler::argument_type para)const
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref != this->MEMBER_orders.end())

@@ -39,12 +39,12 @@ namespace OKps::AES
         byte_device(std::byte const * key) noexcept;
     public:
         constexpr static inline std::size_t const key_length = 16;
-        using TYPE_key = std::array<std::byte, key_length>;
-        using TYPE_byte = std::vector<std::byte>;
+        using key_type = std::array<std::byte, key_length>;
+        using byte_type = std::vector<std::byte>;
     private:
-        TYPE_key MEMBER_key;
+        key_type MEMBER_key;
     public:
-        byte_device(TYPE_key const & key)noexcept;
+        byte_device(key_type const & key)noexcept;
 
         ~byte_device()noexcept;
 
@@ -57,13 +57,13 @@ namespace OKps::AES
         void encrypt(std::byte * const input)const;
 
     public:
-        TYPE_key const & key()const noexcept;
+        key_type const & key()const noexcept;
         /*
         加密
         直接修改原字符串
         */
         void encrypt(std::string & origin)const;
-        void encrypt(TYPE_byte & origin)const;
+        void encrypt(byte_type & origin)const;
 
     private:
         /*
@@ -79,7 +79,7 @@ namespace OKps::AES
         直接修改原字符串
         */
         void decrypt(std::string & origin)const;
-        void decrypt(TYPE_byte & origin)const;
+        void decrypt(byte_type & origin)const;
         /*
         末尾对齐
         */
@@ -91,28 +91,28 @@ namespace OKps::AES
         对齐加密
         */
         void align_encrypt(std::string & origin)const;
-        void align_encrypt(TYPE_byte & origin)const;
+        void align_encrypt(byte_type & origin)const;
         /*
         对齐解密
         输入的必须是对齐加密产生的格式密文串，否则报错
         */
         void align_decrypt(std::string & origin)const;
-        void align_decrypt(TYPE_byte & origin)const;
+        void align_decrypt(byte_type & origin)const;
 
         /*
         随机生成16字节aes密钥
         */
         [[nodiscard("求值函数的返回值如果被抛弃，相当于什么都没有做")]]
-        static TYPE_key random_aes_key();
+        static key_type random_aes_key();
         /*
         生成随机密钥，并用该密钥进行对齐加密
         所得密文应该用对齐解密
         返回值是生成的随机密钥
         */
         [[nodiscard("返回值是密钥，如果不保存，就无法解密")]]
-        static TYPE_key random_encrypt(std::string & origin);
+        static key_type random_encrypt(std::string & origin);
         [[nodiscard("返回值是密钥，如果不保存，就无法解密")]]
-        static TYPE_key random_encrypt(TYPE_byte & origin);
+        static key_type random_encrypt(byte_type & origin);
 
     private:
         static const std::byte Sbox[256];
@@ -151,7 +151,7 @@ namespace OKps::AES
     class file_device final
     {
     public:
-        using TYPE_key = byte_device::TYPE_key;
+        using key_type = byte_device::key_type;
 
     private:
         using TYPE_path = std::filesystem::path;
@@ -178,7 +178,7 @@ namespace OKps::AES
         // 加密器线程数
         std::uintmax_t MEMBER_thread_number;
 
-        TYPE_key MEMBER_key;
+        key_type MEMBER_key;
 
         [[nodiscard("转换函数的返回值如果被抛弃，相当于什么都没有做")]]
         static std::string INNER_buffer_string(const char * buffer, std::size_t size);
@@ -200,10 +200,10 @@ namespace OKps::AES
 
         注意，线程数不要过大，因为操作系统对一个进程能拥有的文件句柄的数量有限制，而本类会给每一个线程申请2个文件句柄，如果线程数太大，则有些线程无法访问文件。如果出现这种情况，则抛出异常。
         */
-        void encrypt(const std::string & origin_route, const std::string & result_route, const TYPE_key & key, const std::size_t thread_count = 0);
-        void decrypt(const std::string & origin_route, const std::string & result_route, const TYPE_key & key, const std::size_t thread_count = 0);
-        void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const TYPE_key & key, const std::size_t thread_count = 0);
-        void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const TYPE_key & key, const std::size_t thread_count = 0);
+        void encrypt(const std::string & origin_route, const std::string & result_route, const key_type & key, const std::size_t thread_count = 0);
+        void decrypt(const std::string & origin_route, const std::string & result_route, const key_type & key, const std::size_t thread_count = 0);
+        void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count = 0);
+        void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count = 0);
 
     private:
         // aes对称加密，密钥必须是长度16的unsigned char字符串
@@ -227,11 +227,11 @@ namespace OKps::AES
         private:
 
             // 密钥
-            TYPE_key const & key;
+            key_type const & key;
 
         public:
             cipher() = delete;
-            cipher(TYPE_reader const & origin, TYPE_writter const & result, const std::size_t begin, const std::size_t block_number, const TYPE_key & key);
+            cipher(TYPE_reader const & origin, TYPE_writter const & result, const std::size_t begin, const std::size_t block_number, const key_type & key);
             cipher(cipher const &) = delete;
             void operator=(cipher const &) = delete;
             cipher(cipher &&) = delete;
