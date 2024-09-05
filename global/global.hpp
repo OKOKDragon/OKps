@@ -30,10 +30,8 @@ namespace OKps::exsample
     public:
         constexpr char const * const hint_string = "只是一串字符串常量";
         using id_type = std::uintmax_t;
-        void play_toy(id_type);
-        class toy_id
-        {
-        };
+        class toy_id;
+        toy_id play_toy(id_type);
     }
 };
 
