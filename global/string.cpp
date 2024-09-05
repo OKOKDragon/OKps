@@ -75,58 +75,58 @@ namespace OKps
         char result;
         switch (number_base)
         {
-        case number_system::bin :
-        { 
-            if (number >= 0 and number <= 1)
+            case number_system::bin:
             {
-                result = static_cast<char>(number + static_cast<unsigned char>('0'));
+                if (number >= 0 and number <= 1)
+                {
+                    result = static_cast<char>(number + static_cast<unsigned char>('0'));
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的整数不是单个2进制数字");
+                }
+                break;
             }
-            else
+            case number_system::dec:
             {
-                throw std::invalid_argument("输入的整数不是单个2进制数字");
+                if (number >= 0 and number <= 9)
+                {
+                    result = static_cast<char>(number + static_cast<unsigned char>('0'));
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的整数不是单个10进制数字");
+                }
+                break;
             }
-            break;
-        }
-        case number_system::dec :
-        {
-            if (number >= 0 and number <= 9)
+            case number_system::hex:
             {
-                result = static_cast<char>(number + static_cast<unsigned char>('0'));
+                if (number >= 0 and number <= 9)
+                {
+                    result = static_cast<char>(number + static_cast<unsigned char>('0'));
+                }
+                else if (number >= 10 and number <= 15)
+                {
+                    result = static_cast<char>(number - 10 + static_cast<unsigned char>('a'));
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的整数不是单个16进制数字");
+                }
+                break;
             }
-            else
+            case number_system::oct:
             {
-                throw std::invalid_argument("输入的整数不是单个10进制数字");
+                if (number >= 0 and number <= 7)
+                {
+                    result = static_cast<char>(number + static_cast<unsigned char>('0'));
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的整数不是单个8进制数字");
+                }
+                break;
             }
-            break;
-        }
-        case number_system::hex :
-        {
-            if (number >= 0 and number <= 9)
-            {
-                result = static_cast<char>(number + static_cast<unsigned char>('0'));
-            }
-            else if (number >= 10 and number <= 15)
-            {
-                result = static_cast<char>(number - 10 + static_cast<unsigned char>('a'));
-            }
-            else
-            {
-                throw std::invalid_argument("输入的整数不是单个16进制数字");
-            }
-            break;
-        }
-        case number_system::oct :
-        {
-            if (number >= 0 and number <= 7)
-            {
-                result = static_cast<char>(number + static_cast<unsigned char>('0'));
-            }
-            else
-            {
-                throw std::invalid_argument("输入的整数不是单个8进制数字");
-            }
-            break;
-        }
         }
         return result;
     }
@@ -136,62 +136,62 @@ namespace OKps
         unsigned int result;
         switch (number_base)
         {
-        case number_system::bin:
-        {
-            if (number >= '0' and number <= '1')
+            case number_system::bin:
             {
-                result = static_cast<unsigned char>(number - '0');
+                if (number >= '0' and number <= '1')
+                {
+                    result = static_cast<unsigned char>(number - '0');
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的字符不表示单个2进制数字");
+                }
+                break;
             }
-            else
+            case number_system::dec:
             {
-                throw std::invalid_argument("输入的字符不表示单个2进制数字");
+                if (number >= '0' and number <= '9')
+                {
+                    result = static_cast<unsigned char>(number - '0');
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的字符不表示单个10进制数字");
+                }
+                break;
             }
-            break;
-        }
-        case number_system::dec:
-        {
-            if (number >= '0' and number <= '9')
+            case number_system::hex:
             {
-                result = static_cast<unsigned char>(number - '0');
+                if (number >= '0' and number <= '9')
+                {
+                    result = static_cast<unsigned char>(number - 0);
+                }
+                else if (number >= 'a' and number <= 'f')
+                {
+                    result = static_cast<unsigned char>(number - 'a' + 10);
+                }
+                else if (number >= 'A' and number <= 'F')
+                {
+                    result = static_cast<unsigned char>(number - 'A' + 10);
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的字符不表示单个16进制数字");
+                }
+                break;
             }
-            else
+            case number_system::oct:
             {
-                throw std::invalid_argument("输入的字符不表示单个10进制数字");
+                if (number >= '0' and number <= '7')
+                {
+                    result = static_cast<unsigned char>(number - '0');
+                }
+                else
+                {
+                    throw std::invalid_argument("输入的字符不表示单个8进制数字");
+                }
+                break;
             }
-            break;
-        }
-        case number_system::hex:
-        {
-            if (number >= '0' and number <= '9')
-            {
-                result = static_cast<unsigned char>(number - 0);
-            }
-            else if (number >= 'a' and number <= 'f')
-            {
-                result = static_cast<unsigned char>(number - 'a' + 10);
-            }
-            else if (number >= 'A' and number <= 'F')
-            {
-                result = static_cast<unsigned char>(number - 'A' + 10);
-            }
-            else
-            {
-                throw std::invalid_argument("输入的字符不表示单个16进制数字");
-            }
-            break;
-        }
-        case number_system::oct:
-        {
-            if (number >= '0' and number <= '7')
-            {
-                result = static_cast<unsigned char>(number -'0');
-            }
-            else
-            {
-                throw std::invalid_argument("输入的字符不表示单个8进制数字");
-            }
-            break;
-        }
         }
         return result;
     }

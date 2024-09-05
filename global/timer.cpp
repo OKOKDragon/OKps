@@ -23,7 +23,7 @@ namespace OKps
         auto const RESULT_begin_time = std::chrono::time_point_cast<time_type>(this->MEMBER_begin_time).time_since_epoch().count();
         auto const RESULT_end_time = std::chrono::time_point_cast<time_type>(TEMP_end_time).time_since_epoch().count();
         auto const result = RESULT_end_time - RESULT_begin_time;
-        static_assert(std::is_same_v<std::remove_const_t<decltype(result)> , end_result_type<time_type>>);
+        static_assert(std::is_same_v<std::remove_const_t<decltype(result)>, end_result_type<time_type>>);
         return result;
     }
 

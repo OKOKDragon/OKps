@@ -1,33 +1,39 @@
-#include <stdexcept>
+ï»¿#include <stdexcept>
 #include ".\base.hpp"
 
 namespace OKps::base
 {
 	blank::blank()noexcept
-	{}
-	blank::blank(blank const&)noexcept
-	{}
+	{
+	}
+	blank::blank(blank const &)noexcept
+	{
+	}
 	blank::~blank()noexcept
-	{}
-	blank::blank(blank&&)noexcept
-	{}
-	void blank::operator =(blank&&)noexcept
-	{}
-	void blank::operator =(blank const&)noexcept
-	{}
-	bool blank::operator ==(blank const& right)const noexcept
+	{
+	}
+	blank::blank(blank &&)noexcept
+	{
+	}
+	void blank::operator =(blank &&)noexcept
+	{
+	}
+	void blank::operator =(blank const &)noexcept
+	{
+	}
+	bool blank::operator ==(blank const & right)const noexcept
 	{
 		return this == &right;
 	}
-	bool blank::operator !=(blank const& right)const noexcept
+	bool blank::operator !=(blank const & right)const noexcept
 	{
 		return not(*this == right);
 	}
-	blank& blank::self()noexcept
+	blank & blank::self()noexcept
 	{
 		return *this;
 	}
-	blank const& blank::self()const noexcept
+	blank const & blank::self()const noexcept
 	{
 		return *this;
 	}
@@ -35,9 +41,10 @@ namespace OKps::base
 	worker::worker()
 		noexcept(std::is_nothrow_default_constructible<std::thread>::value
 			and std::is_nothrow_default_constructible<std::exception_ptr>::value)
-	{}
+	{
+	}
 
-	worker::worker(worker&& origin)
+	worker::worker(worker && origin)
 		noexcept(std::is_nothrow_move_constructible<std::thread>::value
 			and std::is_nothrow_copy_constructible<std::exception_ptr>::value)
 		:MEMBER_thread(std::move(origin.MEMBER_thread))
@@ -45,7 +52,7 @@ namespace OKps::base
 	{
 		origin.MEMBER_error = nullptr;
 	}
-	void worker::operator =(worker&& origin)
+	void worker::operator =(worker && origin)
 		noexcept(std::is_nothrow_move_assignable<std::thread>::value
 			and std::is_nothrow_copy_assignable<std::exception_ptr>::value)
 	{
@@ -61,34 +68,34 @@ namespace OKps::base
 			and std::is_nothrow_destructible<std::exception_ptr>::value)
 	{
 	}
-	worker& worker::self()noexcept
+	worker & worker::self()noexcept
 	{
 		return *this;
 	}
-	worker const& worker::self()const noexcept
+	worker const & worker::self()const noexcept
 	{
 		return *this;
 	}
 
-	std::thread& worker::thread()noexcept
+	std::thread & worker::thread()noexcept
 	{
 		return this->MEMBER_thread;
 	}
-	std::thread const& worker::thread()const noexcept
+	std::thread const & worker::thread()const noexcept
 	{
 		return this->MEMBER_thread;
 	}
 
-	std::exception_ptr const& worker::have_error()const noexcept
+	std::exception_ptr const & worker::have_error()const noexcept
 	{
 		return this->MEMBER_error;
 	}
 
-	void worker::raise_error(std::exception_ptr const& ep)
+	void worker::raise_error(std::exception_ptr const & ep)
 	{
 		if (this->MEMBER_error)
 		{
-			throw std::logic_error("ÒÑ¾­´æ´¢ÁËÒì³££¬ÉÐÎ´µÃµ½´¦Àí");
+			throw std::logic_error("å·²ç»å­˜å‚¨äº†å¼‚å¸¸ï¼Œå°šæœªå¾—åˆ°å¤„ç†");
 		}
 		this->MEMBER_error = ep;
 	}
@@ -97,14 +104,14 @@ namespace OKps::base
 	{
 		if (not this->MEMBER_error)
 		{
-			throw std::logic_error("Ã»ÓÐ´¢´æÒì³£");
+			throw std::logic_error("æ²¡æœ‰å‚¨å­˜å¼‚å¸¸");
 		}
 		auto const ep = this->MEMBER_error;
 		this->MEMBER_error = nullptr;
 		std::rethrow_exception(ep);
 	}
 
-	bool const& move_invalid::is_valid()const noexcept
+	bool const & move_invalid::is_valid()const noexcept
 	{
 		return this->MEMBER_valid;
 	}
@@ -113,30 +120,32 @@ namespace OKps::base
 	{
 		if (not this->MEMBER_valid)
 		{
-			throw std::logic_error("´Ë¶ÔÏóÒÑÊ§Ð§£¬½ûÖ¹·ÃÎÊ");
+			throw std::logic_error("æ­¤å¯¹è±¡å·²å¤±æ•ˆï¼Œç¦æ­¢è®¿é—®");
 		}
 	}
 
 	move_invalid::move_invalid()noexcept
 		:MEMBER_valid(true)
-	{}
+	{
+	}
 
-	move_invalid::move_invalid(move_invalid const& origin)noexcept
+	move_invalid::move_invalid(move_invalid const & origin)noexcept
 		:MEMBER_valid(origin.MEMBER_valid)
-	{}
-	void move_invalid::operator =(move_invalid const& origin)noexcept
+	{
+	}
+	void move_invalid::operator =(move_invalid const & origin)noexcept
 	{
 		if (this != &origin)
 		{
 			this->MEMBER_valid = origin.MEMBER_valid;
 		}
 	}
-	move_invalid::move_invalid(move_invalid&& origin)noexcept
+	move_invalid::move_invalid(move_invalid && origin)noexcept
 		:MEMBER_valid(origin.MEMBER_valid)
 	{
 		origin.MEMBER_valid = false;
 	}
-	void move_invalid::operator =(move_invalid&& origin)noexcept
+	void move_invalid::operator =(move_invalid && origin)noexcept
 	{
 		if (this != &origin)
 		{
@@ -146,20 +155,21 @@ namespace OKps::base
 	}
 
 	move_invalid::~move_invalid()noexcept
-	{}
-	bool move_invalid::operator ==(move_invalid const& right)const noexcept
+	{
+	}
+	bool move_invalid::operator ==(move_invalid const & right)const noexcept
 	{
 		return this == &right;
 	}
-	bool move_invalid::operator !=(move_invalid const& right)const noexcept
+	bool move_invalid::operator !=(move_invalid const & right)const noexcept
 	{
 		return not(*this == right);
 	}
-	move_invalid& move_invalid::self()noexcept
+	move_invalid & move_invalid::self()noexcept
 	{
 		return *this;
 	}
-	move_invalid const& move_invalid::self()const noexcept
+	move_invalid const & move_invalid::self()const noexcept
 	{
 		return *this;
 	}
@@ -175,7 +185,8 @@ namespace OKps::base
 		noexcept(std::is_nothrow_destructible_v<std::random_device>
 			and std::is_nothrow_destructible_v<std::unique_ptr<std::mt19937_64>>
 			and std::is_nothrow_destructible_v<std::uniform_int_distribution<std::uintmax_t>>)
-	{}
+	{
+	}
 
 	std::uintmax_t numbered::id_generator::generate()
 		noexcept(noexcept(std::declval<std::uniform_int_distribution<std::uintmax_t>>()(*std::declval<std::unique_ptr<std::mt19937_64>>())))
@@ -191,12 +202,14 @@ namespace OKps::base
 
 	numbered::numbered(std::uintmax_t const id)noexcept
 		:MEMBER_id(id)
-	{}
+	{
+	}
 
-	numbered::numbered(numbered const& origin)noexcept
+	numbered::numbered(numbered const & origin)noexcept
 		:MEMBER_id(origin.MEMBER_id)
-	{}
-	void numbered::operator =(numbered const& origin)noexcept
+	{
+	}
+	void numbered::operator =(numbered const & origin)noexcept
 	{
 		if (this != &origin)
 		{
@@ -207,88 +220,93 @@ namespace OKps::base
 	numbered::~numbered()noexcept
 	{
 	}
-	bool numbered::operator ==(numbered const& right)const noexcept
+	bool numbered::operator ==(numbered const & right)const noexcept
 	{
 		return this == &right;
 	}
-	bool numbered::operator !=(numbered const& right)const noexcept
+	bool numbered::operator !=(numbered const & right)const noexcept
 	{
 		return not(*this == right);
 	}
-	std::uintmax_t& numbered::id() noexcept
+	std::uintmax_t & numbered::id() noexcept
 	{
 		return this->MEMBER_id;
 	}
-	std::uintmax_t const& numbered::id()const noexcept
+	std::uintmax_t const & numbered::id()const noexcept
 	{
 		return this->MEMBER_id;
 	}
-	numbered& numbered::self()noexcept
+	numbered & numbered::self()noexcept
 	{
 		return *this;
 	}
-	numbered const& numbered::self()const noexcept
+	numbered const & numbered::self()const noexcept
 	{
 		return *this;
 	}
-	bool worker::operator ==(worker const& right)const noexcept
+	bool worker::operator ==(worker const & right)const noexcept
 	{
 		return this == &right;
 	}
-	bool worker::operator !=(worker const& right)const noexcept
+	bool worker::operator !=(worker const & right)const noexcept
 	{
 		return not(*this == right);
 	}
 
-	named::named(std::string const& name)
+	named::named(std::string const & name)
 		noexcept(std::is_nothrow_copy_constructible<std::string>::value)
 		:MEMBER_name(name)
-	{}
-	named::named(std::string&& name)
+	{
+	}
+	named::named(std::string && name)
 		noexcept(std::is_nothrow_move_constructible<std::string>::value)
 		:MEMBER_name(std::move(name))
-	{}
+	{
+	}
 
-	named::named(named const& origin)
+	named::named(named const & origin)
 		noexcept(std::is_nothrow_copy_constructible<std::string>::value)
 		:MEMBER_name(origin.MEMBER_name)
-	{}
-	named::named(named&& origin)
+	{
+	}
+	named::named(named && origin)
 		noexcept(std::is_nothrow_move_constructible<std::string>::value)
 		:MEMBER_name(std::move(origin.MEMBER_name))
-	{}
+	{
+	}
 	named::~named()
 		noexcept(std::is_nothrow_destructible<std::string>::value)
-	{}
+	{
+	}
 
-	std::string const& named::name()const noexcept
+	std::string const & named::name()const noexcept
 	{
 		return this->MEMBER_name;
 	}
 
-	std::string& named::name()noexcept
+	std::string & named::name()noexcept
 	{
 		return this->MEMBER_name;
 	}
 
-	bool named::operator ==(named const& right)const noexcept
+	bool named::operator ==(named const & right)const noexcept
 	{
 		return this == &right;
 	}
-	bool named::operator !=(named const& right)const noexcept
+	bool named::operator !=(named const & right)const noexcept
 	{
 		return not(*this == right);
 	}
-	named& named::self()noexcept
+	named & named::self()noexcept
 	{
 		return *this;
 	}
-	named const& named::self()const noexcept
+	named const & named::self()const noexcept
 	{
 		return *this;
 	}
 
-	void named::operator =(named const& origin)
+	void named::operator =(named const & origin)
 		noexcept(std::is_nothrow_copy_assignable<std::string>::value)
 	{
 		if (this != &origin)
@@ -297,7 +315,7 @@ namespace OKps::base
 		}
 	}
 
-	void named::operator =(named&& origin)
+	void named::operator =(named && origin)
 		noexcept(std::is_nothrow_move_assignable<std::string>::value)
 	{
 		if (this != &origin)
@@ -307,59 +325,71 @@ namespace OKps::base
 	}
 
 	parameter::parameter()noexcept
-	{}
-	parameter::parameter(parameter const&)noexcept
-	{}
+	{
+	}
+	parameter::parameter(parameter const &)noexcept
+	{
+	}
 	parameter::~parameter()noexcept
-	{}
-	parameter::parameter(parameter&&)noexcept
-	{}
-	void parameter::operator =(parameter&&)noexcept
-	{}
-	void parameter::operator =(parameter const&)noexcept
-	{}
-	bool parameter::operator ==(parameter const& right)const noexcept
+	{
+	}
+	parameter::parameter(parameter &&)noexcept
+	{
+	}
+	void parameter::operator =(parameter &&)noexcept
+	{
+	}
+	void parameter::operator =(parameter const &)noexcept
+	{
+	}
+	bool parameter::operator ==(parameter const & right)const noexcept
 	{
 		return this == &right;
 	}
-	bool parameter::operator !=(parameter const& right)const noexcept
+	bool parameter::operator !=(parameter const & right)const noexcept
 	{
 		return not(*this == right);
 	}
-	parameter& parameter::self()noexcept
+	parameter & parameter::self()noexcept
 	{
 		return *this;
 	}
-	parameter const& parameter::self()const noexcept
+	parameter const & parameter::self()const noexcept
 	{
 		return *this;
 	}
 
 	handler::handler()noexcept
-	{}
-	handler::handler(handler const&)noexcept
-	{}
+	{
+	}
+	handler::handler(handler const &)noexcept
+	{
+	}
 	handler::~handler()noexcept
-	{}
-	handler::handler(handler&&)noexcept
-	{}
-	void handler::operator =(handler&&)noexcept
-	{}
-	void handler::operator =(handler const&)noexcept
-	{}
-	bool handler::operator ==(handler const& right)const noexcept
+	{
+	}
+	handler::handler(handler &&)noexcept
+	{
+	}
+	void handler::operator =(handler &&)noexcept
+	{
+	}
+	void handler::operator =(handler const &)noexcept
+	{
+	}
+	bool handler::operator ==(handler const & right)const noexcept
 	{
 		return this == &right;
 	}
-	bool handler::operator !=(handler const& right)const noexcept
+	bool handler::operator !=(handler const & right)const noexcept
 	{
 		return not(*this == right);
 	}
-	handler& handler::self()noexcept
+	handler & handler::self()noexcept
 	{
 		return *this;
 	}
-	handler const& handler::self()const noexcept
+	handler const & handler::self()const noexcept
 	{
 		return *this;
 	}

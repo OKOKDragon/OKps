@@ -5,17 +5,23 @@
 namespace OKps
 {
 	order_matcher::parameter::parameter()noexcept
-	{}
-	order_matcher::parameter::parameter(parameter const&)noexcept
-	{}
-	order_matcher::parameter::parameter(parameter&&)noexcept
-	{}
+	{
+	}
+	order_matcher::parameter::parameter(parameter const &)noexcept
+	{
+	}
+	order_matcher::parameter::parameter(parameter &&)noexcept
+	{
+	}
 	order_matcher::parameter::~parameter()noexcept
-	{}
-	void order_matcher::parameter::operator =(parameter const&)noexcept
-	{}
-	void order_matcher::parameter::operator =(parameter&&)noexcept
-	{}
+	{
+	}
+	void order_matcher::parameter::operator =(parameter const &)noexcept
+	{
+	}
+	void order_matcher::parameter::operator =(parameter &&)noexcept
+	{
+	}
 	order_matcher::handler::handler()noexcept
 	{
 	}
@@ -55,7 +61,7 @@ namespace OKps
 		noexcept(std::is_nothrow_destructible_v<TYPE_pool>)
 	{
 	}
-	void order_matcher::regist(std::string const & order, TYPE_work&& work)
+	void order_matcher::regist(std::string const & order, TYPE_work && work)
 	{
 		if (not work)
 		{
@@ -94,7 +100,7 @@ namespace OKps
 			throw std::invalid_argument(hint);
 		}
 	}
-	order_matcher::handler const& order_matcher::find(std::string const& order)const
+	order_matcher::handler const & order_matcher::find(std::string const & order)const
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())
@@ -103,7 +109,7 @@ namespace OKps
 		}
 		return *(ref->second);
 	}
-	order_matcher::handler& order_matcher::find(std::string const order)
+	order_matcher::handler & order_matcher::find(std::string const order)
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())

@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
 namespace OKps
 {
 	/*
-	¿ÕÀà
+	ç©ºç±»
 	*/
 	class blank final
 	{
 	public:
 		blank()noexcept;
-		blank(blank const&)noexcept;
-		blank(blank&&)noexcept;
+		blank(blank const &)noexcept;
+		blank(blank &&)noexcept;
 		~blank()noexcept;
-		void operator =(blank const&)noexcept;
-		void operator =(blank&&)noexcept;
+		void operator =(blank const &)noexcept;
+		void operator =(blank &&)noexcept;
 		/*
-		±È½ÏÁ½¸ö¶ÔÏóÊÇ·ñÊÇÍ¬Ò»¸ö¶ÔÏó
-		¼´±È½Ï this ºÍ &right ÊÇ·ñÏàÍ¬
+		æ¯”è¾ƒä¸¤ä¸ªå¯¹è±¡æ˜¯å¦æ˜¯åŒä¸€ä¸ªå¯¹è±¡
+		å³æ¯”è¾ƒ this å’Œ &right æ˜¯å¦ç›¸åŒ
 		*/
-		bool operator ==(blank const& right)const noexcept;
-		bool operator !=(blank const& right)const noexcept;
+		bool operator ==(blank const & right)const noexcept;
+		bool operator !=(blank const & right)const noexcept;
 	};
 }

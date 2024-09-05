@@ -508,7 +508,7 @@ namespace OKps
     {
         return (*this) != byte(right);
     }
-    
+
     void byte::operator =(std::u8string const & origin)
     {
         if (origin.size() != bit_per_byte)
@@ -577,6 +577,6 @@ namespace OKps
         this->data = origin;
     }
 
- 
+
 
 }

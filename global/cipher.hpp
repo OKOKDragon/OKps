@@ -28,7 +28,7 @@ namespace OKps::crypt
         void save(TYPE_path const & route)const;
         //从密钥文件读取密钥
         cipher(TYPE_path const & route);
-        void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const& temp_route/*存放临时文件的目录*/, const std::size_t thread_count = 0)const;
-        void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const& temp_route/*存放临时文件的目录*/, const std::size_t thread_count = 0)const;
+        void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route/*存放临时文件的目录*/, const std::size_t thread_count = 0)const;
+        void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route/*存放临时文件的目录*/, const std::size_t thread_count = 0)const;
     };
 }

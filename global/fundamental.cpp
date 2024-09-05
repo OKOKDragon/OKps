@@ -1,4 +1,4 @@
-#include <stdexcept>
+ï»¿#include <stdexcept>
 #include <typeinfo>
 
 #include ".\fundamental.hpp"
@@ -8,62 +8,65 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	integer<value_type>::integer(value_type const value)noexcept
 		:MEMBER_value(value)
-	{}
+	{
+	}
 	template<arithmetic_integer value_type>
-	integer<value_type>::integer(integer const& origin)noexcept
+	integer<value_type>::integer(integer const & origin)noexcept
 		:MEMBER_value(origin.MEMBER_value)
-	{}
+	{
+	}
 	template<arithmetic_integer value_type>
 	integer<value_type>::~integer()noexcept
-	{}
+	{
+	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator =(integer const& origin)noexcept
+	void integer<value_type>::operator =(integer const & origin)noexcept
 	{
 		this->MEMBER_value = origin.MEMBER_value;
 	}
 
 	template<arithmetic_integer value_type>
-	bool integer<value_type>::operator ==(integer const& right)const noexcept
+	bool integer<value_type>::operator ==(integer const & right)const noexcept
 	{
 		return this->MEMBER_value == right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	bool integer<value_type>::operator !=(integer const& right)const noexcept
+	bool integer<value_type>::operator !=(integer const & right)const noexcept
 	{
 		return this->MEMBER_value != right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	bool integer<value_type>::operator >=(integer const& right)const noexcept
+	bool integer<value_type>::operator >=(integer const & right)const noexcept
 	{
 		return this->MEMBER_value >= right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	bool integer<value_type>::operator <=(integer const& right)const noexcept
+	bool integer<value_type>::operator <=(integer const & right)const noexcept
 	{
 		return this->MEMBER_value <= right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	bool integer<value_type>::operator >(integer const& right)const noexcept
+	bool integer<value_type>::operator >(integer const & right)const noexcept
 	{
 		return this->MEMBER_value > right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	bool integer<value_type>::operator <(integer const& right)const noexcept
+	bool integer<value_type>::operator <(integer const & right)const noexcept
 	{
 		return this->MEMBER_value < right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	value_type& integer<value_type>::value()noexcept
+	value_type & integer<value_type>::value()noexcept
 	{
 		return this->MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	value_type const& integer<value_type>::value()const noexcept
+	value_type const & integer<value_type>::value()const noexcept
 	{
 		return this->MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator +(integer const& right)const
+	integer<value_type> integer<value_type>::operator +(integer const & right)const
 	{
 		if constexpr (std::is_signed_v<value_type>)
 		{
@@ -71,13 +74,13 @@ namespace OKps::base
 			{
 				if (integer::max - right.MEMBER_value < this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼Ó·¨ "
+						+ " çš„åŠ æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " + "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -85,13 +88,13 @@ namespace OKps::base
 			{
 				if (integer::min - right.MEMBER_value > this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼Ó·¨ "
+						+ " çš„åŠ æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " + "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -100,20 +103,20 @@ namespace OKps::base
 		{
 			if (integer::max - this->MEMBER_value < right.MEMBER_value)
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ¼Ó·¨ "
+					+ " çš„åŠ æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " + "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
-			}		
+			}
 		}
 		return integer(this->MEMBER_value + right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator +=(integer const& right)
+	void integer<value_type>::operator +=(integer const & right)
 	{
 
 		if constexpr (std::is_signed_v<value_type>)
@@ -122,13 +125,13 @@ namespace OKps::base
 			{
 				if (integer::max - right.MEMBER_value < this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼Ó·¨ "
+						+ " çš„åŠ æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " + "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -136,13 +139,13 @@ namespace OKps::base
 			{
 				if (integer::min - right.MEMBER_value > this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼Ó·¨ "
+						+ " çš„åŠ æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " + "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -151,13 +154,13 @@ namespace OKps::base
 		{
 			if (integer::max - this->MEMBER_value < right.MEMBER_value)
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ¼Ó·¨ "
+					+ " çš„åŠ æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " + "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 		}
@@ -169,33 +172,33 @@ namespace OKps::base
 
 		if (integer::max - static_cast<value_type>(1) < this->MEMBER_value)
 		{
-			std::string const hint = std::string("ÀàĞÍ ")
+			std::string const hint = std::string("ç±»å‹ ")
 				+ typeid(value_type).name()
-				+ " µÄÖµ "
+				+ " çš„å€¼ "
 				+ std::to_string(this->MEMBER_value)
-				+ " ×ÔÔöÔËËãÒç³ö";
+				+ " è‡ªå¢è¿ç®—æº¢å‡º";
 			throw std::overflow_error(hint);
-		}	
+		}
 		++(this->MEMBER_value);
 	}
-	
+
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator -(integer const& right)const
+	integer<value_type> integer<value_type>::operator -(integer const & right)const
 	{
 
 		if constexpr (std::is_signed_v<value_type>)
-		{ 
+		{
 			if (right.MEMBER_value >= static_cast<value_type>(0))
 			{
 				if (integer::min + right.MEMBER_value > this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼õ·¨ "
+						+ " çš„å‡æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " - "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -203,13 +206,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max + right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼õ·¨ "
+						+ " çš„å‡æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " - "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -218,20 +221,20 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value < right.MEMBER_value)
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ¼õ·¨ "
+					+ " çš„å‡æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " - "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::underflow_error(hint);
 			}
 		}
 		return integer(this->MEMBER_value - right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator -=(integer const& right)
+	void integer<value_type>::operator -=(integer const & right)
 	{
 
 		if constexpr (std::is_signed_v<value_type>)
@@ -240,13 +243,13 @@ namespace OKps::base
 			{
 				if (integer::min + right.MEMBER_value > this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼õ·¨ "
+						+ " çš„å‡æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " - "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -254,13 +257,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max + right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ¼õ·¨ "
+						+ " çš„å‡æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " - "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -269,13 +272,13 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value < right.MEMBER_value)
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ¼õ·¨ "
+					+ " çš„å‡æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " - "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::underflow_error(hint);
 			}
 		}
@@ -287,17 +290,17 @@ namespace OKps::base
 
 		if (integer::min + static_cast<value_type>(1) > this->MEMBER_value)
 		{
-			std::string const hint = std::string("ÀàĞÍ ")
+			std::string const hint = std::string("ç±»å‹ ")
 				+ typeid(value_type).name()
-				+ " µÄÖµ "
+				+ " çš„å€¼ "
 				+ std::to_string(this->MEMBER_value)
-				+ " ×Ô¼õÔËËãÒç³ö";
+				+ " è‡ªå‡è¿ç®—æº¢å‡º";
 			throw std::underflow_error(hint);
 		}
 		--(this->MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator *(integer const& right)const
+	integer<value_type> integer<value_type>::operator *(integer const & right)const
 	{
 
 		if constexpr (std::is_signed_v<value_type>)
@@ -306,13 +309,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max / right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -320,13 +323,13 @@ namespace OKps::base
 			{
 				if (right.MEMBER_value < integer::min / this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -334,13 +337,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::min / right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -348,13 +351,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::max / right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -363,20 +366,20 @@ namespace OKps::base
 		{
 			if (integer::max / this->MEMBER_value < right.MEMBER_value)
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ³Ë·¨ "
+					+ " çš„ä¹˜æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " * "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 		}
 		return integer(this->MEMBER_value * right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator *=(integer const& right)
+	void integer<value_type>::operator *=(integer const & right)
 	{
 
 		if constexpr (std::is_signed_v<value_type>)
@@ -385,13 +388,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max / right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -399,13 +402,13 @@ namespace OKps::base
 			{
 				if (right.MEMBER_value < integer::min / this->MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -413,13 +416,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::min / right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
@@ -427,13 +430,13 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::max / right.MEMBER_value)
 				{
-					std::string const hint = std::string("ÀàĞÍ ")
+					std::string const hint = std::string("ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄ³Ë·¨ "
+						+ " çš„ä¹˜æ³• "
 						+ std::to_string(this->MEMBER_value)
 						+ " * "
 						+ std::to_string(right.MEMBER_value)
-						+ " Òç³ö";
+						+ " æº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
@@ -442,13 +445,13 @@ namespace OKps::base
 		{
 			if (integer::max / this->MEMBER_value < right.MEMBER_value)
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ³Ë·¨ "
+					+ " çš„ä¹˜æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " * "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 		}
@@ -456,48 +459,48 @@ namespace OKps::base
 	}
 
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator /(integer const& right)const
+	integer<value_type> integer<value_type>::operator /(integer const & right)const
 	{
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
-			throw std::logic_error("³ıÊı²»ÄÜÎª0");
+			throw std::logic_error("é™¤æ•°ä¸èƒ½ä¸º0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ³ı·¨ "
+					+ " çš„é™¤æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " / "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 		}
 		return integer(this->MEMBER_value / right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator /=(integer const& right)
+	void integer<value_type>::operator /=(integer const & right)
 	{
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
-			throw std::logic_error("³ıÊı²»ÄÜÎª0");
+			throw std::logic_error("é™¤æ•°ä¸èƒ½ä¸º0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ³ı·¨ "
+					+ " çš„é™¤æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " / "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 		}
@@ -505,48 +508,48 @@ namespace OKps::base
 	}
 
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator %(integer const& right)const
+	integer<value_type> integer<value_type>::operator %(integer const & right)const
 	{
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
-			throw std::logic_error("³ıÊı²»ÄÜÎª0");
+			throw std::logic_error("é™¤æ•°ä¸èƒ½ä¸º0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ³ı·¨ "
+					+ " çš„é™¤æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " / "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 		}
 		return integer(this->MEMBER_value % right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator %=(integer const& right)
+	void integer<value_type>::operator %=(integer const & right)
 	{
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
-			throw std::logic_error("³ıÊı²»ÄÜÎª0");
+			throw std::logic_error("é™¤æ•°ä¸èƒ½ä¸º0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄ³ı·¨ "
+					+ " çš„é™¤æ³• "
 					+ std::to_string(this->MEMBER_value)
 					+ " / "
 					+ std::to_string(right.MEMBER_value)
-					+ " Òç³ö";
+					+ " æº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 		}
@@ -556,15 +559,15 @@ namespace OKps::base
 	integer<value_type> integer<value_type>::operator -()const
 	{
 
-		if constexpr(std::is_signed_v<value_type>)
+		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min)
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄÖµ "
+					+ " çš„å€¼ "
 					+ std::to_string(this->MEMBER_value)
-					+ " È¡Ïà·´ÊıµÄ½á¹ûÒç³ö";
+					+ " å–ç›¸åæ•°çš„ç»“æœæº¢å‡º";
 				throw std::overflow_error(hint);
 			}
 			return integer(-(this->MEMBER_value));
@@ -573,11 +576,11 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value != static_cast<value_type>(0))
 			{
-				std::string const hint = std::string("ÀàĞÍ ")
+				std::string const hint = std::string("ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄÖµ "
+					+ " çš„å€¼ "
 					+ std::to_string(this->MEMBER_value)
-					+ " È¡Ïà·´ÊıµÄ½á¹ûÒç³ö";
+					+ " å–ç›¸åæ•°çš„ç»“æœæº¢å‡º";
 				throw std::underflow_error(hint);
 			}
 			return integer();
@@ -589,91 +592,91 @@ namespace OKps::base
 		return integer(~(this->MEMBER_value));
 	}
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator &(integer const& right)const noexcept
+	integer<value_type> integer<value_type>::operator &(integer const & right)const noexcept
 	{
 		return integer(this->MEMBER_value & right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator &=(integer const& right)noexcept
+	void integer<value_type>::operator &=(integer const & right)noexcept
 	{
 		this->MEMBER_value &= right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator |(integer const& right)const noexcept
+	integer<value_type> integer<value_type>::operator |(integer const & right)const noexcept
 	{
 		return integer(this->MEMBER_value | right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator |=(integer const& right)noexcept
+	void integer<value_type>::operator |=(integer const & right)noexcept
 	{
 		this->MEMBER_value |= right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator ^(integer const& right)const noexcept
+	integer<value_type> integer<value_type>::operator ^(integer const & right)const noexcept
 	{
 		return integer(this->MEMBER_value ^ right.MEMBER_value);
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator ^=(integer const& right)noexcept
+	void integer<value_type>::operator ^=(integer const & right)noexcept
 	{
 		this->MEMBER_value ^= right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator <<(integer<std::size_t> const& shift)const
+	integer<value_type> integer<value_type>::operator <<(integer<std::size_t> const & shift)const
 	{
 
 		if (shift.value() >= integer::bit_length)
 		{
-			std::string const hint = std::string("ÀàĞÍ ")
+			std::string const hint = std::string("ç±»å‹ ")
 				+ typeid(value_type).name()
-				+ " µÄ×óÒÆ "
+				+ " çš„å·¦ç§» "
 				+ std::to_string(shift.value())
-				+ " Î»ÔËËãµÄÎ»Êı³¬³öºÏ·¨·¶Î§";
+				+ " ä½è¿ç®—çš„ä½æ•°è¶…å‡ºåˆæ³•èŒƒå›´";
 			throw std::logic_error(hint);
 		}
 		return integer(this->MEMBER_value << shift.value());
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator <<=(integer<std::size_t> const& shift)
+	void integer<value_type>::operator <<=(integer<std::size_t> const & shift)
 	{
 
 		if (shift.value() >= integer::bit_length)
 		{
-			std::string const hint = std::string("ÀàĞÍ ")
+			std::string const hint = std::string("ç±»å‹ ")
 				+ typeid(value_type).name()
-				+ " µÄ×óÒÆ "
+				+ " çš„å·¦ç§» "
 				+ std::to_string(shift.value())
-				+ " Î»ÔËËãµÄÎ»Êı³¬³öºÏ·¨·¶Î§";
+				+ " ä½è¿ç®—çš„ä½æ•°è¶…å‡ºåˆæ³•èŒƒå›´";
 			throw std::logic_error(hint);
 		}
 		this->MEMBER_value <<= shift.value();
 	}
 	template<arithmetic_integer value_type>
-	integer<value_type> integer<value_type>::operator >>(integer<std::size_t> const& shift)const
+	integer<value_type> integer<value_type>::operator >>(integer<std::size_t> const & shift)const
 	{
 
 		if (shift.value() >= integer::bit_length)
 		{
-			std::string const hint = std::string("ÀàĞÍ ")
+			std::string const hint = std::string("ç±»å‹ ")
 				+ typeid(value_type).name()
-				+ " µÄÓÒÒÆ "
+				+ " çš„å³ç§» "
 				+ std::to_string(shift.value())
-				+ " Î»ÔËËãµÄÎ»Êı³¬³öºÏ·¨·¶Î§";
+				+ " ä½è¿ç®—çš„ä½æ•°è¶…å‡ºåˆæ³•èŒƒå›´";
 			throw std::logic_error(hint);
 		}
 		return integer(this->MEMBER_value >> shift.value());
 	}
 	template<arithmetic_integer value_type>
-	void integer<value_type>::operator >>=(integer<std::size_t> const& shift)
+	void integer<value_type>::operator >>=(integer<std::size_t> const & shift)
 	{
 
 		if (shift.value() >= integer::bit_length)
 		{
-			std::string const hint = std::string("ÀàĞÍ ")
+			std::string const hint = std::string("ç±»å‹ ")
 				+ typeid(value_type).name()
-				+ " µÄÓÒÒÆ "
+				+ " çš„å³ç§» "
 				+ std::to_string(shift.value())
-				+ " Î»ÔËËãµÄÎ»Êı³¬³öºÏ·¨·¶Î§";
+				+ " ä½è¿ç®—çš„ä½æ•°è¶…å‡ºåˆæ³•èŒƒå›´";
 			throw std::logic_error(hint);
 		}
 		this->MEMBER_value >>= shift.value();
@@ -685,117 +688,117 @@ namespace OKps::base
 	{
 
 		if constexpr (std::is_signed_v<value_type> and std::is_signed_v<target_type>)
-			//µ±Ç°ÀàĞÍºÍÄ¿±êÀàĞÍ¶¼ÓĞ·ûºÅ
+			//å½“å‰ç±»å‹å’Œç›®æ ‡ç±»å‹éƒ½æœ‰ç¬¦å·
 		{
 			if constexpr (sizeof(value_type) <= sizeof(target_type))
-				//Ä¿±êÀàĞÍ±Èµ±Ç°ÀàĞÍ´ó
+				//ç›®æ ‡ç±»å‹æ¯”å½“å‰ç±»å‹å¤§
 			{
-				//²»»á²úÉúÒç³ö
+				//ä¸ä¼šäº§ç”Ÿæº¢å‡º
 			}
 			else
-				//Ä¿±êÀàĞÍ±Èµ±Ç°ÀàĞÍĞ¡
+				//ç›®æ ‡ç±»å‹æ¯”å½“å‰ç±»å‹å°
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
-					std::string const hint = std::string("´ÓÀàĞÍ ")
+					std::string const hint = std::string("ä»ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄÖµ "
+						+ " çš„å€¼ "
 						+ std::to_string(this->MEMBER_value)
-						+ " ×ª»»µ½ÀàĞÍ "
+						+ " è½¬æ¢åˆ°ç±»å‹ "
 						+ typeid(target_type).name()
-						+ " Ê±·¢ÉúÒç³ö";
+						+ " æ—¶å‘ç”Ÿæº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 				else if (this->MEMBER_value < static_cast<value_type>(integer<target_type>::min))
 				{
-					std::string const hint = std::string("´ÓÀàĞÍ ")
+					std::string const hint = std::string("ä»ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄÖµ "
+						+ " çš„å€¼ "
 						+ std::to_string(this->MEMBER_value)
-						+ " ×ª»»µ½ÀàĞÍ "
+						+ " è½¬æ¢åˆ°ç±»å‹ "
 						+ typeid(target_type).name()
-						+ " Ê±·¢ÉúÒç³ö";
+						+ " æ—¶å‘ç”Ÿæº¢å‡º";
 					throw std::underflow_error(hint);
 				}
 			}
 		}
 		else if constexpr (std::is_unsigned_v<value_type> and std::is_unsigned_v<target_type>)
-			//µ±Ç°ÀàĞÍºÍÄ¿±êÀàĞÍ¶¼ÎŞ·ûºÅ
+			//å½“å‰ç±»å‹å’Œç›®æ ‡ç±»å‹éƒ½æ— ç¬¦å·
 		{
 			if constexpr (sizeof(value_type) <= sizeof(target_type))
-				//Ä¿±êÀàĞÍ±Èµ±Ç°ÀàĞÍ´ó
+				//ç›®æ ‡ç±»å‹æ¯”å½“å‰ç±»å‹å¤§
 			{
-				//²»»á²úÉúÒç³ö
+				//ä¸ä¼šäº§ç”Ÿæº¢å‡º
 			}
 			else
-				//Ä¿±êÀàĞÍ±Èµ±Ç°ÀàĞÍĞ¡
+				//ç›®æ ‡ç±»å‹æ¯”å½“å‰ç±»å‹å°
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
-					std::string const hint = std::string("´ÓÀàĞÍ ")
+					std::string const hint = std::string("ä»ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄÖµ "
+						+ " çš„å€¼ "
 						+ std::to_string(this->MEMBER_value)
-						+ " ×ª»»µ½ÀàĞÍ "
+						+ " è½¬æ¢åˆ°ç±»å‹ "
 						+ typeid(target_type).name()
-						+ " Ê±·¢ÉúÒç³ö";
+						+ " æ—¶å‘ç”Ÿæº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
 		}
 		else if constexpr (std::is_signed_v<value_type> and std::is_unsigned_v<target_type>)
-			//ÓĞ·ûºÅÀàĞÍÏòÎŞ·ûºÅÀàĞÍ×ª»»
+			//æœ‰ç¬¦å·ç±»å‹å‘æ— ç¬¦å·ç±»å‹è½¬æ¢
 		{
 			if (this->MEMBER_value < static_cast<value_type>(0))
 			{
-				std::string const hint = std::string("´ÓÀàĞÍ ")
+				std::string const hint = std::string("ä»ç±»å‹ ")
 					+ typeid(value_type).name()
-					+ " µÄÖµ "
+					+ " çš„å€¼ "
 					+ std::to_string(this->MEMBER_value)
-					+ " ×ª»»µ½ÀàĞÍ "
+					+ " è½¬æ¢åˆ°ç±»å‹ "
 					+ typeid(target_type).name()
-					+ " Ê±·¢ÉúÒç³ö";
+					+ " æ—¶å‘ç”Ÿæº¢å‡º";
 				throw std::underflow_error(hint);
 			}
 			if constexpr (integer::bit_length <= integer<target_type>::bit_length + static_cast<std::size_t>(1))
-				//µ±Ç°ÀàĞÍµÄ×î´óÖµ <= Ä¿±êÀàĞÍµÄ×î´óÖµ
+				//å½“å‰ç±»å‹çš„æœ€å¤§å€¼ <= ç›®æ ‡ç±»å‹çš„æœ€å¤§å€¼
 			{
-				//²»»á²úÉúÒç³ö
+				//ä¸ä¼šäº§ç”Ÿæº¢å‡º
 			}
 			else
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
-					std::string const hint = std::string("´ÓÀàĞÍ ")
+					std::string const hint = std::string("ä»ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄÖµ "
+						+ " çš„å€¼ "
 						+ std::to_string(this->MEMBER_value)
-						+ " ×ª»»µ½ÀàĞÍ "
+						+ " è½¬æ¢åˆ°ç±»å‹ "
 						+ typeid(target_type).name()
-						+ " Ê±·¢ÉúÒç³ö";
+						+ " æ—¶å‘ç”Ÿæº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}
 		}
 		else
-			//ÎŞ·ûºÅÀàĞÍÏòÓĞ·ûºÅÀàĞÍ×ª»»
+			//æ— ç¬¦å·ç±»å‹å‘æœ‰ç¬¦å·ç±»å‹è½¬æ¢
 		{
 			if constexpr (integer<target_type>::bit_length >= integer::bit_length + static_cast<std::size_t>(1))
-				//µ±Ç°ÀàĞÍµÄ×î´óÖµ <= Ä¿±êÀàĞÍµÄ×î´óÖµ
+				//å½“å‰ç±»å‹çš„æœ€å¤§å€¼ <= ç›®æ ‡ç±»å‹çš„æœ€å¤§å€¼
 			{
-				//²»»á²úÉúÒç³ö
+				//ä¸ä¼šäº§ç”Ÿæº¢å‡º
 			}
 			else
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
-					std::string const hint = std::string("´ÓÀàĞÍ ")
+					std::string const hint = std::string("ä»ç±»å‹ ")
 						+ typeid(value_type).name()
-						+ " µÄÖµ "
+						+ " çš„å€¼ "
 						+ std::to_string(this->MEMBER_value)
-						+ " ×ª»»µ½ÀàĞÍ "
+						+ " è½¬æ¢åˆ°ç±»å‹ "
 						+ typeid(target_type).name()
-						+ " Ê±·¢ÉúÒç³ö";
+						+ " æ—¶å‘ç”Ÿæº¢å‡º";
 					throw std::overflow_error(hint);
 				}
 			}

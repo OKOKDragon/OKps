@@ -7,7 +7,7 @@
 
 namespace OKps
 {
-	bool compare(std::filesystem::path const& left, std::filesystem::path const& right)
+	bool compare(std::filesystem::path const & left, std::filesystem::path const & right)
 	{
 		namespace fs = std::filesystem;
 
@@ -91,7 +91,7 @@ namespace OKps
 					}
 				}
 			}
-			if(not done)
+			if (not done)
 			{
 				if (not left_reader.read(left_buffer.get(), last_read_length))
 				{
@@ -121,7 +121,7 @@ namespace OKps
 
 		return result;
 	}
-	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const& directory, bool save_directory)
+	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, bool save_directory)
 	{
 		namespace fs = std::filesystem;
 		if (not fs::is_directory(directory))
@@ -151,7 +151,7 @@ namespace OKps
 		}
 		return result;
 	}
-	field_stream::field_stream(std::string const& data)
+	field_stream::field_stream(std::string const & data)
 		:MEMBER_data(std::make_unique<std::byte[]>(data.size()))
 		, MEMBER_length(data.size())
 	{
@@ -164,7 +164,7 @@ namespace OKps
 		noexcept(std::is_nothrow_destructible_v<std::unique_ptr<std::byte[]>>)
 	{
 	}
-	field_stream::field_stream(std::vector<std::byte> const& data)
+	field_stream::field_stream(std::vector<std::byte> const & data)
 		:MEMBER_data(std::make_unique<std::byte[]>(data.size()))
 		, MEMBER_length(data.size())
 	{
@@ -189,7 +189,7 @@ namespace OKps
 		result.resize(this->MEMBER_length + sizeof(std::size_t));
 		for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 		{
-			result[i] = ((char const*)(&(this->MEMBER_length)))[i];
+			result[i] = ((char const *)(&(this->MEMBER_length)))[i];
 		}
 		for (std::size_t i = 0; i < this->MEMBER_length; i++)
 		{
@@ -213,7 +213,7 @@ namespace OKps
 		result.resize(this->MEMBER_length + sizeof(std::size_t));
 		for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 		{
-			result[i] = ((std::byte const*)(&(this->MEMBER_length)))[i];
+			result[i] = ((std::byte const *)(&(this->MEMBER_length)))[i];
 		}
 		for (std::size_t i = 0; i < this->MEMBER_length; i++)
 		{
@@ -221,7 +221,7 @@ namespace OKps
 		}
 		return result;
 	}
-	std::vector<field_stream> field_stream::parse(std::string const& data)
+	std::vector<field_stream> field_stream::parse(std::string const & data)
 	{
 		std::vector<field_stream> result;
 		std::size_t position = 0;
@@ -238,7 +238,7 @@ namespace OKps
 			std::size_t length;
 			for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 			{
-				((char*)(&length))[i] = data[position];
+				((char *)(&length))[i] = data[position];
 				position++;
 			}
 			if (position + length > data.size())
@@ -256,7 +256,7 @@ namespace OKps
 		}
 		return result;
 	}
-	std::vector<field_stream> field_stream::parse(std::vector<std::byte> const& data)
+	std::vector<field_stream> field_stream::parse(std::vector<std::byte> const & data)
 	{
 		std::vector<field_stream> result;
 		std::size_t position = 0;
@@ -273,7 +273,7 @@ namespace OKps
 			std::size_t length;
 			for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 			{
-				((std::byte*)(&length))[i] = data[position];
+				((std::byte *)(&length))[i] = data[position];
 				position++;
 			}
 			if (position + length > data.size())
@@ -291,7 +291,7 @@ namespace OKps
 		}
 		return result;
 	}
-	field_stream::field_stream(field_stream const& origin)
+	field_stream::field_stream(field_stream const & origin)
 		:MEMBER_data(std::make_unique<std::byte[]>(origin.MEMBER_length))
 		, MEMBER_length(origin.MEMBER_length)
 	{
@@ -300,14 +300,14 @@ namespace OKps
 			this->MEMBER_data[i] = origin.MEMBER_data[i];
 		}
 	}
-	field_stream::field_stream(field_stream&& origin)
+	field_stream::field_stream(field_stream && origin)
 		noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>)
 		:MEMBER_data(std::move(origin.MEMBER_data))
 		, MEMBER_length(origin.MEMBER_length)
 	{
 		origin.MEMBER_length = 0;
 	}
-	bool const& file_holder::do_write()const
+	bool const & file_holder::do_write()const
 	{
 		if (not this->MEMBER_route)
 		{
@@ -315,7 +315,7 @@ namespace OKps
 		}
 		return this->MEMBER_do_write;
 	}
-	bool& file_holder::do_write()
+	bool & file_holder::do_write()
 	{
 		if (not this->MEMBER_route)
 		{
@@ -323,7 +323,7 @@ namespace OKps
 		}
 		return this->MEMBER_do_write;
 	}
-	std::unique_ptr<std::byte[]> const& file_holder::buffer()const
+	std::unique_ptr<std::byte[]> const & file_holder::buffer()const
 	{
 		if (not this->MEMBER_route)
 		{
@@ -331,7 +331,7 @@ namespace OKps
 		}
 		return this->MEMBER_buffer;
 	}
-	std::size_t const& file_holder::size()const
+	std::size_t const & file_holder::size()const
 	{
 		if (not this->MEMBER_route)
 		{
@@ -375,7 +375,7 @@ namespace OKps
 		}
 	}
 	//构造时将文件全部读入缓存
-	file_holder::file_holder(TYPE_path const& file, bool const do_create, bool const ARG_do_write)
+	file_holder::file_holder(TYPE_path const & file, bool const do_create, bool const ARG_do_write)
 		:MEMBER_do_write(ARG_do_write)
 	{
 		namespace fs = std::filesystem;
@@ -428,7 +428,7 @@ namespace OKps
 				+ "”失败";
 			throw std::runtime_error(hint);
 		}
-		if (not reader.read((char*)(this->MEMBER_buffer.get()), this->MEMBER_length))
+		if (not reader.read((char *)(this->MEMBER_buffer.get()), this->MEMBER_length))
 		{
 			std::string const hint = "读取文件“"
 				+ abs->string()
@@ -458,7 +458,7 @@ namespace OKps
 				+ "”失败";
 			throw std::runtime_error(hint);
 		}
-		if (not writter.write((char*)(this->MEMBER_buffer.get()), this->MEMBER_length))
+		if (not writter.write((char *)(this->MEMBER_buffer.get()), this->MEMBER_length))
 		{
 			std::string const hint = "修改文件“"
 				+ this->MEMBER_route->string()
@@ -467,7 +467,7 @@ namespace OKps
 		}
 
 	}
-	file_holder::file_holder(file_holder&& origin)
+	file_holder::file_holder(file_holder && origin)
 		noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>
 			and std::is_nothrow_move_constructible_v<std::unique_ptr<TYPE_path const>>)
 		:MEMBER_buffer(std::move(origin.MEMBER_buffer))

@@ -17,9 +17,9 @@ namespace OKps
 
     因为不同系统、不同终端模拟器可能对命令的格式规定和处理不同，用户实际输入给程序的命令行参数可能并不是他们所想的
     */
-    void echo_command_line(int const argc, char const* const argv[]);
+    void echo_command_line(int const argc, char const * const argv[]);
 
-    void wait_input(std::string const& hint = "输入回车以继续运行程序。在输入回车以前，输入任何字符都会被程序忽略。\n输入回车 ││ ", char const input = '\n');
+    void wait_input(std::string const & hint = "输入回车以继续运行程序。在输入回车以前，输入任何字符都会被程序忽略。\n输入回车 ││ ", char const input = '\n');
     /*
     此函数将单个数字，如 0b1、0xa，转换成字符，如'1'、'a'
     如果不能转换，则抛出异常
@@ -30,7 +30,7 @@ namespace OKps
     如果不能转换，则抛出异常
     c++标准规定，整数类型的内建算术运算符的操作数至少是int类型，char、short会被隐式转换到int再参与整数运算，故此函数返回int类型
     */
-    unsigned int from_char(char const number,number_system const number_base);
+    unsigned int from_char(char const number, number_system const number_base);
     /*
     命令语句分离器
     输入任意字符串，将它转换为命令语句

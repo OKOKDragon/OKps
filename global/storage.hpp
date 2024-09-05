@@ -12,11 +12,11 @@ namespace OKps
 	/*
 	按字节比较两个文件的内容是否完全相同
 	*/
-    bool compare(std::filesystem::path const& left, std::filesystem::path const& right);
+	bool compare(std::filesystem::path const & left, std::filesystem::path const & right);
 	/*
 	深度遍历文件夹，获取所有文件、子目录、子目录下的文件和子目录
 	*/
-	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const& directory,bool save_directory/*是否将目录保存到结果中*/);
+	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, bool save_directory/*是否将目录保存到结果中*/);
 
 	class field_stream final
 	{

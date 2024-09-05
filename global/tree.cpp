@@ -1,4 +1,4 @@
-#include <stack>
+ï»¿#include <stack>
 #include <queue>
 #include <stdexcept>
 
@@ -7,31 +7,36 @@
 namespace OKps
 {
     binary_tree::data_type::data_type()noexcept
-    {}
-    binary_tree::data_type::data_type(data_type const&)noexcept
     {
     }
-    binary_tree::data_type::data_type(data_type&&)noexcept
-    {}
+    binary_tree::data_type::data_type(data_type const &)noexcept
+    {
+    }
+    binary_tree::data_type::data_type(data_type &&)noexcept
+    {
+    }
     binary_tree::data_type::~data_type()noexcept
-    {}
-    void binary_tree::data_type::operator =(data_type const&)noexcept
-    {}
-    void binary_tree::data_type::operator =(data_type&&)noexcept
-    {}
-    binary_tree::data_type& binary_tree::data_type::self()noexcept
+    {
+    }
+    void binary_tree::data_type::operator =(data_type const &)noexcept
+    {
+    }
+    void binary_tree::data_type::operator =(data_type &&)noexcept
+    {
+    }
+    binary_tree::data_type & binary_tree::data_type::self()noexcept
     {
         return *this;
     }
-    binary_tree::data_type const& binary_tree::data_type::self()const noexcept
+    binary_tree::data_type const & binary_tree::data_type::self()const noexcept
     {
         return *this;
     }
 
-    binary_tree::node::node(binary_tree* const tree,
-        node* const parent,
-        node* const left,
-        node* const right)
+    binary_tree::node::node(binary_tree * const tree,
+        node * const parent,
+        node * const left,
+        node * const right)
         :MEMBER_tree(tree),
         MEMBER_left(left),
         MEMBER_right(right),
@@ -40,24 +45,24 @@ namespace OKps
     {
     }
 
-    binary_tree::node::node(binary_tree* const tree,
-        PTR_data&& data,
-        node* const parent,
-        node* const left,
-        node* const right)
+    binary_tree::node::node(binary_tree * const tree,
+        PTR_data && data,
+        node * const parent,
+        node * const left,
+        node * const right)
         : MEMBER_tree(tree),
         MEMBER_data(std::move(data)),
         MEMBER_left(left),
         MEMBER_right(right),
         MEMBER_parent(parent)
-        ,MEMBER_marker(std::make_shared<marker_type const>())
+        , MEMBER_marker(std::make_shared<marker_type const>())
     {
     }
 
     binary_tree::node::~node()
         noexcept(false)
     {
-        //´ıÊµÏÖ£º´ËÎö¹¹º¯Êı¸ÄÎªÖ»Îö¹¹×ÔÉí£¬Õû¿ÃÊ÷µÄÎö¹¹ÓÉÊ÷µÄÎö¹¹º¯Êı¸ºÔğ
+        //å¾…å®ç°ï¼šæ­¤ææ„å‡½æ•°æ”¹ä¸ºåªææ„è‡ªèº«ï¼Œæ•´æ£µæ ‘çš„ææ„ç”±æ ‘çš„ææ„å‡½æ•°è´Ÿè´£
         if (this->is_leaf())
         {
             if (this->MEMBER_parent)
@@ -74,7 +79,7 @@ namespace OKps
         }
         else
         {
-            throw std::logic_error("´Ë½Úµã²»ÊÇÒ¶×Ó½Úµã£¬ÎŞ·¨Îö¹¹");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹ä¸æ˜¯å¶å­èŠ‚ç‚¹ï¼Œæ— æ³•ææ„");
         }
 
     }
@@ -93,7 +98,7 @@ namespace OKps
     {
         if (not (*this))
         {
-            throw std::logic_error("´Ë½ÚµãÎª¿Õ£¬½ûÖ¹·ÃÎÊ");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹ä¸ºç©ºï¼Œç¦æ­¢è®¿é—®");
         }
     }
     binary_tree::data_type const * binary_tree::node::data() const
@@ -111,21 +116,21 @@ namespace OKps
         this->ERROR_invalid();
         this->MEMBER_data.reset();
     }
-    binary_tree::node const* binary_tree::node::parent() const
+    binary_tree::node const * binary_tree::node::parent() const
     {
         this->ERROR_invalid();
         return this->MEMBER_parent;
     }
-    void binary_tree::node::left_birth(PTR_data&& data)
+    void binary_tree::node::left_birth(PTR_data && data)
     {
         this->ERROR_invalid();
         if (this->MEMBER_left)
         {
-            throw std::logic_error("´Ë½ÚµãÒÑ¾­ÓĞ×óº¢×Ó£¬½ûÖ¹ÖØ¸´³õÊ¼»¯¡£");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹å·²ç»æœ‰å·¦å­©å­ï¼Œç¦æ­¢é‡å¤åˆå§‹åŒ–ã€‚");
         }
         else
         {
-            // newĞÂ½Úµã£¬´«Èë´Ë½Úµã×÷Îª¸¸Ç×
+            // newæ–°èŠ‚ç‚¹ï¼Œä¼ å…¥æ­¤èŠ‚ç‚¹ä½œä¸ºçˆ¶äº²
             this->MEMBER_left = new node(this->MEMBER_tree, std::move(data), this);
         }
     }
@@ -134,22 +139,22 @@ namespace OKps
         this->ERROR_invalid();
         if (this->MEMBER_left)
         {
-            throw std::logic_error("´Ë½ÚµãÒÑ¾­ÓĞ×óº¢×Ó£¬½ûÖ¹ÖØ¸´³õÊ¼»¯¡£");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹å·²ç»æœ‰å·¦å­©å­ï¼Œç¦æ­¢é‡å¤åˆå§‹åŒ–ã€‚");
         }
         else
         {
-            // newĞÂ½Úµã£¬´«Èë´Ë½Úµã×÷Îª¸¸Ç×
+            // newæ–°èŠ‚ç‚¹ï¼Œä¼ å…¥æ­¤èŠ‚ç‚¹ä½œä¸ºçˆ¶äº²
             this->MEMBER_left = new node(this->MEMBER_tree, this);
         }
     }
-    binary_tree::node const* binary_tree::node::left() const
+    binary_tree::node const * binary_tree::node::left() const
     {
         this->ERROR_invalid();
         return this->MEMBER_left;
     }
-    void binary_tree::node::clear_tree(node* const root)
+    void binary_tree::node::clear_tree(node * const root)
     {
-        if(not root)
+        if (not root)
         {
             return;
         }
@@ -165,26 +170,26 @@ namespace OKps
         this->ERROR_invalid();
         node::clear_tree(this->MEMBER_left);
     }
-    binary_tree::node* binary_tree::node::left()
+    binary_tree::node * binary_tree::node::left()
     {
         this->ERROR_invalid();
         return this->MEMBER_left;
     }
-    binary_tree::node* binary_tree::node::parent() 
+    binary_tree::node * binary_tree::node::parent()
     {
         this->ERROR_invalid();
         return this->MEMBER_parent;
     }
-    void binary_tree::node::right_birth(PTR_data&& data)
+    void binary_tree::node::right_birth(PTR_data && data)
     {
         this->ERROR_invalid();
         if (this->MEMBER_right)
         {
-            throw std::logic_error("´Ë½ÚµãÒÑ¾­ÓĞÓÒº¢×Ó£¬½ûÖ¹ÖØ¸´³õÊ¼»¯¡£");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹å·²ç»æœ‰å³å­©å­ï¼Œç¦æ­¢é‡å¤åˆå§‹åŒ–ã€‚");
         }
         else
         {
-            // newĞÂ½Úµã£¬´«Èë´Ë½Úµã×÷Îª¸¸Ç×
+            // newæ–°èŠ‚ç‚¹ï¼Œä¼ å…¥æ­¤èŠ‚ç‚¹ä½œä¸ºçˆ¶äº²
             this->MEMBER_right = new node(this->MEMBER_tree, std::move(data), this);
         }
     }
@@ -194,20 +199,20 @@ namespace OKps
         this->ERROR_invalid();
         if (this->MEMBER_right)
         {
-            throw std::logic_error("´Ë½ÚµãÒÑ¾­ÓĞÓÒº¢×Ó£¬½ûÖ¹ÖØ¸´³õÊ¼»¯¡£");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹å·²ç»æœ‰å³å­©å­ï¼Œç¦æ­¢é‡å¤åˆå§‹åŒ–ã€‚");
         }
         else
         {
-            // newĞÂ½Úµã£¬´«Èë´Ë½Úµã×÷Îª¸¸Ç×
+            // newæ–°èŠ‚ç‚¹ï¼Œä¼ å…¥æ­¤èŠ‚ç‚¹ä½œä¸ºçˆ¶äº²
             this->MEMBER_right = new node(this->MEMBER_tree, this);
         }
     }
-    binary_tree::node const* binary_tree::node::right() const
+    binary_tree::node const * binary_tree::node::right() const
     {
         this->ERROR_invalid();
         return this->MEMBER_right;
     }
-    binary_tree::node* binary_tree::node::right()
+    binary_tree::node * binary_tree::node::right()
     {
         this->ERROR_invalid();
         return this->MEMBER_right;
@@ -241,7 +246,7 @@ namespace OKps
         }
         return result;
     }
-    binary_tree::node const* binary_tree::node::root() const
+    binary_tree::node const * binary_tree::node::root() const
     {
         this->ERROR_invalid();
         return this->MEMBER_tree->MEMBER_root;
@@ -251,7 +256,7 @@ namespace OKps
         this->ERROR_invalid();
         return this->MEMBER_tree->MEMBER_root;
     }
-    bool binary_tree::node::is_ancestor(node const* const n)const
+    bool binary_tree::node::is_ancestor(node const * const n)const
     {
         this->ERROR_invalid();
         if (not n)
@@ -260,17 +265,17 @@ namespace OKps
         }
         n->ERROR_invalid();
         if (n->MEMBER_tree != this->MEMBER_tree)
-            //²»ÔÚÍ¬Ò»¿ÃÊ÷ÉÏ£¬±ØÈ»²»ÊÇ×æÏÈ¹ØÏµ
+            //ä¸åœ¨åŒä¸€æ£µæ ‘ä¸Šï¼Œå¿…ç„¶ä¸æ˜¯ç¥–å…ˆå…³ç³»
         {
             return false;
         }
-        auto TEMP_itor = this;//µü´úÆ÷
+        auto TEMP_itor = this;//è¿­ä»£å™¨
 
         if (TEMP_itor == n)
         {
             return false;
         }
-        //nodeºÍ±¾½ÚµãÔÚÍ¬Ò»¿ÃÊ÷ÉÏ£¬µ«²»ÊÇÍ¬Ò»¸ö½Úµã
+        //nodeå’Œæœ¬èŠ‚ç‚¹åœ¨åŒä¸€æ£µæ ‘ä¸Šï¼Œä½†ä¸æ˜¯åŒä¸€ä¸ªèŠ‚ç‚¹
         while (true)
         {
             auto const TEMP_parent = TEMP_itor->MEMBER_parent;
@@ -286,13 +291,13 @@ namespace OKps
                 }
             }
             else
-                //µ±Ç°µü´úÆ÷ÊÇ¸ù½Úµã
+                //å½“å‰è¿­ä»£å™¨æ˜¯æ ¹èŠ‚ç‚¹
             {
                 return false;
             }
         }
     }
-    void binary_tree::node::swap_child() 
+    void binary_tree::node::swap_child()
     {
         this->ERROR_invalid();
         auto const temp = this->MEMBER_left;
@@ -304,15 +309,15 @@ namespace OKps
         this->ERROR_invalid();
         if (not this->MEMBER_parent)
         {
-            throw std::logic_error("´Ë½ÚµãÒÑ¾­ÊÇ¸ù½Úµã£¬ÎŞ·¨²ğ·Ö³ö×ÓÊ÷");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹å·²ç»æ˜¯æ ¹èŠ‚ç‚¹ï¼Œæ— æ³•æ‹†åˆ†å‡ºå­æ ‘");
         }
         else
         {
-            // new¿ÕÊ÷£¬½«¸ù½Úµã¸ÄÎª´Ë½Úµã
+            // newç©ºæ ‘ï¼Œå°†æ ¹èŠ‚ç‚¹æ”¹ä¸ºæ­¤èŠ‚ç‚¹
             auto result = binary_tree();
             result.MEMBER_root = this;
 
-            // ĞŞ¸Ä´Ë½ÚµãÔ­¸¸Ç×µÄ¹ØÏµ
+            // ä¿®æ”¹æ­¤èŠ‚ç‚¹åŸçˆ¶äº²çš„å…³ç³»
             if (this->MEMBER_parent->MEMBER_left == this)
             {
                 this->MEMBER_parent->MEMBER_left = nullptr;
@@ -327,59 +332,59 @@ namespace OKps
             return result;
         }
     }
-    void binary_tree::node::combine_left(binary_tree&& subtree)
+    void binary_tree::node::combine_left(binary_tree && subtree)
     {
         this->ERROR_invalid();
         if (this->MEMBER_left)
         {
-            throw std::logic_error("´Ë½ÚµãÒÑ¾­ÓĞ×óº¢×Ó£¬ÎŞ·¨ºÏ²¢×ÓÊ÷");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹å·²ç»æœ‰å·¦å­©å­ï¼Œæ— æ³•åˆå¹¶å­æ ‘");
         }
         else
         {
             subtree.INNER_change_owner_tree(this->MEMBER_tree);
-            // ºÏ²¢Ê÷½á¹¹
+            // åˆå¹¶æ ‘ç»“æ„
             this->MEMBER_left = subtree.MEMBER_root;
             subtree.MEMBER_root = nullptr;
         }
     }
-    void binary_tree::node::swap_tree(node* const left, node* const right)
+    void binary_tree::node::swap_tree(node * const left, node * const right)
     {
         if ((not left) or (not right))
         {
-            throw std::invalid_argument("½ûÖ¹ÊäÈë¿ÕÖ¸Õë");
+            throw std::invalid_argument("ç¦æ­¢è¾“å…¥ç©ºæŒ‡é’ˆ");
             return;
         }
         left->ERROR_invalid();
         right->ERROR_invalid();
         if (left == right)
-            //ÊäÈëµÄÁ½¸ö½ÚµãÏàÍ¬
+            //è¾“å…¥çš„ä¸¤ä¸ªèŠ‚ç‚¹ç›¸åŒ
         {
             return;
         }
-        auto TEMP_node1_parent = left->MEMBER_parent;//node1Ô­À´µÄ¸¸Ç×
-        auto TEMP_node2_parent = right->MEMBER_parent;//node2Ô­À´µÄ¸¸Ç×
+        auto TEMP_node1_parent = left->MEMBER_parent;//node1åŸæ¥çš„çˆ¶äº²
+        auto TEMP_node2_parent = right->MEMBER_parent;//node2åŸæ¥çš„çˆ¶äº²
 
-        auto TEMP_node1_tree = left->MEMBER_tree;//node1Ô­À´µÄÊ÷
-        auto TEMP_node2_tree = right->MEMBER_tree;//node2Ô­À´µÄÊ÷
+        auto TEMP_node1_tree = left->MEMBER_tree;//node1åŸæ¥çš„æ ‘
+        auto TEMP_node2_tree = right->MEMBER_tree;//node2åŸæ¥çš„æ ‘
         if ((not TEMP_node1_parent) and (not TEMP_node2_parent))
             /*
-            ÊäÈëµÄÊÇ2¸ö¸ù½Úµã
-            ÓÉÓÚËüÃÇ²»ÊÇÍ¬Ò»¸ö½Úµã£¬¹Ê²»ÔÚÍ¬Ò»¿ÃÊ÷
+            è¾“å…¥çš„æ˜¯2ä¸ªæ ¹èŠ‚ç‚¹
+            ç”±äºå®ƒä»¬ä¸æ˜¯åŒä¸€ä¸ªèŠ‚ç‚¹ï¼Œæ•…ä¸åœ¨åŒä¸€æ£µæ ‘
             */
         {
-            TEMP_node1_tree->INNER_change_owner_tree(TEMP_node2_tree);//node1Ô­À´Ê÷ÏÂµÄËùÓĞ½Úµã¸ÄÎªnode2Ô­À´µÄÊ÷ËùÓĞ
+            TEMP_node1_tree->INNER_change_owner_tree(TEMP_node2_tree);//node1åŸæ¥æ ‘ä¸‹çš„æ‰€æœ‰èŠ‚ç‚¹æ”¹ä¸ºnode2åŸæ¥çš„æ ‘æ‰€æœ‰
             TEMP_node2_tree->INNER_change_owner_tree(TEMP_node1_tree);
             TEMP_node1_tree->MEMBER_root = right;
             TEMP_node2_tree->MEMBER_root = left;
             return;
         }
-        if (left->is_ancestor(right)/*node2ÊÇnode1µÄ×æÏÈ*/ or right->is_ancestor(left)/*node1ÊÇnode2µÄ×æÏÈ*/)
+        if (left->is_ancestor(right)/*node2æ˜¯node1çš„ç¥–å…ˆ*/ or right->is_ancestor(left)/*node1æ˜¯node2çš„ç¥–å…ˆ*/)
         {
-            throw std::invalid_argument("½ûÖ¹ÊäÈëµÄ½ÚµãÖ®¼ä´æÔÚ×æÏÈ¹ØÏµ");
+            throw std::invalid_argument("ç¦æ­¢è¾“å…¥çš„èŠ‚ç‚¹ä¹‹é—´å­˜åœ¨ç¥–å…ˆå…³ç³»");
             return;
         }
         if (TEMP_node1_tree != TEMP_node2_tree)
-            //node1ºÍnode2²»ÔÚÍ¬Ò»¿ÃÊ÷ÉÏ
+            //node1å’Œnode2ä¸åœ¨åŒä¸€æ£µæ ‘ä¸Š
         {
             binary_tree::INNER_change_owner_tree(left, TEMP_node2_tree);
             binary_tree::INNER_change_owner_tree(right, TEMP_node1_tree);
@@ -390,69 +395,69 @@ namespace OKps
         if (TEMP_node2_parent)
         {
             if (TEMP_node2_parent->MEMBER_left == right)
-                //node2ÊÇ×óº¢×Ó
+                //node2æ˜¯å·¦å­©å­
             {
                 TEMP_node2_parent->MEMBER_left = left;
             }
             else
-                //node2ÊÇÓÒº¢×Ó
+                //node2æ˜¯å³å­©å­
             {
                 TEMP_node2_parent->MEMBER_right = left;
             }
 
         }
         else
-            //node2ÊÇ¸ù½Úµã
+            //node2æ˜¯æ ¹èŠ‚ç‚¹
         {
             TEMP_node2_tree->MEMBER_root = left;
         }
         if (TEMP_node1_parent)
         {
             if (TEMP_node1_parent->MEMBER_left == left)
-                //node1ÊÇ×óº¢×Ó
+                //node1æ˜¯å·¦å­©å­
             {
                 TEMP_node1_parent->MEMBER_left = right;
             }
             else
-                //node1ÊÇÓÒº¢×Ó
+                //node1æ˜¯å³å­©å­
             {
                 TEMP_node1_parent->MEMBER_right = right;
             }
 
         }
         else
-            //node1ÊÇ¸ù½Úµã
+            //node1æ˜¯æ ¹èŠ‚ç‚¹
         {
             TEMP_node1_tree->MEMBER_root = right;
         }
 
     }
-    void binary_tree::node::combine_right(binary_tree&& subtree)
+    void binary_tree::node::combine_right(binary_tree && subtree)
     {
         this->ERROR_invalid();
         if (this->MEMBER_right)
         {
-            throw std::logic_error("´Ë½ÚµãÒÑ¾­ÓĞÓÒº¢×Ó£¬ÎŞ·¨ºÏ²¢×ÓÊ÷");
+            throw std::logic_error("æ­¤èŠ‚ç‚¹å·²ç»æœ‰å³å­©å­ï¼Œæ— æ³•åˆå¹¶å­æ ‘");
         }
         else
         {
             subtree.INNER_change_owner_tree(this->MEMBER_tree);
-            // ºÏ²¢Ê÷½á¹¹
+            // åˆå¹¶æ ‘ç»“æ„
             this->MEMBER_right = subtree.MEMBER_root;
             subtree.MEMBER_root = nullptr;
         }
     }
-    void binary_tree::node::swap_data(node* const right)
+    void binary_tree::node::swap_data(node * const right)
     {
         this->ERROR_invalid();
         if (not right)
         {
-            throw std::invalid_argument("½ûÖ¹ÊäÈë¿ÕÖ¸Õë");
+            throw std::invalid_argument("ç¦æ­¢è¾“å…¥ç©ºæŒ‡é’ˆ");
         }
         right->ERROR_invalid();
         this->MEMBER_data.swap(right->MEMBER_data);
     }
-    std::shared_ptr<binary_tree::marker_type const> const& binary_tree::node::marker()const noexcept
+    std::shared_ptr<binary_tree::marker_type const> const & binary_tree::node::marker()const noexcept
     {
         return this->MEMBER_marker;
     }
@@ -460,11 +465,11 @@ namespace OKps
         :MEMBER_root(nullptr)
     {
     }
-    binary_tree::binary_tree(PTR_data&& data)
+    binary_tree::binary_tree(PTR_data && data)
         : MEMBER_root(new node(this, std::move(data)))
     {
     }
-    binary_tree::binary_tree(binary_tree&& origin)
+    binary_tree::binary_tree(binary_tree && origin)
         :MEMBER_root(origin.MEMBER_root)
     {
         origin.MEMBER_root = nullptr;
@@ -474,11 +479,11 @@ namespace OKps
     {
         node::clear_tree(this->MEMBER_root);
     }
-    void binary_tree::root_birth(PTR_data&& data)
+    void binary_tree::root_birth(PTR_data && data)
     {
         if (this->MEMBER_root)
         {
-            throw std::logic_error("¸ù½Úµã²»¿Õ£¬½ûÖ¹ÖØ¸´³õÊ¼»¯¡£");
+            throw std::logic_error("æ ¹èŠ‚ç‚¹ä¸ç©ºï¼Œç¦æ­¢é‡å¤åˆå§‹åŒ–ã€‚");
         }
         else
         {
@@ -489,7 +494,7 @@ namespace OKps
     {
         if (this->MEMBER_root)
         {
-            throw std::logic_error("¸ù½Úµã²»¿Õ£¬½ûÖ¹ÖØ¸´³õÊ¼»¯¡£");
+            throw std::logic_error("æ ¹èŠ‚ç‚¹ä¸ç©ºï¼Œç¦æ­¢é‡å¤åˆå§‹åŒ–ã€‚");
         }
         else
         {
@@ -502,14 +507,16 @@ namespace OKps
         this->MEMBER_root = nullptr;
     }
     binary_tree::marker_type::marker_type()noexcept
-    {}
+    {
+    }
     binary_tree::marker_type::~marker_type()noexcept
-    {}
-    binary_tree::iterator::iterator(node* const origin )
-        noexcept(noexcept(std::weak_ptr<marker_type const>(std::declval<std::shared_ptr<marker_type const> const&>())))
+    {
+    }
+    binary_tree::iterator::iterator(node * const origin)
+        noexcept(noexcept(std::weak_ptr<marker_type const>(std::declval<std::shared_ptr<marker_type const> const &>())))
         :MEMBER_node(origin)
     {
-        if(origin)
+        if (origin)
         {
             this->MEMBER_marker = origin->marker();
         }
@@ -518,20 +525,20 @@ namespace OKps
         noexcept(std::is_nothrow_destructible<std::weak_ptr<marker_type const>>::value)
     {
     }
-    binary_tree::iterator::iterator(iterator const& origin)
+    binary_tree::iterator::iterator(iterator const & origin)
         noexcept(std::is_nothrow_copy_constructible<std::weak_ptr<marker_type const>>::value)
         :MEMBER_node(origin.MEMBER_node)
-        ,MEMBER_marker(origin.MEMBER_marker)
+        , MEMBER_marker(origin.MEMBER_marker)
     {
     }
     void binary_tree::iterator::ERROR_invalid()const noexcept(false)
     {
         if (not (*this))
         {
-            throw std::logic_error("´Ëµü´úÆ÷ÒıÓÃµÄ½ÚµãÒÑÊ§Ğ§");
+            throw std::logic_error("æ­¤è¿­ä»£å™¨å¼•ç”¨çš„èŠ‚ç‚¹å·²å¤±æ•ˆ");
         }
     }
-    void binary_tree::iterator::operator=(iterator const& origin)
+    void binary_tree::iterator::operator=(iterator const & origin)
         noexcept(std::is_nothrow_copy_assignable<std::weak_ptr<marker_type const>>::value)
     {
         if (this == &origin)
@@ -541,14 +548,14 @@ namespace OKps
         this->MEMBER_node = origin.MEMBER_node;
         this->MEMBER_marker = origin.MEMBER_marker;
     }
-    binary_tree::iterator::iterator(iterator&& origin)
+    binary_tree::iterator::iterator(iterator && origin)
         noexcept(std::is_nothrow_move_constructible<std::weak_ptr<marker_type const>>::value)
         :MEMBER_node(origin.MEMBER_node)
-        ,MEMBER_marker(std::move(origin.MEMBER_marker))
+        , MEMBER_marker(std::move(origin.MEMBER_marker))
     {
         origin.MEMBER_node = nullptr;
     }
-    void binary_tree::iterator::operator=(iterator&& origin)
+    void binary_tree::iterator::operator=(iterator && origin)
         noexcept(std::is_nothrow_move_assignable<std::weak_ptr<marker_type const>>::value)
     {
         if (this == &origin)
@@ -558,7 +565,7 @@ namespace OKps
         this->MEMBER_node = origin.MEMBER_node;
         origin.MEMBER_node = nullptr;
     }
-    bool binary_tree::iterator::operator==(iterator const& right)const
+    bool binary_tree::iterator::operator==(iterator const & right)const
     {
         this->ERROR_invalid();
         right.ERROR_invalid();
@@ -571,16 +578,16 @@ namespace OKps
             return false;
         }
     }
-    bool binary_tree::iterator::operator!=(iterator const& right)const
+    bool binary_tree::iterator::operator!=(iterator const & right)const
     {
         return not((*this) == right);
     }
-    binary_tree::data_type* binary_tree::iterator::data()
+    binary_tree::data_type * binary_tree::iterator::data()
     {
         this->ERROR_invalid();
         return this->MEMBER_node->data();
     }
-    binary_tree::data_type const* binary_tree::iterator::data()const
+    binary_tree::data_type const * binary_tree::iterator::data()const
     {
         this->ERROR_invalid();
         return this->MEMBER_node->data();
@@ -634,7 +641,7 @@ namespace OKps
         this->ERROR_invalid();
         this->MEMBER_node->right_birth();
     }
-    void binary_tree::iterator::right_birth(PTR_data&& data)
+    void binary_tree::iterator::right_birth(PTR_data && data)
     {
         this->ERROR_invalid();
         this->MEMBER_node->right_birth(std::move(data));
@@ -649,7 +656,7 @@ namespace OKps
         this->ERROR_invalid();
         this->MEMBER_node->left_birth();
     }
-    void binary_tree::iterator::left_birth(PTR_data&& data)
+    void binary_tree::iterator::left_birth(PTR_data && data)
     {
         this->ERROR_invalid();
         this->MEMBER_node->left_birth(std::move(data));
@@ -669,7 +676,7 @@ namespace OKps
         this->ERROR_invalid();
         return this->MEMBER_node->depth();
     }
-    bool binary_tree::iterator::is_ancestor(iterator const& n)const
+    bool binary_tree::iterator::is_ancestor(iterator const & n)const
     {
         this->ERROR_invalid();
         n.ERROR_invalid();
@@ -685,18 +692,18 @@ namespace OKps
         this->ERROR_invalid();
         return this->MEMBER_node->split_tree();
     }
-    void binary_tree::iterator::combine_left(binary_tree&& subtree)
+    void binary_tree::iterator::combine_left(binary_tree && subtree)
     {
         this->ERROR_invalid();
         this->MEMBER_node->combine_left(std::move(subtree));
     }
-    void binary_tree::iterator::combine_right(binary_tree&& subtree)
+    void binary_tree::iterator::combine_right(binary_tree && subtree)
     {
         this->ERROR_invalid();
         this->MEMBER_node->combine_right(std::move(subtree));
     }
-    binary_tree::iterator::operator bool()const 
-        noexcept(noexcept(std::declval<iterator const*>()->MEMBER_marker.expired()))
+    binary_tree::iterator::operator bool()const
+        noexcept(noexcept(std::declval<iterator const *>()->MEMBER_marker.expired()))
     {
         if (not this->MEMBER_node or this->MEMBER_marker.expired())
         {
@@ -707,24 +714,24 @@ namespace OKps
             return true;
         }
     }
-    void binary_tree::iterator::swap_data(iterator& right)
+    void binary_tree::iterator::swap_data(iterator & right)
     {
         this->ERROR_invalid();
         right.ERROR_invalid();
         this->MEMBER_node->swap_data(right.MEMBER_node);
     }
-    void binary_tree::iterator::swap_tree(iterator& left, iterator& right)
+    void binary_tree::iterator::swap_tree(iterator & left, iterator & right)
     {
         left.ERROR_invalid();
         right.ERROR_invalid();
         node::swap_tree(left.MEMBER_node, right.MEMBER_node);
     }
-    binary_tree::tree_information::tree_information(const std::size_t node, const std::size_t leaf, const std::size_t depth, TYPE_list&& list)
+    binary_tree::tree_information::tree_information(const std::size_t node, const std::size_t leaf, const std::size_t depth, TYPE_list && list)
         noexcept(std::is_nothrow_move_constructible<TYPE_list>::value)
         : MEMBER_node(node), MEMBER_leaf(leaf), MEMBER_depth(depth), MEMBER_list(std::move(list))
     {
     }
-    binary_tree::tree_information::tree_information(const tree_information& origin)
+    binary_tree::tree_information::tree_information(const tree_information & origin)
         noexcept(std::is_nothrow_copy_constructible<TYPE_list>::value)
         :MEMBER_node(origin.MEMBER_node),
         MEMBER_leaf(origin.MEMBER_leaf),
@@ -732,7 +739,7 @@ namespace OKps
         MEMBER_list(origin.MEMBER_list)
     {
     }
-    void binary_tree::tree_information::operator=(const tree_information& origin)
+    void binary_tree::tree_information::operator=(const tree_information & origin)
         noexcept(std::is_nothrow_copy_assignable<TYPE_list>::value)
     {
         if (this == &origin)
@@ -745,7 +752,7 @@ namespace OKps
         this->MEMBER_list = origin.MEMBER_list;
     }
 
-    binary_tree::tree_information::tree_information(tree_information&& origin)
+    binary_tree::tree_information::tree_information(tree_information && origin)
         noexcept(std::is_nothrow_move_constructible<TYPE_list>::value)
         : MEMBER_node(origin.MEMBER_node),
         MEMBER_leaf(origin.MEMBER_leaf),
@@ -755,7 +762,7 @@ namespace OKps
 
     }
 
-    void binary_tree::tree_information::operator=(tree_information&& origin)
+    void binary_tree::tree_information::operator=(tree_information && origin)
         noexcept(std::is_nothrow_move_assignable<TYPE_list>::value)
     {
         if (this == &origin)
@@ -787,42 +794,42 @@ namespace OKps
     {
         return this->MEMBER_depth;
     }
-    binary_tree::tree_information::TYPE_list& binary_tree::tree_information::list()noexcept
+    binary_tree::tree_information::TYPE_list & binary_tree::tree_information::list()noexcept
     {
         return this->MEMBER_list;
     }
-    binary_tree::tree_information::TYPE_list const& binary_tree::tree_information::list()const noexcept
+    binary_tree::tree_information::TYPE_list const & binary_tree::tree_information::list()const noexcept
     {
         return this->MEMBER_list;
     }
-    binary_tree::tree_information binary_tree::front_traversal(node* const root)
+    binary_tree::tree_information binary_tree::front_traversal(node * const root)
     {
 
         auto result = typename tree_information::TYPE_list();
         if (not root)
-            // ¿ÕÊ÷£¬·µ»Ø¿ÕÊı×é
+            // ç©ºæ ‘ï¼Œè¿”å›ç©ºæ•°ç»„
         {
             return tree_information(0, 0, 0, std::move(result));
         }
 
-        // ±£´æ½á¹û
+        // ä¿å­˜ç»“æœ
 
-        // ²Ù×÷½á¹ûÊı×éµÄÏÂ±ê
+        // æ“ä½œç»“æœæ•°ç»„çš„ä¸‹æ ‡
         std::size_t count = 0;
         std::size_t leaf = 0;
         std::size_t depth = 1;
-        // µü´úÆ÷
+        // è¿­ä»£å™¨
         auto _root = root;
 
-        // ¸¨ÖúÕ»
-        std::stack<node*> assistant;
+        // è¾…åŠ©æ ˆ
+        std::stack<node *> assistant;
         while (true)
         {
             while (_root)
-                // µü´úÆ÷²»¿Õ
+                // è¿­ä»£å™¨ä¸ç©º
             {
-                
-                // µü´úÆ÷Ö¸ÏòµÄ½ÚµãĞ´Èë½á¹û
+
+                // è¿­ä»£å™¨æŒ‡å‘çš„èŠ‚ç‚¹å†™å…¥ç»“æœ
                 result.push_back(iterator(_root));
                 count++;
                 if (_root->is_leaf())
@@ -834,20 +841,20 @@ namespace OKps
                     depth = _root->depth();
                 }
                 if (_root->right())
-                    // µü´úÆ÷ÓĞÓÒº¢×Ó
+                    // è¿­ä»£å™¨æœ‰å³å­©å­
                 {
-                    // ÓÒº¢×ÓÈëÕ»
+                    // å³å­©å­å…¥æ ˆ
                     assistant.push(_root->right());
                 }
-                // µü´úÆ÷±äÎª×Ô¼ºµÄ×óº¢×Ó
+                // è¿­ä»£å™¨å˜ä¸ºè‡ªå·±çš„å·¦å­©å­
                 _root = _root->left();
             }
             if (assistant.empty())
-                // ¸¨ÖúÕ»¿Õ
+                // è¾…åŠ©æ ˆç©º
             {
                 break;
             }
-            // ¸¨ÖúÕ»¶¥²¿³öÕ»£¬×÷ÎªÏÂÒ»¸öÑ­»·µÄÆğµã
+            // è¾…åŠ©æ ˆé¡¶éƒ¨å‡ºæ ˆï¼Œä½œä¸ºä¸‹ä¸€ä¸ªå¾ªç¯çš„èµ·ç‚¹
 
             _root = assistant.top();
             assistant.pop();
@@ -868,41 +875,41 @@ namespace OKps
     {
         return binary_tree::front_traversal(this->MEMBER_root);
     }
-    binary_tree::tree_information binary_tree::middle_traversal(node* const root)
+    binary_tree::tree_information binary_tree::middle_traversal(node * const root)
     {
 
         auto result = typename tree_information::TYPE_list();
 
         if (not root)
-            // ¿ÕÊ÷£¬·µ»Ø¿ÕÊı×é
+            // ç©ºæ ‘ï¼Œè¿”å›ç©ºæ•°ç»„
         {
             return tree_information(0, 0, 0, std::move(result));
         }
 
-        // ±£´æ½á¹û
-        // ²Ù×÷½á¹ûÊı×éµÄÏÂ±ê
+        // ä¿å­˜ç»“æœ
+        // æ“ä½œç»“æœæ•°ç»„çš„ä¸‹æ ‡
         std::size_t count = 0;
         std::size_t leaf = 0;
         std::size_t depth = 0;
-        // µü´úÆ÷
+        // è¿­ä»£å™¨
         auto _root = root;
-        // ¸¨ÖúÕ»
-        std::stack<node*> assistant;
+        // è¾…åŠ©æ ˆ
+        std::stack<node *> assistant;
         while (true)
         {
             if (_root)
             {
-                // µü´úÆ÷½øÕ»
+                // è¿­ä»£å™¨è¿›æ ˆ
                 assistant.push(_root);
-                // µü´úµ½×óº¢×Ó
+                // è¿­ä»£åˆ°å·¦å­©å­
                 _root = _root->left();
             }
             else if (not assistant.empty())
             {
-                // ÉĞÎ´·ÃÎÊµ½µÄ×îµÍ×æÏÈ½Úµã³öÕ»
+                // å°šæœªè®¿é—®åˆ°çš„æœ€ä½ç¥–å…ˆèŠ‚ç‚¹å‡ºæ ˆ
                 _root = assistant.top();
                 assistant.pop();
-                // ·ÃÎÊ¸Ã½Úµã
+                // è®¿é—®è¯¥èŠ‚ç‚¹
                 result.push_back(iterator(_root));
                 count++;
                 if (_root->is_leaf())
@@ -913,11 +920,11 @@ namespace OKps
                 {
                     depth = _root->depth();
                 }
-                // ±éÀúÆäÓÒ×ÓÊ÷
+                // éå†å…¶å³å­æ ‘
                 _root = _root->right();
             }
             else
-                // ±éÀúÍê³É
+                // éå†å®Œæˆ
             {
                 break;
             }
@@ -929,26 +936,26 @@ namespace OKps
         return binary_tree::middle_traversal(this->MEMBER_root);
     }
 
-    binary_tree::tree_information binary_tree::behind_traversal(node* const root)
+    binary_tree::tree_information binary_tree::behind_traversal(node * const root)
     {
 
         auto result = typename tree_information::TYPE_list();
 
         if (not root)
-            // ¿ÕÊ÷£¬·µ»Ø¿ÕÊı×é
+            // ç©ºæ ‘ï¼Œè¿”å›ç©ºæ•°ç»„
         {
             return tree_information(0, 0, 0, std::move(result));
         }
 
-        // ±£´æ½á¹û
-        // ²Ù×÷½á¹ûÊı×éµÄÏÂ±ê
+        // ä¿å­˜ç»“æœ
+        // æ“ä½œç»“æœæ•°ç»„çš„ä¸‹æ ‡
         std::size_t count = 0;
         std::size_t leaf = 0;
         std::size_t depth = 0;
-        // µü´úÆ÷
+        // è¿­ä»£å™¨
         auto _root = root;
-        // ¸¨ÖúÕ»
-        std::stack<node*> assistant;
+        // è¾…åŠ©æ ˆ
+        std::stack<node *> assistant;
 
         assistant.push(_root);
 
@@ -957,22 +964,22 @@ namespace OKps
             if (assistant.top() != _root->parent())
             {
 
-                while (auto temp = assistant.top()) // ×Ô¶¥¶øÏÂ£¬·´¸´¼ì²éµ±Ç°½Úµã£¨¼´Õ»¶¥£©
+                while (auto temp = assistant.top()) // è‡ªé¡¶è€Œä¸‹ï¼Œåå¤æ£€æŸ¥å½“å‰èŠ‚ç‚¹ï¼ˆå³æ ˆé¡¶ï¼‰
                 {
                     if (temp->left())
-                    { // ¾¡¿ÉÄÜÏò×óµü´ú
+                    { // å°½å¯èƒ½å‘å·¦è¿­ä»£
                         if (temp->right())
                         {
                             assistant.push(temp->right());
-                        }                                   // ÈôÓĞÓÒº¢×Ó£¬ÓÅÏÈÈëÕ»
-                        assistant.push(temp->left()); // È»ºó²Å×ªÖÁ×óº¢×Ó
+                        }                                   // è‹¥æœ‰å³å­©å­ï¼Œä¼˜å…ˆå…¥æ ˆ
+                        assistant.push(temp->left()); // ç„¶åæ‰è½¬è‡³å·¦å­©å­
                     }
-                    else // ÎŞ·¨Ïò×ó²ÅÏòÓÒ
+                    else // æ— æ³•å‘å·¦æ‰å‘å³
                     {
                         assistant.push(temp->right());
                     }
                 }
-                assistant.pop(); // ·µ»ØÖ®Ç°£¬µ¯³öÕ»¶¥µÄ¿Õ½Úµã
+                assistant.pop(); // è¿”å›ä¹‹å‰ï¼Œå¼¹å‡ºæ ˆé¡¶çš„ç©ºèŠ‚ç‚¹
             }
             _root = assistant.top();
             assistant.pop();
@@ -999,29 +1006,29 @@ namespace OKps
     {
         return std::make_unique<tree_information const>(binary_tree::behind_traversal(this->MEMBER_root));
     }
-    binary_tree::tree_information binary_tree::level_traversal(node* const root)
+    binary_tree::tree_information binary_tree::level_traversal(node * const root)
     {
 
         auto result = typename tree_information::TYPE_list();
 
         if (not root)
-            // ¿ÕÊ÷£¬·µ»Ø¿ÕÊı×é
+            // ç©ºæ ‘ï¼Œè¿”å›ç©ºæ•°ç»„
         {
             return tree_information(0, 0, 0, std::move(result));
         }
 
-        // ±£´æ½á¹û
-        // ²Ù×÷½á¹ûÊı×éµÄÏÂ±ê
+        // ä¿å­˜ç»“æœ
+        // æ“ä½œç»“æœæ•°ç»„çš„ä¸‹æ ‡
         std::size_t count = 0;
         std::size_t leaf = 0;
         std::size_t depth = 0;
-        // ¸¨Öú¶ÓÁĞ
-        std::queue<node*> assistant;
-        // ¸ù½ÚµãÈë¶Ó
+        // è¾…åŠ©é˜Ÿåˆ—
+        std::queue<node *> assistant;
+        // æ ¹èŠ‚ç‚¹å…¥é˜Ÿ
         assistant.push(root);
         while (not assistant.empty())
         {
-            // È¡³ö¶ÓÍ·½Úµã£¬·ÃÎÊ
+            // å–å‡ºé˜Ÿå¤´èŠ‚ç‚¹ï¼Œè®¿é—®
             auto temp = assistant.front();
             assistant.pop();
             result.push_back(iterator(temp));
@@ -1037,12 +1044,12 @@ namespace OKps
 
             if (temp->left())
             {
-                // ×óº¢×ÓÈë¶Ó
+                // å·¦å­©å­å…¥é˜Ÿ
                 assistant.push(temp->left());
             }
             if (temp->right())
             {
-                // ÓÒº¢×ÓÈë¶Ó
+                // å³å­©å­å…¥é˜Ÿ
                 assistant.push(temp->right());
             }
         }
@@ -1056,7 +1063,7 @@ namespace OKps
     {
         return std::make_unique<tree_information const>(binary_tree::level_traversal(this->MEMBER_root));
     }
-    void binary_tree::INNER_change_owner_tree(binary_tree* const owner)
+    void binary_tree::INNER_change_owner_tree(binary_tree * const owner)
     {
         auto temp = this->behind_traversal();
         for (std::size_t counter = 0; counter < temp.MEMBER_list.size(); counter++)
@@ -1064,15 +1071,15 @@ namespace OKps
             temp.MEMBER_list[counter]->change_tree(owner);
         }
     }
-    bool binary_tree::data_type::operator ==(data_type const& right)const noexcept
+    bool binary_tree::data_type::operator ==(data_type const & right)const noexcept
     {
         return this == &right;
     }
-    bool binary_tree::data_type::operator !=(data_type const& right)const noexcept
+    bool binary_tree::data_type::operator !=(data_type const & right)const noexcept
     {
         return not(*this == right);
     }
-    void binary_tree::INNER_change_owner_tree(node* const node, binary_tree* const owner)
+    void binary_tree::INNER_change_owner_tree(node * const node, binary_tree * const owner)
     {
         auto temp = binary_tree::behind_traversal(node);
         for (std::size_t counter = 0; counter < temp.MEMBER_list.size(); counter++)
@@ -1080,33 +1087,33 @@ namespace OKps
             temp.MEMBER_list[counter]->change_tree(owner);
         }
     }
-    void binary_tree::node::change_tree(binary_tree* const t)
+    void binary_tree::node::change_tree(binary_tree * const t)
     {
         if (not t)
         {
-            throw std::invalid_argument("½ûÖ¹ÊäÈë¿ÕÖ¸Õë");
+            throw std::invalid_argument("ç¦æ­¢è¾“å…¥ç©ºæŒ‡é’ˆ");
         }
         this->MEMBER_tree = t;
     }
-    binary_tree::node* binary_tree::iterator::operator ->()
+    binary_tree::node * binary_tree::iterator::operator ->()
     {
         this->ERROR_invalid();
         return this->MEMBER_node;
     }
-    binary_tree::node const* binary_tree::iterator::operator ->()const
+    binary_tree::node const * binary_tree::iterator::operator ->()const
     {
         this->ERROR_invalid();
         return this->MEMBER_node;
     }
-    binary_tree* binary_tree::node::tree()noexcept
+    binary_tree * binary_tree::node::tree()noexcept
     {
         return this->MEMBER_tree;
     }
-    binary_tree const* binary_tree::node::tree()const noexcept
+    binary_tree const * binary_tree::node::tree()const noexcept
     {
         return this->MEMBER_tree;
     }
-    binary_tree::iterator binary_tree::find(data_type const& data)
+    binary_tree::iterator binary_tree::find(data_type const & data)
     {
         auto temp = this->behind_traversal();
         for (std::size_t count = 0; count < temp.MEMBER_list.size(); count++)
@@ -1119,7 +1126,7 @@ namespace OKps
         }
         return iterator();
     }
-    std::unique_ptr<binary_tree::iterator const> binary_tree::find(data_type const& data)const
+    std::unique_ptr<binary_tree::iterator const> binary_tree::find(data_type const & data)const
     {
         auto temp = this->behind_traversal();
         for (std::size_t count = 0; count < temp->MEMBER_list.size(); count++)
@@ -1141,46 +1148,46 @@ namespace OKps
 
     std::unique_ptr<binary_tree::iterator const> binary_tree::root()const noexcept
     {
-        auto result= iterator(this->MEMBER_root);
+        auto result = iterator(this->MEMBER_root);
         return std::make_unique<iterator const>(std::move(result));
     }
 
-    binary_tree::tree_information binary_tree::level_traversal(iterator& root)
+    binary_tree::tree_information binary_tree::level_traversal(iterator & root)
     {
         root.ERROR_invalid();
         return binary_tree::level_traversal(root.MEMBER_node);
     }
-    std::unique_ptr<binary_tree::tree_information const> binary_tree::level_traversal(iterator const& root)
+    std::unique_ptr<binary_tree::tree_information const> binary_tree::level_traversal(iterator const & root)
     {
         root.ERROR_invalid();
         return std::make_unique<tree_information const>(binary_tree::level_traversal(root.MEMBER_node));
     }
-    binary_tree::tree_information binary_tree::behind_traversal(iterator& root)
+    binary_tree::tree_information binary_tree::behind_traversal(iterator & root)
     {
         root.ERROR_invalid();
         return binary_tree::behind_traversal(root.MEMBER_node);
     }
-    std::unique_ptr<binary_tree::tree_information const> binary_tree::behind_traversal(iterator const& root)
+    std::unique_ptr<binary_tree::tree_information const> binary_tree::behind_traversal(iterator const & root)
     {
         root.ERROR_invalid();
         return std::make_unique<tree_information const>(binary_tree::behind_traversal(root.MEMBER_node));
     }
-    std::unique_ptr<binary_tree::tree_information const> binary_tree::middle_traversal(iterator const& root)
+    std::unique_ptr<binary_tree::tree_information const> binary_tree::middle_traversal(iterator const & root)
     {
         root.ERROR_invalid();
         return std::make_unique<tree_information const>(binary_tree::middle_traversal(root.MEMBER_node));
     }
-    binary_tree::tree_information binary_tree::middle_traversal(iterator& root)
+    binary_tree::tree_information binary_tree::middle_traversal(iterator & root)
     {
         root.ERROR_invalid();
         return binary_tree::middle_traversal(root.MEMBER_node);
     }
-    std::unique_ptr<binary_tree::tree_information const> binary_tree::front_traversal(iterator const& root)
+    std::unique_ptr<binary_tree::tree_information const> binary_tree::front_traversal(iterator const & root)
     {
         root.ERROR_invalid();
         return std::make_unique<tree_information const>(binary_tree::front_traversal(root.MEMBER_node));
     }
-    binary_tree::tree_information binary_tree::front_traversal(iterator& root)
+    binary_tree::tree_information binary_tree::front_traversal(iterator & root)
     {
         root.ERROR_invalid();
         return binary_tree::front_traversal(root.MEMBER_node);

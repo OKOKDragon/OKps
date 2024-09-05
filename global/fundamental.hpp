@@ -1,26 +1,26 @@
-#pragma once
+ï»¿#pragma once
 
 #include <type_traits>
 
 #include ".\bits.hpp"
 
 /*
-´ËÎÄ¼ş¶¨ÒåÒ»Ğ©c++ÄÚÖÃÕûÊıÀàĞÍµÄ°ü×°Àà£¬ÒÔ·ÀÖ¹ËÄÔòÔËËãºÍÎ»ÔËËãÊ±µÄÎ´¶¨ÒåĞĞÎª¡£
+æ­¤æ–‡ä»¶å®šä¹‰ä¸€äº›c++å†…ç½®æ•´æ•°ç±»å‹çš„åŒ…è£…ç±»ï¼Œä»¥é˜²æ­¢å››åˆ™è¿ç®—å’Œä½è¿ç®—æ—¶çš„æœªå®šä¹‰è¡Œä¸ºã€‚
 
-´ËÎÄ¼şÒªÇóÔÚc++20±ê×¼ÏÂ±àÒë£¬ÒòÎªc++20±ê×¼¹æ¶¨ÁËÄÚÖÃÕûÊıÀàĞÍ¶¼ÒªÓÃ²¹ÂëĞÎÊ½±íÊ¾£¬´Ó¶ø¹æ·¶ÁËÄÚÖÃÕûÊıÀàĞÍµÄÈ¡Öµ·¶Î§ºÍÎ»ÔËËãµÄĞĞÎª¡£
+æ­¤æ–‡ä»¶è¦æ±‚åœ¨c++20æ ‡å‡†ä¸‹ç¼–è¯‘ï¼Œå› ä¸ºc++20æ ‡å‡†è§„å®šäº†å†…ç½®æ•´æ•°ç±»å‹éƒ½è¦ç”¨è¡¥ç å½¢å¼è¡¨ç¤ºï¼Œä»è€Œè§„èŒƒäº†å†…ç½®æ•´æ•°ç±»å‹çš„å–å€¼èŒƒå›´å’Œä½è¿ç®—çš„è¡Œä¸ºã€‚
 
-´ËÎÄ¼şÌá¹©µÄËùÓĞÔËËã²Ù×÷¶¼»áÔÚÔËĞĞÆÚÇ¿ÖÆ¶ÔÎ´¶¨ÒåĞĞÎª×ö¼ì²é£¬½«Ó°Ïì³ÌĞòµÄĞÔÄÜ¡£
-ËùÓĞ°ü×°ÀàµÄ³õÊ¼Öµ¶¼ÊÇ0¡£
+æ­¤æ–‡ä»¶æä¾›çš„æ‰€æœ‰è¿ç®—æ“ä½œéƒ½ä¼šåœ¨è¿è¡ŒæœŸå¼ºåˆ¶å¯¹æœªå®šä¹‰è¡Œä¸ºåšæ£€æŸ¥ï¼Œå°†å½±å“ç¨‹åºçš„æ€§èƒ½ã€‚
+æ‰€æœ‰åŒ…è£…ç±»çš„åˆå§‹å€¼éƒ½æ˜¯0ã€‚
 
-¹æ¶¨Á½¸öÊı left ºÍ right Ö®¼ä½øĞĞËÄÔòÔËËã£¬½á¹ûµÄÀàĞÍÓë left ÏàÍ¬£¬right »áÏÈ±»×ª»»³ÉÓë left ÏàÍ¬µÄÀàĞÍ¡£
-Èç¹ûÔÚ×ª»»ÀàĞÍ¹ı³ÌÖĞ£¬·¢ÏÖ right µÄÖµÎŞ·¨ÓÃ left µÄÀàĞÍ±íÊ¾£¬ÔòÅ×³öÒì³£¡£
+è§„å®šä¸¤ä¸ªæ•° left å’Œ right ä¹‹é—´è¿›è¡Œå››åˆ™è¿ç®—ï¼Œç»“æœçš„ç±»å‹ä¸ left ç›¸åŒï¼Œright ä¼šå…ˆè¢«è½¬æ¢æˆä¸ left ç›¸åŒçš„ç±»å‹ã€‚
+å¦‚æœåœ¨è½¬æ¢ç±»å‹è¿‡ç¨‹ä¸­ï¼Œå‘ç° right çš„å€¼æ— æ³•ç”¨ left çš„ç±»å‹è¡¨ç¤ºï¼Œåˆ™æŠ›å‡ºå¼‚å¸¸ã€‚
 
-left ºÍ right ½øĞĞ±È½Ï£¬Ò²ÊÇÒÔ left µÄÀàĞÍÎª×¼£¬right »áÏÈ±»×ª»»³ÉÓë left ÏàÍ¬µÄÀàĞÍ¡£
+left å’Œ right è¿›è¡Œæ¯”è¾ƒï¼Œä¹Ÿæ˜¯ä»¥ left çš„ç±»å‹ä¸ºå‡†ï¼Œright ä¼šå…ˆè¢«è½¬æ¢æˆä¸ left ç›¸åŒçš„ç±»å‹ã€‚
 
-Óëc++±ê×¼²»Í¬µÄÊÇ£¬ÎªÁËÍ³Ò»¸÷ÖÖÕûÊıµÄĞĞÎª£¬´ËÎÄ¼şÌá¹©µÄ°ü×°Àà¶ÔÈÎºÎÒç³ö¶¼ÊÓÎª´íÎó£¬¶øc++±ê×¼¶ÔÎŞ·ûºÅÕûÊıµÄÒç³öÔò½øĞĞÈ¡Ä£ÔËËã¡£
+ä¸c++æ ‡å‡†ä¸åŒçš„æ˜¯ï¼Œä¸ºäº†ç»Ÿä¸€å„ç§æ•´æ•°çš„è¡Œä¸ºï¼Œæ­¤æ–‡ä»¶æä¾›çš„åŒ…è£…ç±»å¯¹ä»»ä½•æº¢å‡ºéƒ½è§†ä¸ºé”™è¯¯ï¼Œè€Œc++æ ‡å‡†å¯¹æ— ç¬¦å·æ•´æ•°çš„æº¢å‡ºåˆ™è¿›è¡Œå–æ¨¡è¿ç®—ã€‚
 
-c++±ê×¼¹æ¶¨£ºchar ÀàĞÍÓë signed char »ò unsigned char Ö®Ò»¾ßÓĞÏàÍ¬µÄ·ûºÅĞÔ¡¢´óĞ¡ºÍ¶ÔÆë£¬µ«ËüÊÇµ¥¶ÀµÄÀàĞÍ¡£
-´ËÎÄ¼ş×¨×¢ÓÚÔËËã£¬¹ÊÖ»Ìá¹© signed char ºÍ unsigned char µÄ°ü×°Àà£¬²¢½«ËüÃÇµ±×÷ 1 ×Ö½Ú´óĞ¡µÄÕûÊıÀàĞÍ£»²»Ìá¹© char µÄ°ü×°Àà¡£
+c++æ ‡å‡†è§„å®šï¼šchar ç±»å‹ä¸ signed char æˆ– unsigned char ä¹‹ä¸€å…·æœ‰ç›¸åŒçš„ç¬¦å·æ€§ã€å¤§å°å’Œå¯¹é½ï¼Œä½†å®ƒæ˜¯å•ç‹¬çš„ç±»å‹ã€‚
+æ­¤æ–‡ä»¶ä¸“æ³¨äºè¿ç®—ï¼Œæ•…åªæä¾› signed char å’Œ unsigned char çš„åŒ…è£…ç±»ï¼Œå¹¶å°†å®ƒä»¬å½“ä½œ 1 å­—èŠ‚å¤§å°çš„æ•´æ•°ç±»å‹ï¼›ä¸æä¾› char çš„åŒ…è£…ç±»ã€‚
 */
 
 namespace OKps::base
@@ -50,13 +50,13 @@ namespace OKps::base
 	class integer;
 
 	/*
-	¾ö¶¨ value_type ÀàĞÍÏò different_value_type ÀàĞÍ×ª»»Ê±ÊÇ·ñÓĞ¿ÉÄÜÒç³ö¡£
-	Èç¹ûÖµÎªtrueÔò±íÊ¾²»¿ÉÄÜÒç³ö£¬¼´ÏàÓ¦µÄ×ª»»º¯Êı¿ÉÒÔÉùÃ÷Îª noexcept(true)¡£
+	å†³å®š value_type ç±»å‹å‘ different_value_type ç±»å‹è½¬æ¢æ—¶æ˜¯å¦æœ‰å¯èƒ½æº¢å‡ºã€‚
+	å¦‚æœå€¼ä¸ºtrueåˆ™è¡¨ç¤ºä¸å¯èƒ½æº¢å‡ºï¼Œå³ç›¸åº”çš„è½¬æ¢å‡½æ•°å¯ä»¥å£°æ˜ä¸º noexcept(true)ã€‚
 	*/
 	template<arithmetic_integer value_type, different_arithmetic_integer<value_type> target_type>
 	constexpr bool const safe_convertible = ((have_same_sign<value_type, target_type> and (sizeof(value_type) <= sizeof(target_type)))
 		or (std::is_unsigned_v<value_type> and std::is_signed_v<target_type> and (integer<target_type>::bit_length >= integer<value_type>::bit_length + static_cast<std::size_t>(1))));
-	
+
 
 	template<arithmetic_integer value_type>
 	class integer final
@@ -70,46 +70,46 @@ namespace OKps::base
 		static inline constexpr value_type min = std::numeric_limits<value_type>::min();
 
 		integer(value_type const value = static_cast<value_type>(0))noexcept;
-		integer(integer const&)noexcept;
-		integer(integer&&) = delete;
+		integer(integer const &)noexcept;
+		integer(integer &&) = delete;
 		~integer()noexcept;
 
-		void operator =(integer const&)noexcept;
+		void operator =(integer const &)noexcept;
 
-		bool operator ==(integer const&)const noexcept;
-		bool operator !=(integer const&)const noexcept;
-		bool operator >=(integer const&)const noexcept;
-		bool operator <=(integer const&)const noexcept;
-		bool operator >(integer const&)const noexcept;
-		bool operator <(integer const&)const noexcept;
+		bool operator ==(integer const &)const noexcept;
+		bool operator !=(integer const &)const noexcept;
+		bool operator >=(integer const &)const noexcept;
+		bool operator <=(integer const &)const noexcept;
+		bool operator >(integer const &)const noexcept;
+		bool operator <(integer const &)const noexcept;
 
-		value_type& value()noexcept;
-		value_type const& value()const noexcept;
+		value_type & value()noexcept;
+		value_type const & value()const noexcept;
 
-		integer operator +(integer const&)const;
-		integer operator -(integer const&)const;
-		integer operator *(integer const&)const;
-		integer operator /(integer const&)const;
-		integer operator %(integer const&)const;
-		void operator +=(integer const&);
-		void operator -=(integer const&);
-		void operator *=(integer const&);
-		void operator /=(integer const&);
-		void operator %=(integer const&);
+		integer operator +(integer const &)const;
+		integer operator -(integer const &)const;
+		integer operator *(integer const &)const;
+		integer operator /(integer const &)const;
+		integer operator %(integer const &)const;
+		void operator +=(integer const &);
+		void operator -=(integer const &);
+		void operator *=(integer const &);
+		void operator /=(integer const &);
+		void operator %=(integer const &);
 		void operator ++();
 		void operator --();
 		integer operator -()const;
 		integer operator ~()const noexcept;
-		integer operator &(integer const&)const noexcept;
-		integer operator |(integer const&)const noexcept;
-		integer operator ^(integer const&)const noexcept;
-		void operator &=(integer const&)noexcept;
-		void operator |=(integer const&)noexcept;
-		void operator ^=(integer const&)noexcept;
-		integer operator <<(integer<std::size_t> const&)const;
-		integer operator >>(integer<std::size_t> const&)const;
-		void operator <<=(integer<std::size_t> const&);
-		void operator >>=(integer<std::size_t> const&);
+		integer operator &(integer const &)const noexcept;
+		integer operator |(integer const &)const noexcept;
+		integer operator ^(integer const &)const noexcept;
+		void operator &=(integer const &)noexcept;
+		void operator |=(integer const &)noexcept;
+		void operator ^=(integer const &)noexcept;
+		integer operator <<(integer<std::size_t> const &)const;
+		integer operator >>(integer<std::size_t> const &)const;
+		void operator <<=(integer<std::size_t> const &);
+		void operator >>=(integer<std::size_t> const &);
 
 		template<different_arithmetic_integer<value_type> target_type>
 		operator integer<target_type>()const
@@ -120,7 +120,7 @@ namespace OKps::base
 	template class integer<signed char>;
 	template class integer<unsigned char>;
 	template class integer<signed short>;
-	template class integer<unsigned short>;	
+	template class integer<unsigned short>;
 	template class integer<signed int>;
 	template class integer<unsigned int>;
 	template class integer<signed long>;

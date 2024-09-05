@@ -39,7 +39,7 @@ namespace OKps::AES
         byte_device(std::byte const * key) noexcept;
     public:
         constexpr static inline std::size_t const key_length = 16;
-        using TYPE_key = std::array<std::byte,key_length>;
+        using TYPE_key = std::array<std::byte, key_length>;
         using TYPE_byte = std::vector<std::byte>;
     private:
         TYPE_key MEMBER_key;

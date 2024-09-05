@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <thread>
 #include <exception>
@@ -8,56 +8,56 @@
 #include <memory>
 
 /*
-´ËÎÄ¼şÔÚÃüÃû¿Õ¼ä OKps::base ¶¨Òå¶àÖÖÍ¨ÓÃµÄ»ùÀà
-»ùÀà¶¼ÓĞselfº¯Êı£¬·µ»ØÖµÊÇµ½×ÔÉíµÄÒıÓÃ£¬¼´{return *this;}
-»ùÀàµÄ == ºÍ != ²Ù×÷·û·µ»ØµÄ½á¹ûÊÇ±È½ÏÁ½¸ö¶ÔÏóÊÇ·ñÊÇÍ¬Ò»¸ö¶ÔÏó£¬¼´±È½ÏÁ½¸ö¶ÔÏóÈ¡µØÖ·µÄ½á¹ûÊÇ·ñÏàÍ¬
+æ­¤æ–‡ä»¶åœ¨å‘½åç©ºé—´ OKps::base å®šä¹‰å¤šç§é€šç”¨çš„åŸºç±»
+åŸºç±»éƒ½æœ‰selfå‡½æ•°ï¼Œè¿”å›å€¼æ˜¯åˆ°è‡ªèº«çš„å¼•ç”¨ï¼Œå³{return *this;}
+åŸºç±»çš„ == å’Œ != æ“ä½œç¬¦è¿”å›çš„ç»“æœæ˜¯æ¯”è¾ƒä¸¤ä¸ªå¯¹è±¡æ˜¯å¦æ˜¯åŒä¸€ä¸ªå¯¹è±¡ï¼Œå³æ¯”è¾ƒä¸¤ä¸ªå¯¹è±¡å–åœ°å€çš„ç»“æœæ˜¯å¦ç›¸åŒ
 */
 
 namespace OKps::base
 {
 	/*
-	¿Õ»ùÀà
+	ç©ºåŸºç±»
 	*/
 	class blank
 	{
 	protected:
 		blank()noexcept;
-		blank(blank const&)noexcept;
+		blank(blank const &)noexcept;
 		virtual ~blank()noexcept;
 		blank(blank &&)noexcept;
-		virtual void operator =(blank&&)noexcept;
-		virtual void operator =(blank const&)noexcept;
-		virtual bool operator ==(blank const&)const noexcept;
-		virtual bool operator !=(blank const&)const noexcept;
-		virtual blank& self()noexcept;
-		virtual blank const& self()const noexcept;
+		virtual void operator =(blank &&)noexcept;
+		virtual void operator =(blank const &)noexcept;
+		virtual bool operator ==(blank const &)const noexcept;
+		virtual bool operator !=(blank const &)const noexcept;
+		virtual blank & self()noexcept;
+		virtual blank const & self()const noexcept;
 
 	};
 	/*
-	´Ë»ùÀàÓĞÒ»¸öbool ÀàĞÍ±êÖ¾£¬true´ú±í¶ÔÏóÓĞĞ§£¬false´ú±í¶ÔÏóÎŞĞ§
-	¶ÔÏóÄ¬ÈÏ¹¹ÔìÊ±ÎªÓĞĞ§¶ÔÏó£¬±»ÒÆ¶¯ºó»á±êÊ¶ÎªÎŞĞ§¶ÔÏó
+	æ­¤åŸºç±»æœ‰ä¸€ä¸ªbool ç±»å‹æ ‡å¿—ï¼Œtrueä»£è¡¨å¯¹è±¡æœ‰æ•ˆï¼Œfalseä»£è¡¨å¯¹è±¡æ— æ•ˆ
+	å¯¹è±¡é»˜è®¤æ„é€ æ—¶ä¸ºæœ‰æ•ˆå¯¹è±¡ï¼Œè¢«ç§»åŠ¨åä¼šæ ‡è¯†ä¸ºæ— æ•ˆå¯¹è±¡
 	*/
 	class move_invalid
 	{
 	private:
 		bool MEMBER_valid;
 	protected:
-		bool const& is_valid()const noexcept;
+		bool const & is_valid()const noexcept;
 		void raise_invalid_error()const noexcept(false);
 		move_invalid()noexcept;
-		move_invalid(move_invalid const&)noexcept;
-		virtual void operator =(move_invalid const&)noexcept;
-		move_invalid(move_invalid&&)noexcept;
+		move_invalid(move_invalid const &)noexcept;
+		virtual void operator =(move_invalid const &)noexcept;
+		move_invalid(move_invalid &&)noexcept;
 		virtual void operator =(move_invalid &&)noexcept;
 		virtual ~move_invalid()noexcept;
-		virtual bool operator ==(move_invalid const&)const noexcept;
-		virtual bool operator !=(move_invalid const&)const noexcept;
-		virtual move_invalid& self()noexcept;
-		virtual move_invalid const& self()const noexcept;
+		virtual bool operator ==(move_invalid const &)const noexcept;
+		virtual bool operator !=(move_invalid const &)const noexcept;
+		virtual move_invalid & self()noexcept;
+		virtual move_invalid const & self()const noexcept;
 
 	};
 	/*
-	¾ßÓĞÒ»¸öÎŞ·ûºÅÕûÊı×÷Îª±àºÅµÄ»ùÀà
+	å…·æœ‰ä¸€ä¸ªæ— ç¬¦å·æ•´æ•°ä½œä¸ºç¼–å·çš„åŸºç±»
 	*/
 	class numbered
 	{
@@ -74,10 +74,10 @@ namespace OKps::base
 				noexcept(std::is_nothrow_destructible_v<std::random_device>
 					and std::is_nothrow_destructible_v<std::unique_ptr<std::mt19937_64>>
 					and std::is_nothrow_destructible_v<std::uniform_int_distribution<std::uintmax_t>>);
-			id_generator(id_generator const&) = delete;
-			id_generator(id_generator&&) = delete;
-			void operator =(id_generator const&) = delete;
-			void operator =(id_generator&&) = delete;
+			id_generator(id_generator const &) = delete;
+			id_generator(id_generator &&) = delete;
+			void operator =(id_generator const &) = delete;
+			void operator =(id_generator &&) = delete;
 
 			std::uintmax_t generate()
 				noexcept(noexcept(std::declval<std::uniform_int_distribution<std::uintmax_t>>()(*std::declval<std::unique_ptr<std::mt19937_64>>())));
@@ -89,97 +89,97 @@ namespace OKps::base
 	private:
 		std::uintmax_t MEMBER_id;
 	protected:
-		numbered(std::uintmax_t const id=0)noexcept;
-		numbered(numbered const&)noexcept;
-		virtual void operator =(numbered const&)noexcept;
-		numbered(numbered&&)noexcept = delete;
-		virtual void operator =(numbered&&)noexcept = delete;
+		numbered(std::uintmax_t const id = 0)noexcept;
+		numbered(numbered const &)noexcept;
+		virtual void operator =(numbered const &)noexcept;
+		numbered(numbered &&)noexcept = delete;
+		virtual void operator =(numbered &&)noexcept = delete;
 		virtual ~numbered()noexcept;
-		virtual bool operator ==(numbered const&)const noexcept;
-		virtual bool operator !=(numbered const&)const noexcept;
-		std::uintmax_t& id()noexcept;
-		std::uintmax_t const& id()const noexcept;
-		virtual numbered& self()noexcept;
-		virtual numbered const& self()const noexcept;
+		virtual bool operator ==(numbered const &)const noexcept;
+		virtual bool operator !=(numbered const &)const noexcept;
+		std::uintmax_t & id()noexcept;
+		std::uintmax_t const & id()const noexcept;
+		virtual numbered & self()noexcept;
+		virtual numbered const & self()const noexcept;
 	};
 	/*
-	¾ßÓĞÒ»¸ö×Ö·û´®×÷Îª±êÊ¶µÄ»ùÀà
+	å…·æœ‰ä¸€ä¸ªå­—ç¬¦ä¸²ä½œä¸ºæ ‡è¯†çš„åŸºç±»
 	*/
 	class named
 	{
 	private:
 		std::string MEMBER_name;
 	protected:
-		named(std::string const& )
+		named(std::string const &)
 			noexcept(std::is_nothrow_copy_constructible<std::string>::value);
 		named(std::string && = std::string())
 			noexcept(std::is_nothrow_move_constructible<std::string>::value);
-		named(named const&)
+		named(named const &)
 			noexcept(std::is_nothrow_copy_constructible<std::string>::value);
-		virtual void operator =(named const&)
+		virtual void operator =(named const &)
 			noexcept(std::is_nothrow_copy_assignable<std::string>::value);
-		named(named&&)
+		named(named &&)
 			noexcept(std::is_nothrow_move_constructible<std::string>::value);
 		virtual void operator =(named &&)
 			noexcept(std::is_nothrow_move_assignable<std::string>::value);
 		virtual ~named()
 			noexcept(std::is_nothrow_destructible<std::string>::value);
-		std::string const& name()const noexcept;
-		std::string& name()noexcept;
-		virtual bool operator ==(named const&)const noexcept;
-		virtual bool operator !=(named const&)const noexcept;
-		virtual named& self()noexcept;
-		virtual named const& self()const noexcept;
+		std::string const & name()const noexcept;
+		std::string & name()noexcept;
+		virtual bool operator ==(named const &)const noexcept;
+		virtual bool operator !=(named const &)const noexcept;
+		virtual named & self()noexcept;
+		virtual named const & self()const noexcept;
 	};
 	/*
-	²ÎÊı»ùÀà
-	ºÍ¿Õ»ùÀàÒ»Ñù£¬µ«×¨ÓÃ×ö´¦Àíº¯ÊıÀàµÄ²ÎÊı
+	å‚æ•°åŸºç±»
+	å’Œç©ºåŸºç±»ä¸€æ ·ï¼Œä½†ä¸“ç”¨åšå¤„ç†å‡½æ•°ç±»çš„å‚æ•°
 	*/
 	class parameter
 	{
 	protected:
 		parameter()noexcept;
-		parameter(parameter const&)noexcept;
+		parameter(parameter const &)noexcept;
 		virtual ~parameter()noexcept;
-		parameter(parameter&&)noexcept;
-		virtual void operator =(parameter&&)noexcept;
-		virtual void operator =(parameter const&)noexcept;
-		virtual bool operator ==(parameter const&)const noexcept;
-		virtual bool operator !=(parameter const&)const noexcept;
-		virtual parameter& self()noexcept;
-		virtual parameter const& self()const noexcept;
+		parameter(parameter &&)noexcept;
+		virtual void operator =(parameter &&)noexcept;
+		virtual void operator =(parameter const &)noexcept;
+		virtual bool operator ==(parameter const &)const noexcept;
+		virtual bool operator !=(parameter const &)const noexcept;
+		virtual parameter & self()noexcept;
+		virtual parameter const & self()const noexcept;
 	};
 	/*
-	´¦Àíº¯Êı»ùÀà
-	¿ÉÒÔÓÃ×÷»Øµ÷º¯ÊıµÄ±ê×¼ÀàĞÍ£¬¶ø²»ÓÃ lambda ÅäºÏÄ£°åµÄĞÎÊ½
-	ÀıÈç£¬ÏëÒªÔÚº¯Êı f ÖĞÊ¹ÓÃ»Øµ÷º¯Êı h£¬Ôò¿ÉÒÔĞ´³É
+	å¤„ç†å‡½æ•°åŸºç±»
+	å¯ä»¥ç”¨ä½œå›è°ƒå‡½æ•°çš„æ ‡å‡†ç±»å‹ï¼Œè€Œä¸ç”¨ lambda é…åˆæ¨¡æ¿çš„å½¢å¼
+	ä¾‹å¦‚ï¼Œæƒ³è¦åœ¨å‡½æ•° f ä¸­ä½¿ç”¨å›è°ƒå‡½æ•° hï¼Œåˆ™å¯ä»¥å†™æˆ
 	result_type f(handler& h, parameter& p);
-	ÆäÖĞh.handle()º¯ÊıÏàµ±ÓÚ»Øµ÷º¯Êı£¬pÊÇÆä²ÎÊı
+	å…¶ä¸­h.handle()å‡½æ•°ç›¸å½“äºå›è°ƒå‡½æ•°ï¼Œpæ˜¯å…¶å‚æ•°
 	*/
 	class handler
 	{
 	protected:
 		handler()noexcept;
-		handler(handler const&)noexcept;
+		handler(handler const &)noexcept;
 		virtual ~handler()noexcept;
-		handler(handler&&)noexcept;
-		virtual void operator =(handler&&)noexcept;
-		virtual void operator =(handler const&)noexcept;
-		virtual bool operator ==(handler const&)const noexcept;
-		virtual bool operator !=(handler const&)const noexcept;
-		virtual handler& self()noexcept;
-		virtual handler const& self()const noexcept;
+		handler(handler &&)noexcept;
+		virtual void operator =(handler &&)noexcept;
+		virtual void operator =(handler const &)noexcept;
+		virtual bool operator ==(handler const &)const noexcept;
+		virtual bool operator !=(handler const &)const noexcept;
+		virtual handler & self()noexcept;
+		virtual handler const & self()const noexcept;
 		/*
-		ÓÃÖÇÄÜÖ¸ÕëµÄĞÎÊ½½ÓÊÕ²ÎÊı£¬ÊÇÒòÎªÓĞ¿ÉÄÜÏëÒªÓÃ¿ÕÖ¸Õë´ú±íÎŞ²ÎÊı£»
-		µ«ÊÇÓÖ²»Ï£Íû²»Ğ¡ĞÄĞ´³ö´íÎóµÄ delete »òÆäËû´íÎóµÄÖ¸Õë²Ù×÷£¬ËùÒÔ±ÜÃâÊ¹ÓÃÂãÖ¸Õë¡£
+		ç”¨æ™ºèƒ½æŒ‡é’ˆçš„å½¢å¼æ¥æ”¶å‚æ•°ï¼Œæ˜¯å› ä¸ºæœ‰å¯èƒ½æƒ³è¦ç”¨ç©ºæŒ‡é’ˆä»£è¡¨æ— å‚æ•°ï¼›
+		ä½†æ˜¯åˆä¸å¸Œæœ›ä¸å°å¿ƒå†™å‡ºé”™è¯¯çš„ delete æˆ–å…¶ä»–é”™è¯¯çš„æŒ‡é’ˆæ“ä½œï¼Œæ‰€ä»¥é¿å…ä½¿ç”¨è£¸æŒ‡é’ˆã€‚
 		*/
-		virtual void handle(std::unique_ptr<parameter> const&) = 0;
+		virtual void handle(std::unique_ptr<parameter> const &) = 0;
 	};
 	/*
-	Ïß³Ì¹¤×÷Õß»ùÀà
+	çº¿ç¨‹å·¥ä½œè€…åŸºç±»
 
-	»ùÀà¹ÜÀíÒ»¸öÏß³Ì£¬¸ÃÏß³ÌµÄÏß³Ìº¯ÊıÊÇworkº¯Êı£¬workº¯ÊıÊÇ´¿Ğéº¯Êı£¬±ØĞëÓÉ×ÓÀàÊµÏÖ
-	workº¯Êı½ûÖ¹Å×³öÒì³££¬Èç¹ûĞèÒªÊ¹ÓÃÒì³££¬ÔòÊ¹ÓÃ´Ë»ùÀàÌá¹©µÄº¯Êı£¬½«Òì³£´æ´¢ÔÚ»ùÀàÖĞ
+	åŸºç±»ç®¡ç†ä¸€ä¸ªçº¿ç¨‹ï¼Œè¯¥çº¿ç¨‹çš„çº¿ç¨‹å‡½æ•°æ˜¯workå‡½æ•°ï¼Œworkå‡½æ•°æ˜¯çº¯è™šå‡½æ•°ï¼Œå¿…é¡»ç”±å­ç±»å®ç°
+	workå‡½æ•°ç¦æ­¢æŠ›å‡ºå¼‚å¸¸ï¼Œå¦‚æœéœ€è¦ä½¿ç”¨å¼‚å¸¸ï¼Œåˆ™ä½¿ç”¨æ­¤åŸºç±»æä¾›çš„å‡½æ•°ï¼Œå°†å¼‚å¸¸å­˜å‚¨åœ¨åŸºç±»ä¸­
 	*/
 	class worker
 	{
@@ -190,32 +190,32 @@ namespace OKps::base
 		worker()
 			noexcept(std::is_nothrow_default_constructible<std::thread>::value
 				and std::is_nothrow_default_constructible<std::exception_ptr>::value);
-		worker(worker const&) = delete;
-		virtual void operator =(worker const&) = delete;
-		worker(worker&&)
+		worker(worker const &) = delete;
+		virtual void operator =(worker const &) = delete;
+		worker(worker &&)
 			noexcept(std::is_nothrow_move_constructible<std::thread>::value
 				and std::is_nothrow_copy_constructible<std::exception_ptr>::value);
-		virtual void operator =(worker&&)
+		virtual void operator =(worker &&)
 			noexcept(std::is_nothrow_move_assignable<std::thread>::value
 				and std::is_nothrow_copy_assignable<std::exception_ptr>::value);
 		virtual ~worker()
 			noexcept(std::is_nothrow_destructible<std::thread>::value
 				and std::is_nothrow_destructible<std::exception_ptr>::value);
-		virtual worker& self()noexcept;
-		virtual worker const& self()const noexcept;
+		virtual worker & self()noexcept;
+		virtual worker const & self()const noexcept;
 		virtual void work()noexcept = 0;
-		std::thread& thread()noexcept;
-		std::thread const& thread()const noexcept;
-		std::exception_ptr const& have_error()const noexcept;
+		std::thread & thread()noexcept;
+		std::thread const & thread()const noexcept;
+		std::exception_ptr const & have_error()const noexcept;
 		/*
-		½«Òì³£ÒÔ std::exception_ptr µÄĞÎÊ½´æ´¢ÓÚ»ùÀàÖĞ
+		å°†å¼‚å¸¸ä»¥ std::exception_ptr çš„å½¢å¼å­˜å‚¨äºåŸºç±»ä¸­
 		*/
-		void raise_error(std::exception_ptr const&);
+		void raise_error(std::exception_ptr const &);
 		/*
-		½«´æ´¢ÔÚ»ùÀàÖĞµÄÒì³£Å×³ö
+		å°†å­˜å‚¨åœ¨åŸºç±»ä¸­çš„å¼‚å¸¸æŠ›å‡º
 		*/
 		[[noreturn]] void release_error()noexcept(false);
-    	virtual bool operator ==(worker const&)const noexcept;
-		virtual bool operator !=(worker const&)const noexcept;
+		virtual bool operator ==(worker const &)const noexcept;
+		virtual bool operator !=(worker const &)const noexcept;
 	};
 }

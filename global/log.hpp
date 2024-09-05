@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <source_location>
 #include <string>
@@ -6,8 +6,8 @@
 namespace OKps
 {
 	/*
-	¼«¼ò´úÂëÈÕÖ¾
-	ÓÉ1¸ö´úÂëÎ»ÖÃĞÅÏ¢ºÍ1¸ö×Ö·û´®ÌáÊ¾ĞÅÏ¢×é³É
+	æç®€ä»£ç æ—¥å¿—
+	ç”±1ä¸ªä»£ç ä½ç½®ä¿¡æ¯å’Œ1ä¸ªå­—ç¬¦ä¸²æç¤ºä¿¡æ¯ç»„æˆ
 	*/
 	class log final
 	{
@@ -16,15 +16,15 @@ namespace OKps
 		std::string MEMBER_hint;
 		bool MEMBER_valid;
 	public:
-		log(std::string const& hint, std::source_location const& location = std::source_location::current());
-		log(log const& origin);
-		log(log&& origin)
+		log(std::string const & hint, std::source_location const & location = std::source_location::current());
+		log(log const & origin);
+		log(log && origin)
 			noexcept(std::is_nothrow_move_constructible_v<std::source_location>
 				and std::is_nothrow_move_constructible_v<std::string>);
 		~log()
 			noexcept(std::is_nothrow_destructible_v<std::string>
 				and std::is_nothrow_destructible_v<std::source_location>);
-		std::string const& hint()const;
-		std::source_location const& location()const;
+		std::string const & hint()const;
+		std::source_location const & location()const;
 	};
 }
