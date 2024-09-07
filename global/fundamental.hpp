@@ -75,6 +75,7 @@ namespace OKps::base
 		~integer()noexcept;
 
 		void operator =(integer const &)noexcept;
+		void operator =(integer &&)noexcept = delete;
 
 		bool operator ==(integer const &)const noexcept;
 		bool operator !=(integer const &)const noexcept;
