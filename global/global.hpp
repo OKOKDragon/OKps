@@ -68,3 +68,4 @@ c++标准库中的异常，要么是来自外部的、不可控的严重错误�
 #include ".\storage.hpp"
 #include ".\matcher.hpp"
 #include ".\log.hpp"
+#include ".\graph.hpp"

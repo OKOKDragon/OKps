@@ -300,7 +300,10 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator *(integer const & right)const
 	{
-
+		if (this->MEMBER_value == static_cast<value_type>(0) or right.MEMBER_value == static_cast<value_type>(0))
+		{
+			return integer(static_cast<value_type>(0));
+		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value >= static_cast<value_type>(0) and right.MEMBER_value >= static_cast<value_type>(0))
@@ -379,7 +382,11 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	void integer<value_type>::operator *=(integer const & right)
 	{
-
+		if (this->MEMBER_value == static_cast<value_type>(0) or right.MEMBER_value == static_cast<value_type>(0))
+		{
+			this->MEMBER_value = static_cast<value_type>(0);
+			return;
+		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value >= static_cast<value_type>(0) and right.MEMBER_value >= static_cast<value_type>(0))

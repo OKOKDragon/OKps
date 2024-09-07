@@ -11,7 +11,7 @@ namespace OKps
 
     使用new delete手动管理内存，原因是智能指针递归调用析构函数可能会造成栈溢出
     */
-    class binary_tree
+    class binary_tree final
     {
     public:
         /*
