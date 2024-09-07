@@ -54,11 +54,17 @@ namespace OKps
 	public:
 		order_matcher()
 			noexcept(std::is_nothrow_default_constructible_v<TYPE_pool>);
+		/*
+		移动后原对象会彻底清空
+		*/
 		order_matcher(order_matcher &&)
 			noexcept(std::is_nothrow_move_constructible_v<TYPE_pool>);
+		void operator =(order_matcher &&)
+			noexcept(std::is_nothrow_move_assignable_v<TYPE_pool>);
 		order_matcher(order_matcher const &)
 			noexcept(std::is_nothrow_copy_constructible_v<TYPE_pool>)
 			= delete;
+		void operator =(order_matcher const &) = delete;
 		~order_matcher()
 			noexcept(std::is_nothrow_destructible_v<TYPE_pool>);
 		/*

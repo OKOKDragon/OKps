@@ -29,6 +29,7 @@ namespace OKps::RSA
         ~byte_device()noexcept;
 
         byte_device(byte_device const & origin);
+        void operator =(byte_device const & origin);
 
         //移动构造会导致原来的对象origin不可用
         byte_device(byte_device && origin)noexcept;

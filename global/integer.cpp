@@ -309,8 +309,11 @@ namespace OKps
     }
     void integer::operator =(integer const & origin)
     {
-        this->MEMBER_number = origin.MEMBER_number;//std::vector的复制赋值操作符没有声明为noexcept，所以我们也无法声明noexcept
-        this->MEMBER_sign = origin.MEMBER_sign;
+        if (this != (&origin))
+        {
+            this->MEMBER_number = origin.MEMBER_number;//std::vector的复制赋值操作符没有声明为noexcept，所以我们也无法声明noexcept
+            this->MEMBER_sign = origin.MEMBER_sign;
+        }
     }
     integer integer::operator +(integer const & right)const
     {
@@ -376,9 +379,12 @@ namespace OKps
     }
     void  integer::operator =(integer && origin)noexcept
     {
-        this->MEMBER_sign = origin.MEMBER_sign;
-        this->MEMBER_number = std::move(origin.MEMBER_number);
-        origin.MEMBER_sign = sign_type::zero;
+        if (this != (&origin))
+        {
+            this->MEMBER_sign = origin.MEMBER_sign;
+            this->MEMBER_number = std::move(origin.MEMBER_number);
+            origin.MEMBER_sign = sign_type::zero;
+        }
     }
     integer integer::operator -(integer const & right)const
     {

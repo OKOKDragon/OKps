@@ -28,11 +28,14 @@ namespace OKps
     public:
         simple_spin_lock()noexcept;
 
+        /*
+        原子对象无法复制或移动
+        */
         simple_spin_lock(const simple_spin_lock &) = delete;
-        simple_spin_lock(simple_spin_lock &&) = delete;
+        simple_spin_lock(simple_spin_lock && origin) = delete;
 
         void operator=(const simple_spin_lock &) = delete;
-        void operator=(simple_spin_lock &&) = delete;
+        void operator=(simple_spin_lock && origin) = delete;
         /*
         如果锁处于上锁状态，则析构函数会解锁
         */

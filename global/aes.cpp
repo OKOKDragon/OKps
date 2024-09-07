@@ -69,7 +69,7 @@ namespace OKps::AES
     }
     void byte_device::operator=(byte_device const & origin)noexcept
     {
-        if (this == &origin) [[unlikely]]
+        if (this == &origin)
         {
             return;
         }
@@ -116,7 +116,7 @@ namespace OKps::AES
     }
     void byte_device::operator=(byte_device && origin) noexcept
     {
-        if (this == &origin) [[unlikely]]
+        if (this == &origin)
         {
             return;
         }

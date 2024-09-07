@@ -118,8 +118,11 @@ namespace OKps
     }
     void byte::reference::operator =(reference const & origin)noexcept
     {
-        this->position = origin.position;
-        this->data = origin.data;
+        if (this != (&origin))
+        {
+            this->position = origin.position;
+            this->data = origin.data;
+        }
     }
     byte::reference::operator bool()const noexcept
     {
@@ -460,7 +463,10 @@ namespace OKps
     }
     void byte::operator =(byte const & origin)noexcept
     {
-        this->data = origin.data;
+        if (this != (&origin))
+        {
+            this->data = origin.data;
+        }
     }
     bool byte::operator ==(byte const & right)const noexcept
     {

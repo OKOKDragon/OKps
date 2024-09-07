@@ -212,6 +212,46 @@ namespace OKps
         }
         return result;
     }
+    command_statement::~command_statement()
+        noexcept(std::is_nothrow_destructible_v<std::string>
+        and std::is_nothrow_destructible_v<std::vector<std::string>>)
+    {
+    }
+
+    command_statement::command_statement(command_statement const & origin)
+        noexcept(std::is_nothrow_copy_constructible_v<std::string>
+        and std::is_nothrow_copy_constructible_v<std::vector<std::string>>)
+        :MEMBER_command(origin.MEMBER_command)
+        , MEMBER_argument_list(origin.MEMBER_argument_list)
+    {
+    }
+    command_statement::command_statement(command_statement && origin)
+        noexcept(std::is_nothrow_move_constructible_v<std::string>
+        and std::is_nothrow_move_constructible_v<std::vector<std::string>>)
+        :MEMBER_command(std::move(origin.MEMBER_command))
+        , MEMBER_argument_list(std::move(origin.MEMBER_argument_list))
+    {
+    }
+    void command_statement::operator =(command_statement const & origin)
+        noexcept(std::is_nothrow_copy_assignable_v<std::string>
+        and std::is_nothrow_copy_assignable_v<std::vector<std::string>>)
+    {
+        if (this != (&origin))
+        {
+            this->MEMBER_command = origin.MEMBER_command;
+            this->MEMBER_argument_list = origin.MEMBER_argument_list;
+        }
+    }
+    void command_statement::operator =(command_statement && origin)
+        noexcept(std::is_nothrow_move_assignable_v<std::string>
+        and std::is_nothrow_move_assignable_v<std::vector<std::string>>)
+    {
+        if (this != (&origin))
+        {
+            this->MEMBER_command = std::move(origin.MEMBER_command);
+            this->MEMBER_argument_list = std::move(origin.MEMBER_argument_list);
+        }
+    }
     command_statement::command_statement(const std::string & origin_statement)
     {
 

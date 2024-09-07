@@ -4,6 +4,7 @@
 
 namespace OKps::RSA
 {
+
     bool byte_device::is_valid()const noexcept
     {
         return this->MEMBER_valid;
@@ -147,11 +148,14 @@ namespace OKps::RSA
     }
     void byte_device::operator =(byte_device && origin)noexcept
     {
-        this->MEMBER_key = std::move(origin.MEMBER_key);
-        this->MEMBER_public_key = std::move(origin.MEMBER_public_key);
-        this->MEMBER_private_key = std::move(origin.MEMBER_private_key);
-        this->MEMBER_valid = origin.MEMBER_valid;
-        origin.MEMBER_valid = false;
+        if (this != (&origin))
+        {
+            this->MEMBER_key = std::move(origin.MEMBER_key);
+            this->MEMBER_public_key = std::move(origin.MEMBER_public_key);
+            this->MEMBER_private_key = std::move(origin.MEMBER_private_key);
+            this->MEMBER_valid = origin.MEMBER_valid;
+            origin.MEMBER_valid = false;
+        }
     }
     byte_device::byte_device(integer const & key, integer const & public_key, integer const & private_key)
         :MEMBER_key(key)
@@ -190,7 +194,16 @@ namespace OKps::RSA
         , MEMBER_valid(origin.MEMBER_valid)
     {
     }
-
+    void  byte_device::operator =(byte_device const & origin)
+    {
+        if (this != (&origin))
+        {
+            this->MEMBER_key = origin.MEMBER_key;
+            this->MEMBER_public_key = origin.MEMBER_public_key;
+            this->MEMBER_private_key = origin.MEMBER_private_key;
+            this->MEMBER_valid = origin.MEMBER_valid;
+        }
+    }
     byte_device::byte_device(byte_device && origin)noexcept
         :MEMBER_key(std::move(origin.MEMBER_key))
         , MEMBER_public_key(std::move(origin.MEMBER_public_key))

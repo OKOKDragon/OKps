@@ -99,5 +99,7 @@ namespace OKps
 			noexcept(noexcept(std::declval<std::thread>().join()));
 		message(message const &) = delete;
 		message(message &&) = delete;
+		void operator =(message const &) = delete;
+		void operator =(message &&) = delete;
 	};
 }

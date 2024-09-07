@@ -68,5 +68,22 @@ namespace OKps
         std::string command_string() const;
 
         command_statement(const std::string & origin_statement);
+
+        ~command_statement()
+            noexcept(std::is_nothrow_destructible_v<std::string>
+            and std::is_nothrow_destructible_v<std::vector<std::string>>);
+
+        command_statement(command_statement const & origin)
+            noexcept(std::is_nothrow_copy_constructible_v<std::string>
+            and std::is_nothrow_copy_constructible_v<std::vector<std::string>>);
+        command_statement(command_statement && origin)
+            noexcept(std::is_nothrow_move_constructible_v<std::string>
+            and std::is_nothrow_move_constructible_v<std::vector<std::string>>);
+        void operator =(command_statement const & origin)
+            noexcept(std::is_nothrow_copy_assignable_v<std::string>
+            and std::is_nothrow_copy_assignable_v<std::vector<std::string>>);
+        void operator =(command_statement && origin)
+            noexcept(std::is_nothrow_move_assignable_v<std::string>
+            and std::is_nothrow_move_assignable_v<std::vector<std::string>>);
     };
 }

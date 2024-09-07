@@ -22,7 +22,10 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	void integer<value_type>::operator =(integer const & origin)noexcept
 	{
-		this->MEMBER_value = origin.MEMBER_value;
+		if (this != (&origin))
+		{
+			this->MEMBER_value = origin.MEMBER_value;
+		}
 	}
 
 	template<arithmetic_integer value_type>

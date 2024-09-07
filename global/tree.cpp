@@ -469,11 +469,20 @@ namespace OKps
         : MEMBER_root(new node(this, std::move(data)))
     {
     }
-    binary_tree::binary_tree(binary_tree && origin)
+    binary_tree::binary_tree(binary_tree && origin)noexcept(false)
         :MEMBER_root(origin.MEMBER_root)
     {
         origin.MEMBER_root = nullptr;
         this->INNER_change_owner_tree(this);
+    }
+    void binary_tree::operator =(binary_tree && origin)noexcept(false)
+    {
+        if (this != (&origin))
+        {
+            this->MEMBER_root = origin.MEMBER_root;
+            origin.MEMBER_root = nullptr;
+            this->INNER_change_owner_tree(this);
+        }
     }
     binary_tree::~binary_tree()noexcept
     {

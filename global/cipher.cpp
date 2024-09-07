@@ -36,11 +36,30 @@ namespace OKps::crypt
         , MEMBER_crypt_aes(origin.MEMBER_crypt_aes)
     {
     }
+    void cipher::operator =(cipher const & origin)
+    {
+        if (this != (&origin))
+        {
+            this->MEMBER_rsa = std::make_unique<RSA::byte_device>(*(origin.MEMBER_rsa));
+            this->MEMBER_aes = origin.MEMBER_aes;
+            this->MEMBER_crypt_aes = origin.MEMBER_crypt_aes;
+        }
+    }
+
     cipher::cipher(cipher && origin)noexcept
         :MEMBER_rsa(std::move(origin.MEMBER_rsa))
         , MEMBER_aes(std::move(origin.MEMBER_aes))
         , MEMBER_crypt_aes(std::move(origin.MEMBER_crypt_aes))
     {
+    }
+    void cipher::operator =(cipher && origin)noexcept
+    {
+        if (this != (&origin))
+        {
+            this->MEMBER_rsa = std::move(origin.MEMBER_rsa);
+            this->MEMBER_aes = std::move(origin.MEMBER_aes);
+            this->MEMBER_crypt_aes = std::move(origin.MEMBER_crypt_aes);
+        }
     }
     void cipher::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count)const
     {

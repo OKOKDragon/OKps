@@ -46,4 +46,25 @@ namespace OKps
 	{
 		origin.MEMBER_valid = false;
 	}
+	void log::operator =(log const & origin)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_hint = origin.MEMBER_hint;
+			this->MEMBER_location = origin.MEMBER_location;
+			this->MEMBER_valid = origin.MEMBER_valid;
+		}
+	}
+	void log::operator =(log && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::source_location>
+			and std::is_nothrow_move_assignable_v<std::string>)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_hint = std::move(origin.MEMBER_hint);
+			this->MEMBER_location = std::move(origin.MEMBER_location);
+			this->MEMBER_valid = origin.MEMBER_valid;
+			origin.MEMBER_valid = false;
+		}
+	}
 }

@@ -22,8 +22,10 @@ namespace OKps::crypt
         cipher(RSA::byte_device && rsa = RSA::byte_device(), std::uintmax_t const aes_count = 2/*aes密钥的数量*/);
         ~cipher()noexcept;
         cipher(cipher const & origin);
+        void operator =(cipher const & origin);
         //移动时会造成原对象失效
         cipher(cipher && origin)noexcept;
+        void operator =(cipher && origin)noexcept;
         //将密钥输出到文件
         void save(TYPE_path const & route)const;
         //从密钥文件读取密钥

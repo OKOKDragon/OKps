@@ -300,6 +300,29 @@ namespace OKps
 			this->MEMBER_data[i] = origin.MEMBER_data[i];
 		}
 	}
+	void field_stream::operator =(field_stream const & origin)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_data = std::make_unique<std::byte[]>(origin.MEMBER_length);
+			this->MEMBER_length = origin.MEMBER_length;
+			for (std::size_t i = 0; i < this->MEMBER_length; i++)
+			{
+				this->MEMBER_data[i] = origin.MEMBER_data[i];
+			}
+		}
+	}
+
+	void field_stream::operator =(field_stream && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::unique_ptr<std::byte[]>>)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_data = std::move(origin.MEMBER_data);
+			this->MEMBER_length = origin.MEMBER_length;
+			origin.MEMBER_length = 0;
+		}
+	}
 	field_stream::field_stream(field_stream && origin)
 		noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>)
 		:MEMBER_data(std::move(origin.MEMBER_data))
@@ -311,7 +334,7 @@ namespace OKps
 	{
 		if (not this->MEMBER_route)
 		{
-			throw std::runtime_error("此对象已失效");
+			throw std::logic_error("此对象已失效，禁止访问");
 		}
 		return this->MEMBER_do_write;
 	}
@@ -319,7 +342,7 @@ namespace OKps
 	{
 		if (not this->MEMBER_route)
 		{
-			throw std::runtime_error("此对象已失效");
+			throw std::logic_error("此对象已失效，禁止访问");
 		}
 		return this->MEMBER_do_write;
 	}
@@ -327,7 +350,7 @@ namespace OKps
 	{
 		if (not this->MEMBER_route)
 		{
-			throw std::runtime_error("此对象已失效");
+			throw std::logic_error("此对象已失效，禁止访问");
 		}
 		return this->MEMBER_buffer;
 	}
@@ -335,7 +358,7 @@ namespace OKps
 	{
 		if (not this->MEMBER_route)
 		{
-			throw std::runtime_error("此对象已失效");
+			throw std::logic_error("此对象已失效，禁止访问");
 		}
 		return this->MEMBER_length;
 	}
@@ -343,7 +366,7 @@ namespace OKps
 	{
 		if (not this->MEMBER_route)
 		{
-			throw std::runtime_error("此对象已失效");
+			throw std::logic_error("此对象已失效，禁止访问");
 		}
 		if (size < this->MEMBER_length)
 		{
@@ -476,5 +499,16 @@ namespace OKps
 		, MEMBER_do_write(origin.MEMBER_do_write)
 	{
 	}
-
+	void file_holder::operator =(file_holder && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::unique_ptr<std::byte[]>>
+		and std::is_nothrow_move_assignable_v<std::unique_ptr<TYPE_path const>>)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_buffer = std::move(origin.MEMBER_buffer);
+			this->MEMBER_route = std::move(origin.MEMBER_route);
+			this->MEMBER_length = origin.MEMBER_length;
+			this->MEMBER_do_write = origin.MEMBER_do_write;
+		}
+	}
 }

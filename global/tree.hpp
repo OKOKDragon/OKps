@@ -43,6 +43,8 @@ namespace OKps
             ~marker_type()noexcept;
             marker_type(marker_type const &) = delete;
             marker_type(marker_type &&) = delete;
+            void operator =(marker_type const &) = delete;
+            void operator =(marker_type &&) = delete;
         };
 
         using PTR_data = std::unique_ptr<data_type>;
@@ -86,14 +88,14 @@ namespace OKps
                 node * const left = nullptr,
                 node * const right = nullptr);
             node(const node &) = delete;
-            void operator=(const node &) = delete;
+            void operator =(const node &) = delete;
             /*
             移动节点
             移动后，原节点将被置空
             */
             node(node && origin) = delete;
 
-            void operator=(node && origin) = delete;
+            void operator =(node && origin) = delete;
             /*
             析构此节点，释放数据，改变家庭关系
             要求此节点是叶子节点
@@ -219,9 +221,9 @@ namespace OKps
         所以此二叉树无法复制构造
         */
         binary_tree(const binary_tree & origin) = delete;
-
-        binary_tree(binary_tree && origin);
-
+        void operator =(const binary_tree & origin) = delete;
+        binary_tree(binary_tree && origin)noexcept(false);
+        void operator =(binary_tree && origin)noexcept(false);
         ~binary_tree()noexcept;
 
     public:
@@ -258,13 +260,13 @@ namespace OKps
             iterator(iterator const & origin)
                 noexcept(std::is_nothrow_copy_constructible<std::weak_ptr<marker_type const>>::value);
 
-            void operator=(iterator const & origin)
+            void operator =(iterator const & origin)
                 noexcept(std::is_nothrow_copy_assignable<std::weak_ptr<marker_type const>>::value);
 
             iterator(iterator && origin)
                 noexcept(std::is_nothrow_move_constructible<std::weak_ptr<marker_type const>>::value);
 
-            void operator=(iterator && origin)
+            void operator =(iterator && origin)
                 noexcept(std::is_nothrow_move_assignable<std::weak_ptr<marker_type const>>::value);
 
             /*

@@ -56,7 +56,7 @@ namespace OKps::base
 		noexcept(std::is_nothrow_move_assignable<std::thread>::value
 			and std::is_nothrow_copy_assignable<std::exception_ptr>::value)
 	{
-		if (this != &origin)
+		if (this != (&origin))
 		{
 			this->MEMBER_thread = std::move(origin.MEMBER_thread);
 			this->MEMBER_error = origin.MEMBER_error;
@@ -135,7 +135,7 @@ namespace OKps::base
 	}
 	void move_invalid::operator =(move_invalid const & origin)noexcept
 	{
-		if (this != &origin)
+		if (this != (&origin))
 		{
 			this->MEMBER_valid = origin.MEMBER_valid;
 		}
@@ -147,7 +147,7 @@ namespace OKps::base
 	}
 	void move_invalid::operator =(move_invalid && origin)noexcept
 	{
-		if (this != &origin)
+		if (this != (&origin))
 		{
 			this->MEMBER_valid = origin.MEMBER_valid;
 			origin.MEMBER_valid = false;
@@ -211,7 +211,7 @@ namespace OKps::base
 	}
 	void numbered::operator =(numbered const & origin)noexcept
 	{
-		if (this != &origin)
+		if (this != (&origin))
 		{
 			this->MEMBER_id = origin.MEMBER_id;
 		}
@@ -309,7 +309,7 @@ namespace OKps::base
 	void named::operator =(named const & origin)
 		noexcept(std::is_nothrow_copy_assignable<std::string>::value)
 	{
-		if (this != &origin)
+		if (this != (&origin))
 		{
 			this->MEMBER_name = origin.MEMBER_name;
 		}
@@ -318,7 +318,7 @@ namespace OKps::base
 	void named::operator =(named && origin)
 		noexcept(std::is_nothrow_move_assignable<std::string>::value)
 	{
-		if (this != &origin)
+		if (this != (&origin))
 		{
 			this->MEMBER_name = std::move(origin.MEMBER_name);
 		}

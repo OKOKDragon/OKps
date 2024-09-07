@@ -34,6 +34,8 @@ namespace OKps
         public:
             reference(reference const & origin)noexcept;
             void operator =(reference const & origin)noexcept;
+            reference(reference && origin)noexcept = delete;
+            void operator =(reference && origin)noexcept = delete;
             void operator =(bool const value)noexcept;
             operator bool()const noexcept;
             void operator =(char const value);
@@ -113,6 +115,8 @@ namespace OKps
         void operator <<=(std::size_t const shift);
         void operator >>=(std::size_t const shift);
         ~byte()noexcept;
+        byte(byte &&) = delete;
+        void operator =(byte &&) = delete;
     };
 
     static_assert(sizeof(byte) == 1);

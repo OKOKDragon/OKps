@@ -35,8 +35,14 @@ namespace OKps
 		static std::vector<field_stream> parse(std::string const & data);
 		static std::vector<field_stream> parse(std::vector<std::byte> const & data);
 		field_stream(field_stream const & origin);
+		void operator =(field_stream const & origin);
+		/*
+		移动后，原对象的数据会被清空
+		*/
 		field_stream(field_stream && origin)
 			noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>);
+		void operator =(field_stream && origin)
+			noexcept(std::is_nothrow_move_assignable_v<std::unique_ptr<std::byte[]>>);
 	};
 	class file_holder final
 	{
@@ -60,6 +66,10 @@ namespace OKps
 		//析构时将缓存全部写入文件
 		~file_holder()noexcept(false);
 		file_holder(file_holder const &) = delete;
+		void operator =(file_holder const &) = delete;
+		void operator =(file_holder &&)
+			noexcept(std::is_nothrow_move_assignable_v<std::unique_ptr<std::byte[]>>
+			and std::is_nothrow_move_assignable_v<std::unique_ptr<TYPE_path const>>);
 		file_holder(file_holder &&)
 			noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>
 			and std::is_nothrow_move_constructible_v<std::unique_ptr<TYPE_path const>>);

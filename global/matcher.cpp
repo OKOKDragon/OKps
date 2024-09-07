@@ -50,6 +50,14 @@ namespace OKps
 		:MEMBER_orders(std::move(origin.MEMBER_orders))
 	{
 	}
+	void order_matcher::operator =(order_matcher && origin)
+		noexcept(std::is_nothrow_move_assignable_v<TYPE_pool>)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_orders = std::move(origin.MEMBER_orders);
+		}
+	}
 	/*
 	order_matcher::order_matcher(order_matcher const & origin)
 		noexcept(std::is_nothrow_copy_constructible_v<TYPE_pool>)
