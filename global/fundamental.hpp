@@ -83,7 +83,6 @@ namespace OKps::base
 		bool operator >(integer const &)const noexcept;
 		bool operator <(integer const &)const noexcept;
 
-		value_type & value()noexcept;
 		value_type const & value()const noexcept;
 
 		integer operator +(integer const &)const;

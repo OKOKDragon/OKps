@@ -56,11 +56,6 @@ namespace OKps::base
 		return this->MEMBER_value < right.MEMBER_value;
 	}
 	template<arithmetic_integer value_type>
-	value_type & integer<value_type>::value()noexcept
-	{
-		return this->MEMBER_value;
-	}
-	template<arithmetic_integer value_type>
 	value_type const & integer<value_type>::value()const noexcept
 	{
 		return this->MEMBER_value;
