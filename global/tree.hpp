@@ -224,6 +224,9 @@ namespace OKps
         void operator =(const binary_tree & origin) = delete;
         binary_tree(binary_tree && origin)noexcept(false);
         void operator =(binary_tree && origin)noexcept(false);
+        /*
+        按照后序遍历的顺序析构所有节点，再析构二叉树对象
+        */
         ~binary_tree()noexcept;
 
     public:
