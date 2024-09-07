@@ -18,9 +18,13 @@ namespace OKps
 	public:
 		log(std::string const & hint, std::source_location const & location = std::source_location::current());
 		log(log const & origin);
+		void operator =(log const & origin);
 		log(log && origin)
 			noexcept(std::is_nothrow_move_constructible_v<std::source_location>
 				and std::is_nothrow_move_constructible_v<std::string>);
+		void operator =(log && origin)
+			noexcept(std::is_nothrow_move_assignable_v<std::source_location>
+				and std::is_nothrow_move_assignable_v<std::string>);
 		~log()
 			noexcept(std::is_nothrow_destructible_v<std::string>
 				and std::is_nothrow_destructible_v<std::source_location>);
