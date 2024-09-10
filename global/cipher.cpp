@@ -72,7 +72,7 @@ namespace OKps::crypt
         {
             std::string const hint = std::string("路径 ")
                 + temp_route.string()
-                + " 不是目录，无法作为临时目录使用";
+                + " 不是既存目录，无法作为临时目录使用";
             throw std::invalid_argument(hint);
         }
         AES::file_device TEMP_cipher;
@@ -86,10 +86,7 @@ namespace OKps::crypt
         std::mt19937 random_engine(random_seed());                      // 随机数生成器
         std::uniform_int_distribution<std::uintmax_t> distribution(std::numeric_limits<std::uintmax_t>::min(), std::numeric_limits<std::uintmax_t>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
 
-        if (not fs::exists(temp_route))
-        {
-            fs::create_directory(temp_route);
-        }
+
         TYPE_path TEMP_route = temp_route / std::to_string(distribution(random_engine));
         while (fs::exists(TEMP_route))
         {
@@ -122,7 +119,7 @@ namespace OKps::crypt
         {
             std::string const hint = std::string("路径 ")
                 + temp_route.string()
-                + " 不是目录，无法作为临时目录使用";
+                + " 不是既存目录，无法作为临时目录使用";
             throw std::invalid_argument(hint);
         }
         AES::file_device TEMP_cipher;
@@ -135,10 +132,7 @@ namespace OKps::crypt
         std::random_device random_seed;                                 // 用于生成随机数种子
         std::mt19937 random_engine(random_seed());                      // 随机数生成器
         std::uniform_int_distribution<std::uintmax_t> distribution(std::numeric_limits<std::uintmax_t>::min(), std::numeric_limits<std::uintmax_t>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
-        if (not fs::exists(temp_route))
-        {
-            fs::create_directory(temp_route);
-        }
+
         TYPE_path TEMP_route = temp_route / std::to_string(distribution(random_engine));
         while (fs::exists(TEMP_route))
         {

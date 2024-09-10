@@ -200,8 +200,7 @@ namespace OKps::AES
 
         注意，线程数不要过大，因为操作系统对一个进程能拥有的文件句柄的数量有限制，而本类会给每一个线程申请2个文件句柄，如果线程数太大，则有些线程无法访问文件。如果出现这种情况，则抛出异常。
         */
-        void encrypt(const std::string & origin_route, const std::string & result_route, const key_type & key, const std::size_t thread_count = 0);
-        void decrypt(const std::string & origin_route, const std::string & result_route, const key_type & key, const std::size_t thread_count = 0);
+
         void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count = 0);
         void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count = 0);
 

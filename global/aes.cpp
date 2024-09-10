@@ -912,10 +912,7 @@ namespace OKps::AES
             origin.pop_back();
         }
     }
-    void file_device::decrypt(const std::string & origin_route, const std::string & result_route, const key_type & key, const std::size_t thread_count)
-    {
-        this->decrypt((TYPE_path)origin_route, (TYPE_path)result_route, key, thread_count);
-    }
+
     void file_device::decrypt_work()
     {
         std::vector<TYPE_reader> origin;
@@ -1099,13 +1096,7 @@ namespace OKps::AES
     {
     }
 
-    void file_device::encrypt(const std::string & origin_route,
-        const std::string & result_route,
-        const file_device::key_type & key,
-        const std::size_t thread_count)
-    {
-        this->encrypt((TYPE_path)origin_route, (TYPE_path)result_route, key, thread_count);
-    }
+
 
     void file_device::encrypt_work()
     {
@@ -1175,10 +1166,10 @@ namespace OKps::AES
 
         /*
         分配任务
-         原文为 16n+end_info 字节，其中end_info字节是需要末尾对齐的部分
-         16n 分给 m 个加密器线程处理，它们全部结束以后，end_info 字节由本函数处理
-         注意basic_aes_device算法的原文必须以16字节为一组，得到16字节密文，所以要分配的不是 16n 个字节，而是 n 个 16字节块
-         则应该分给每个加密器线程 n/m 块，而留下 n-(n/m)*m 块，再加上末尾对齐的 end_info 字节，由本函数处理，处理时应该使用下标[this->cipher_number-1]的文件对象和this->write_size数组
+        原文为 16n+end_info 字节，其中end_info字节是需要末尾对齐的部分
+        16n 分给 m 个加密器线程处理，它们全部结束以后，end_info 字节由本函数处理
+        注意basic_aes_device算法的原文必须以16字节为一组，得到16字节密文，所以要分配的不是 16n 个字节，而是 n 个 16字节块
+        则应该分给每个加密器线程 n/m 块，而留下 n-(n/m)*m 块，再加上末尾对齐的 end_info 字节，由本函数处理，处理时应该使用下标[this->cipher_number-1]的文件对象和this->write_size数组
         */
         // 原文的总块数
         auto const block_count = this->MEMBER_file_size / byte_device::key_length;
@@ -1401,6 +1392,28 @@ namespace OKps::AES
     }
     void file_device::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count)
     {
+        namespace fs = std::filesystem;
+        if (not fs::exists(origin_route))
+        {
+            std::string const hint = std::string("路径 ")
+                + origin_route.string()
+                + " 不存在";
+            throw std::invalid_argument(hint);
+        }
+        else if (fs::is_directory(origin_route))
+        {
+            std::string const hint = std::string("路径 ")
+                + origin_route.string()
+                + " 不是文件";
+            throw std::invalid_argument(hint);
+        }
+        if (fs::exists(result_route) and fs::is_directory(result_route))
+        {
+            std::string const hint = std::string("路径 ")
+                + result_route.string()
+                + " 已经存在，但不是文件";
+            throw std::invalid_argument(hint);
+        }
         this->MEMBER_error = std::current_exception();
         this->MEMBER_file_size = std::filesystem::file_size(origin_route);
         this->MEMBER_key = key;
@@ -1441,6 +1454,28 @@ namespace OKps::AES
     }
     void file_device::decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count)
     {
+        namespace fs = std::filesystem;
+        if (not fs::exists(origin_route))
+        {
+            std::string const hint = std::string("路径 ")
+                + origin_route.string()
+                + " 不存在";
+            throw std::invalid_argument(hint);
+        }
+        else if (fs::is_directory(origin_route))
+        {
+            std::string const hint = std::string("路径 ")
+                + origin_route.string()
+                + " 不是文件";
+            throw std::invalid_argument(hint);
+        }
+        if (fs::exists(result_route) and fs::is_directory(result_route))
+        {
+            std::string const hint = std::string("路径 ")
+                + result_route.string()
+                + " 已经存在，但不是文件";
+            throw std::invalid_argument(hint);
+        }
         this->MEMBER_error = std::current_exception();
         this->MEMBER_file_size = std::filesystem::file_size(origin_route);
         if (not (this->MEMBER_file_size >= 17 and this->MEMBER_file_size % 16 == 1))

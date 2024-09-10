@@ -30,7 +30,11 @@ namespace OKps::crypt
         void save(TYPE_path const & route)const;
         //从密钥文件读取密钥
         cipher(TYPE_path const & route);
-        void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route/*存放临时文件的目录*/, const std::size_t thread_count = 0)const;
-        void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route/*存放临时文件的目录*/, const std::size_t thread_count = 0)const;
+        /*
+        参数 temp_route 是存放临时文件的目录，在调用此函数时它必须已经存在，否则抛出异常。
+        函数执行后会清理临时文件，但不会删除 temp_route 这个目录。该目录由调用者负责管理。
+        */
+        void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count = 0)const;
+        void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count = 0)const;
     };
 }
