@@ -400,12 +400,12 @@ namespace OKps::AES
 
         std::byte temp = t[0];
 
-        t[0] = byte_device::Sbox[(unsigned int)(t[1])];
-        t[1] = byte_device::Sbox[(unsigned int)(t[2])];
-        t[2] = byte_device::Sbox[(unsigned int)(t[3])];
-        t[3] = byte_device::Sbox[(unsigned int)(t[0])];
+        t[0] = byte_device::Sbox[static_cast<unsigned int>(t[1])];
+        t[1] = byte_device::Sbox[static_cast<unsigned int>(t[2])];
+        t[2] = byte_device::Sbox[static_cast<unsigned int>(t[3])];
+        t[3] = byte_device::Sbox[static_cast<unsigned int>(t[0])];
 
-        t[3] = byte_device::Sbox[(unsigned int)(temp)];
+        t[3] = byte_device::Sbox[static_cast<unsigned int>(temp)];
         t[0] ^= rc[i - 1];
 
         this->w[i][0][0] = this->w[i - 1][0][0] ^ t[0];
@@ -446,7 +446,7 @@ namespace OKps::AES
 
     void byte_device::KeyExpansion(std::byte const * key) noexcept
     {
-        std::byte rc[] = {std::byte(0x01), std::byte(0x02), std::byte(0x04), std::byte(0x08), std::byte(0x10), std::byte(0x20), std::byte(0x40), std::byte(0x80), std::byte(0x1b), std::byte(0x36)};
+        constexpr std::byte const rc[] = {std::byte(0x01), std::byte(0x02), std::byte(0x04), std::byte(0x08), std::byte(0x10), std::byte(0x20), std::byte(0x40), std::byte(0x80), std::byte(0x1b), std::byte(0x36)};
 
         this->w[0][0][0] = key[0];
         this->w[0][0][1] = key[4];
@@ -530,25 +530,25 @@ namespace OKps::AES
     void byte_device::SubBytes(std::byte state[][4])noexcept
     {
 
-        state[0][0] = byte_device::Sbox[unsigned int(state[0][0])];
-        state[0][1] = byte_device::Sbox[unsigned int(state[0][1])];
-        state[0][2] = byte_device::Sbox[unsigned int(state[0][2])];
-        state[0][3] = byte_device::Sbox[unsigned int(state[0][3])];
+        state[0][0] = byte_device::Sbox[static_cast<unsigned int>(state[0][0])];
+        state[0][1] = byte_device::Sbox[static_cast<unsigned int>(state[0][1])];
+        state[0][2] = byte_device::Sbox[static_cast<unsigned int>(state[0][2])];
+        state[0][3] = byte_device::Sbox[static_cast<unsigned int>(state[0][3])];
 
-        state[1][0] = byte_device::Sbox[unsigned int(state[1][0])];
-        state[1][1] = byte_device::Sbox[unsigned int(state[1][1])];
-        state[1][2] = byte_device::Sbox[unsigned int(state[1][2])];
-        state[1][3] = byte_device::Sbox[unsigned int(state[1][3])];
+        state[1][0] = byte_device::Sbox[static_cast<unsigned int>(state[1][0])];
+        state[1][1] = byte_device::Sbox[static_cast<unsigned int>(state[1][1])];
+        state[1][2] = byte_device::Sbox[static_cast<unsigned int>(state[1][2])];
+        state[1][3] = byte_device::Sbox[static_cast<unsigned int>(state[1][3])];
 
-        state[2][0] = byte_device::Sbox[unsigned int(state[2][0])];
-        state[2][1] = byte_device::Sbox[unsigned int(state[2][1])];
-        state[2][2] = byte_device::Sbox[unsigned int(state[2][2])];
-        state[2][3] = byte_device::Sbox[unsigned int(state[2][3])];
+        state[2][0] = byte_device::Sbox[static_cast<unsigned int>(state[2][0])];
+        state[2][1] = byte_device::Sbox[static_cast<unsigned int>(state[2][1])];
+        state[2][2] = byte_device::Sbox[static_cast<unsigned int>(state[2][2])];
+        state[2][3] = byte_device::Sbox[static_cast<unsigned int>(state[2][3])];
 
-        state[3][0] = byte_device::Sbox[unsigned int(state[3][0])];
-        state[3][1] = byte_device::Sbox[unsigned int(state[3][1])];
-        state[3][2] = byte_device::Sbox[unsigned int(state[3][2])];
-        state[3][3] = byte_device::Sbox[unsigned int(state[3][3])];
+        state[3][0] = byte_device::Sbox[static_cast<unsigned int>(state[3][0])];
+        state[3][1] = byte_device::Sbox[static_cast<unsigned int>(state[3][1])];
+        state[3][2] = byte_device::Sbox[static_cast<unsigned int>(state[3][2])];
+        state[3][3] = byte_device::Sbox[static_cast<unsigned int>(state[3][3])];
     }
 
     void byte_device::ShiftRows(std::byte state[][4])noexcept
@@ -671,25 +671,25 @@ namespace OKps::AES
     void byte_device::InvSubBytes(std::byte state[][4])noexcept
     {
 
-        state[0][0] = byte_device::InvSbox[unsigned int(state[0][0])];
-        state[0][1] = byte_device::InvSbox[unsigned int(state[0][1])];
-        state[0][2] = byte_device::InvSbox[unsigned int(state[0][2])];
-        state[0][3] = byte_device::InvSbox[unsigned int(state[0][3])];
+        state[0][0] = byte_device::InvSbox[static_cast<unsigned int>(state[0][0])];
+        state[0][1] = byte_device::InvSbox[static_cast<unsigned int>(state[0][1])];
+        state[0][2] = byte_device::InvSbox[static_cast<unsigned int>(state[0][2])];
+        state[0][3] = byte_device::InvSbox[static_cast<unsigned int>(state[0][3])];
 
-        state[1][0] = byte_device::InvSbox[unsigned int(state[1][0])];
-        state[1][1] = byte_device::InvSbox[unsigned int(state[1][1])];
-        state[1][2] = byte_device::InvSbox[unsigned int(state[1][2])];
-        state[1][3] = byte_device::InvSbox[unsigned int(state[1][3])];
+        state[1][0] = byte_device::InvSbox[static_cast<unsigned int>(state[1][0])];
+        state[1][1] = byte_device::InvSbox[static_cast<unsigned int>(state[1][1])];
+        state[1][2] = byte_device::InvSbox[static_cast<unsigned int>(state[1][2])];
+        state[1][3] = byte_device::InvSbox[static_cast<unsigned int>(state[1][3])];
 
-        state[2][0] = byte_device::InvSbox[unsigned int(state[2][0])];
-        state[2][1] = byte_device::InvSbox[unsigned int(state[2][1])];
-        state[2][2] = byte_device::InvSbox[unsigned int(state[2][2])];
-        state[2][3] = byte_device::InvSbox[unsigned int(state[2][3])];
+        state[2][0] = byte_device::InvSbox[static_cast<unsigned int>(state[2][0])];
+        state[2][1] = byte_device::InvSbox[static_cast<unsigned int>(state[2][1])];
+        state[2][2] = byte_device::InvSbox[static_cast<unsigned int>(state[2][2])];
+        state[2][3] = byte_device::InvSbox[static_cast<unsigned int>(state[2][3])];
 
-        state[3][0] = byte_device::InvSbox[unsigned int(state[3][0])];
-        state[3][1] = byte_device::InvSbox[unsigned int(state[3][1])];
-        state[3][2] = byte_device::InvSbox[unsigned int(state[3][2])];
-        state[3][3] = byte_device::InvSbox[unsigned int(state[3][3])];
+        state[3][0] = byte_device::InvSbox[static_cast<unsigned int>(state[3][0])];
+        state[3][1] = byte_device::InvSbox[static_cast<unsigned int>(state[3][1])];
+        state[3][2] = byte_device::InvSbox[static_cast<unsigned int>(state[3][2])];
+        state[3][3] = byte_device::InvSbox[static_cast<unsigned int>(state[3][3])];
     }
 
     void byte_device::InvShiftRows(std::byte state[][4])noexcept
@@ -880,14 +880,14 @@ namespace OKps::AES
         {
             throw std::invalid_argument("输入串的格式错误");
         }
-        unsigned int const count = unsigned int(origin[origin.size() - 1]);
+        unsigned int const count = static_cast<unsigned int>(origin[origin.size() - 1]);
         if (count > 16)
         {
             throw std::invalid_argument("输入串的格式错误");
         }
         origin.pop_back();
         this->decrypt(origin);
-        for (unsigned int count1 = 0; count1 < (unsigned int)16 - count; count1++)
+        for (unsigned int count1 = 0; count1 < static_cast<unsigned int>(16) - count; count1++)
         {
             origin.pop_back();
         }
@@ -900,14 +900,14 @@ namespace OKps::AES
         {
             throw std::invalid_argument("输入串的格式错误");
         }
-        unsigned int const count = unsigned int(origin[origin.size() - 1]);
+        unsigned int const count = static_cast<unsigned int>(origin[origin.size() - 1]);
         if (count > 16)
         {
             throw std::invalid_argument("输入串的格式错误");
         }
         origin.pop_back();
         this->decrypt(origin);
-        for (unsigned int count1 = 0; count1 < (unsigned int)16 - count; count1++)
+        for (unsigned int count1 = 0; count1 < static_cast<unsigned int>(16) - count; count1++)
         {
             origin.pop_back();
         }
@@ -992,13 +992,13 @@ namespace OKps::AES
         // 一般16字节密文块的块数 n
         auto const block_count = this->MEMBER_file_size / 16 - 1;
         // 加密器线程的任务起始点
-        auto begin = (decltype(block_count))(0);
+        auto begin = static_cast<decltype(block_count)>(0);
         // 单个加密器线程的任务块数
         auto const single_work_block_count = block_count / this->MEMBER_thread_number;
 
         std::vector<file_device::TYPE_cipher_ptr> cipher;
         cipher.resize(this->MEMBER_thread_number);
-        for (auto count = (decltype(this->MEMBER_thread_number))(0); count < this->MEMBER_thread_number; count++)
+        for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
         {
             cipher[count] = (std::make_shared<file_device::cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key));
             cipher[count]->decrypt();
@@ -1039,7 +1039,7 @@ namespace OKps::AES
 
             f_aes.decrypt(TEMP_buffer);
 
-            result[this->MEMBER_thread_number - 1]->write(TEMP_buffer.c_str(), (unsigned int)(TEMP_buffer[16]));
+            result[this->MEMBER_thread_number - 1]->write(TEMP_buffer.c_str(), static_cast<unsigned int>(TEMP_buffer[16]));
 
         }
 
@@ -1054,13 +1054,13 @@ namespace OKps::AES
     {
         std::random_device seed;                                 // 用于生成随机数种子
         std::mt19937 random_engine(seed());                      // 随机数生成器
-        std::uniform_int_distribution<unsigned int> distribution(0, unsigned int(std::numeric_limits<unsigned char>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
+        std::uniform_int_distribution<unsigned int> distribution(0, static_cast<unsigned int>(std::numeric_limits<unsigned char>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
         byte_device::key_type result;
 
         for (std::size_t counter = 0; counter < (std::size_t)16; counter++)
         {
 
-            result[counter] = std::byte(unsigned char(distribution(random_engine))); // 生成一个0到255的随机整数，转换为unsigned char，存储到key中
+            result[counter] = static_cast<std::byte>(static_cast<unsigned char>(distribution(random_engine))); // 生成一个0到255的随机整数，转换为unsigned char，存储到key中
         }
         return result;
     }
@@ -1183,22 +1183,22 @@ namespace OKps::AES
         // 原文的总块数
         auto const block_count = this->MEMBER_file_size / byte_device::key_length;
         // 末尾对齐处理的位数
-        auto end_info = (unsigned int)(this->MEMBER_file_size - block_count * byte_device::key_length);
+        auto end_info = static_cast<unsigned int>(this->MEMBER_file_size - block_count * byte_device::key_length);
         // 加密器线程的任务起始点
-        auto begin = (decltype(block_count))(0);
+        auto begin = static_cast<decltype(block_count)>(0);
         // 单个加密器线程的任务块数
         const auto single_work_block_count = block_count / this->MEMBER_thread_number;
 
         std::vector<file_device::TYPE_cipher_ptr> cipher;
         cipher.resize(this->MEMBER_thread_number);
-        for (auto count = (decltype(this->MEMBER_thread_number))(0); count < this->MEMBER_thread_number; count++)
+        for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
         {
             cipher[count] = (std::make_shared<file_device::cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key));
             cipher[count]->encrypt();
             // 下一个加密器线程的起始点
             begin += single_work_block_count * 16;
         }
-        for (auto count = (decltype(this->MEMBER_thread_number))(0); count < this->MEMBER_thread_number; count++)
+        for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
         {
             cipher[count]->join();
         }
@@ -1208,7 +1208,7 @@ namespace OKps::AES
         char buffer[16]; // 16字节缓存，一组明文
         byte_device f_aes(this->MEMBER_key);
         // 处理原文中剩余的 完整16字节块
-        for (auto count = (decltype(block_count))(0); count < block_count - single_work_block_count * this->MEMBER_thread_number; count++)
+        for (auto count = static_cast<decltype(block_count)>(0); count < block_count - single_work_block_count * this->MEMBER_thread_number; count++)
         {
             origin[this->MEMBER_thread_number - 1]->read(buffer, byte_device::key_length);
             std::string TEMP_buffer = file_device::INNER_buffer_string(buffer, byte_device::key_length);
@@ -1226,7 +1226,7 @@ namespace OKps::AES
         result[this->MEMBER_thread_number - 1]->write(TEMP_buffer.c_str(), byte_device::key_length);
 
         {
-            auto info = (char)(end_info);
+            auto info = static_cast<char>(end_info);
 
             result[this->MEMBER_thread_number - 1]->write(&info, 1);
 
@@ -1469,7 +1469,7 @@ namespace OKps::AES
         {
             this->MEMBER_thread_number = thread_count;
         }
-        std::size_t constexpr const TEMP_least_work = (std::size_t)(1024) * 64;//每个线程最少要处理64kb数据，否则太浪费
+        std::size_t constexpr const TEMP_least_work = static_cast<std::size_t>(1024) * 64;//每个线程最少要处理64kb数据，否则太浪费
         if (this->MEMBER_file_size / this->MEMBER_thread_number < TEMP_least_work)
         {
             this->MEMBER_thread_number = this->MEMBER_file_size / TEMP_least_work;

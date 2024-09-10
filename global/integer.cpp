@@ -118,22 +118,22 @@ namespace OKps
         {
             xIndex--;
             yIndex--;
-            sum = (TYPE_full_number)((*REF_long)[xIndex]) + (TYPE_full_number)((*REF_short)[yIndex]) + (sum >> half_length);
-            result[xIndex] = (value_type)sum;
+            sum = static_cast<TYPE_full_number>((*REF_long)[xIndex]) + static_cast<TYPE_full_number>((*REF_short)[yIndex]) + (sum >> half_length);
+            result[xIndex] = static_cast<value_type>(sum);
         }
 
         //复制较长的数，并传播进位
         while (xIndex > 0)
         {
             xIndex--;
-            sum = (TYPE_full_number)((*REF_long)[xIndex]) + (sum >> half_length);
-            result[xIndex] = (value_type)sum;
+            sum = static_cast<TYPE_full_number>((*REF_long)[xIndex]) + (sum >> half_length);
+            result[xIndex] = static_cast<value_type>(sum);
         }
 
         //必要时扩充数组
-        if ((value_type)(sum >> half_length) != 0)
+        if (static_cast<value_type>(sum >> half_length) != 0)
         {
-            result.insert(result.begin(), (value_type)(sum >> half_length));
+            result.insert(result.begin(), static_cast<value_type>(sum >> half_length));
         }
         return result;
     }
@@ -155,28 +155,28 @@ namespace OKps
             TYPE_full_number TEMP_big;
             if (carry)
             {
-                if ((TYPE_full_number)(big[bigIndex]) == 0)
+                if (static_cast<TYPE_full_number>(big[bigIndex]) == 0)
                 {
-                    TEMP_big = base - (TYPE_full_number)1;
+                    TEMP_big = base - static_cast <TYPE_full_number>(1);
                     have_carry = true;
                 }
                 else
                 {
-                    TEMP_big = (TYPE_full_number)(big[bigIndex]) - (TYPE_full_number)1;
+                    TEMP_big = static_cast<TYPE_full_number>(big[bigIndex]) - static_cast<TYPE_full_number>(1);
                 }
             }
             else
             {
-                TEMP_big = (TYPE_full_number)(big[bigIndex]);
+                TEMP_big = static_cast<TYPE_full_number>(big[bigIndex]);
             }
-            if (TEMP_big < (TYPE_full_number)(little[littleIndex]))
+            if (TEMP_big < static_cast<TYPE_full_number>(little[littleIndex]))
             {
                 have_carry = true;
-                result[bigIndex] = base - (TYPE_full_number)(little[littleIndex]) + TEMP_big;
+                result[bigIndex] = base - static_cast<TYPE_full_number>(little[littleIndex]) + TEMP_big;
             }
             else
             {
-                result[bigIndex] = TEMP_big - (TYPE_full_number)(little[littleIndex]);
+                result[bigIndex] = TEMP_big - static_cast<TYPE_full_number>(little[littleIndex]);
             }
             carry = have_carry;
         }
@@ -189,19 +189,19 @@ namespace OKps
             TYPE_full_number TEMP_big;
             if (carry)
             {
-                if ((TYPE_full_number)(big[bigIndex]) == 0)
+                if (static_cast<TYPE_full_number>(big[bigIndex]) == 0)
                 {
-                    TEMP_big = base - (TYPE_full_number)1;
+                    TEMP_big = base - static_cast<TYPE_full_number>(1);
                     have_carry = true;
                 }
                 else
                 {
-                    TEMP_big = (TYPE_full_number)(big[bigIndex]) - (TYPE_full_number)1;
+                    TEMP_big = static_cast<TYPE_full_number>(big[bigIndex]) - static_cast<TYPE_full_number>(1);
                 }
             }
             else
             {
-                TEMP_big = (TYPE_full_number)(big[bigIndex]);
+                TEMP_big = static_cast<TYPE_full_number>(big[bigIndex]);
             }
             result[bigIndex] = TEMP_big;
             carry = have_carry;
@@ -257,14 +257,14 @@ namespace OKps
         std::string result;
         for (std::size_t count_1 = 0;count_1 < sizeof(sign_type) / sizeof(char);count_1++)
         {
-            result.push_back(((char const *)(&this->MEMBER_sign))[count_1]);
+            result.push_back((reinterpret_cast<char const *>(&this->MEMBER_sign))[count_1]);
         }
         for (std::size_t count_1 = 0;count_1 < this->MEMBER_number.size();count_1++)
         {
             auto const temp_number = this->MEMBER_number[count_1];
             for (std::size_t count_2 = 0;count_2 < sizeof(decltype(temp_number)) / sizeof(char);count_2++)
             {
-                result.push_back(((char const *)(&temp_number))[count_2]);
+                result.push_back((reinterpret_cast<char const *>(&temp_number))[count_2]);
             }
         }
         return result;
@@ -280,7 +280,7 @@ namespace OKps
             {
                 throw std::invalid_argument("输入的流格式错误");
             }
-            ((char *)(&this->MEMBER_sign))[count_1] = temp_input[position];
+            (reinterpret_cast<char *>(&this->MEMBER_sign))[count_1] = temp_input[position];
             position++;
         }
         while (true)
@@ -296,7 +296,7 @@ namespace OKps
                 {
                     throw std::invalid_argument("输入的流格式错误");
                 }
-                ((char *)(&temp_number))[count_2] = temp_input[position];
+                (reinterpret_cast<char *>(&temp_number))[count_2] = temp_input[position];
                 position++;
             }
             this->MEMBER_number.push_back(temp_number);
@@ -512,12 +512,12 @@ namespace OKps
         while (position > 0)
         {
             position--;
-            carrier = ((TYPE_full_number)(left[position])) * ((TYPE_full_number)right) + (carrier >> half_length);
-            result[position] = (value_type)carrier;
+            carrier = (static_cast<TYPE_full_number>(left[position])) * static_cast<TYPE_full_number>(right) + (carrier >> half_length);
+            result[position] = static_cast<value_type>(carrier);
         }
-        if ((value_type)(carrier >> half_length) != 0)
+        if (static_cast<value_type>(carrier >> half_length) != 0)
         {
-            result.insert(result.begin(), (value_type)(carrier >> half_length));
+            result.insert(result.begin(), static_cast<value_type>(carrier >> half_length));
         }
         result.insert(result.end(), after_zero, 0);
         return result;
@@ -686,16 +686,16 @@ namespace OKps
         for (decltype(left.size()) count = 0;count < left.size();count++)
         {
             carrier <<= half_length;
-            carrier += (TYPE_full_number)(left[count]);
-            divide[count] = (value_type)(carrier / (TYPE_full_number)right);
-            carrier %= (TYPE_full_number)right;
+            carrier += static_cast<TYPE_full_number>(left[count]);
+            divide[count] = static_cast<value_type>(carrier / static_cast<TYPE_full_number>(right));
+            carrier %= static_cast<TYPE_full_number>(right);
         }
         INNER_erase_leading_zero(divide);
         number_type mod;
         if (carrier != 0)
         {
             mod.resize(1);
-            mod[0] = (value_type)carrier;
+            mod[0] = static_cast<value_type>(carrier);
         }
         return INNER_divide_result(divide, mod);
     }
@@ -718,15 +718,15 @@ namespace OKps
         auto v = right;//除数
         auto const n = v.size();//n是数组v的长度
         auto const m = u.size() - n;//m+n是数组u的长度
-        auto const d = base / ((TYPE_full_number)(v[0]) + 1);//因为v[0] > 0，所以 base / (v[0]+1) <= half_base，也就是说d可以用half_number类型存储
-        if (debug and (value_type)(d >> half_length) != 0)
+        auto const d = base / (static_cast<TYPE_full_number>(v[0]) + 1);//因为v[0] > 0，所以 base / (v[0]+1) <= half_base，也就是说d可以用half_number类型存储
+        if (debug and static_cast<value_type>(d >> half_length) != 0)
         {
             throw std::logic_error("d值不能用half_number类型表示，不符合预期。检查Knuth除法算法的实现。");
         }
         {
             number_type TEMP_d;
             TEMP_d.resize(1);
-            TEMP_d[0] = (value_type)d;
+            TEMP_d[0] = static_cast<value_type>(d);
             u = INNER_multiply_number(u, TEMP_d);
             if (u.size() == m + n)
             {
@@ -753,8 +753,8 @@ namespace OKps
         auto const TEMP_v = integer(v, sign_type::positive);//值为v的大整数
         while (j <= m)
         {
-            q_ = ((TYPE_full_number)(u[j]) * base + (TYPE_full_number)(u[j + 1])) / (TYPE_full_number)(v[0]);
-            r_ = ((TYPE_full_number)(u[j]) * base + (TYPE_full_number)(u[j + 1])) % (TYPE_full_number)(v[0]);
+            q_ = (static_cast<TYPE_full_number>(u[j]) * base + static_cast<TYPE_full_number>(u[j + 1])) / static_cast<TYPE_full_number>(v[0]);
+            r_ = (static_cast<TYPE_full_number>(u[j]) * base + static_cast<TYPE_full_number>(u[j + 1])) % static_cast<TYPE_full_number>(v[0]);
         FLOW_test:
             if (q_ == base or q_ * v[1] > base * r_ + u[j + 2])
             {
@@ -878,29 +878,29 @@ namespace OKps
         {
             case number_system::bin:
             {
-                input_base = integer((value_type)2, sign_type::positive);
+                input_base = integer(static_cast<value_type>(2), sign_type::positive);
                 break;
             }
             case number_system::dec:
             {
-                input_base = integer((value_type)10, sign_type::positive);
+                input_base = integer(static_cast<value_type>(10), sign_type::positive);
                 break;
             }
             case number_system::oct:
             {
-                input_base = integer((value_type)8, sign_type::positive);
+                input_base = integer(static_cast<value_type>(8), sign_type::positive);
                 break;
             }
             case number_system::hex:
             {
-                input_base = integer((value_type)10, sign_type::positive);
+                input_base = integer(static_cast<value_type>(10), sign_type::positive);
                 break;
             }
         }
         for (size_t i = 0; i < input.size(); ++i)
         {
             (*this) = (*this) * input_base;
-            (*this) = (*this) + integer((value_type)(OKps::from_char(input[i], system)), sign_type::positive);//如果input有非数字的字符，则会在此处抛出异常
+            (*this) = (*this) + integer(static_cast<value_type>(OKps::from_char(input[i], system)), sign_type::positive);//如果input有非数字的字符，则会在此处抛出异常
         }
         if (this->MEMBER_sign != sign_type::zero)
         {
@@ -918,22 +918,22 @@ namespace OKps
         {
             case number_system::bin:
             {
-                input_base = integer((value_type)2, sign_type::positive);
+                input_base = integer(static_cast<value_type>(2), sign_type::positive);
                 break;
             }
             case number_system::dec:
             {
-                input_base = integer((value_type)10, sign_type::positive);
+                input_base = integer(static_cast<value_type>(10), sign_type::positive);
                 break;
             }
             case number_system::oct:
             {
-                input_base = integer((value_type)8, sign_type::positive);
+                input_base = integer(static_cast<value_type>(8), sign_type::positive);
                 break;
             }
             case number_system::hex:
             {
-                input_base = integer((value_type)10, sign_type::positive);
+                input_base = integer(static_cast<value_type>(10), sign_type::positive);
                 break;
             }
         }
@@ -995,8 +995,8 @@ namespace OKps
             this->MEMBER_sign = sign_type::zero;
             return;
         }
-        value_type const high = (value_type)(number >> half_length);
-        value_type const low = (value_type)number;
+        value_type const high = static_cast<value_type>(number >> half_length);
+        value_type const low = static_cast<value_type>(number);
         if (high == 0)
         {
             this->MEMBER_number.resize(1);
@@ -1368,7 +1368,7 @@ namespace OKps
 
         for (std::size_t count = 0;count < prime_count;count++)
         {
-            prime_file.read((char *)(&temp), sizeof(std::uintmax_t));
+            prime_file.read(reinterpret_cast<char *>(&temp), sizeof(std::uintmax_t));
             result[count] = integer(temp, sign_type::positive);
         }
 

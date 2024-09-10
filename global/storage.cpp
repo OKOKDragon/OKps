@@ -38,7 +38,7 @@ namespace OKps
 		}
 		else
 		{
-			constexpr std::uintmax_t const buffer_length = (std::uintmax_t)1024 * 64;
+			constexpr std::uintmax_t const buffer_length = static_cast<std::uintmax_t>(1024) * 64;
 			std::uintmax_t const read_times = length / buffer_length;
 			std::uintmax_t last_read_length = length % buffer_length;
 			if (last_read_length == 0 and read_times != 0)
@@ -188,7 +188,7 @@ namespace OKps
 		result.resize(this->MEMBER_length + sizeof(std::size_t));
 		for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 		{
-			result[i] = ((char const *)(&(this->MEMBER_length)))[i];
+			result[i] = (reinterpret_cast<char const *>(&(this->MEMBER_length)))[i];
 		}
 		for (std::size_t i = 0; i < this->MEMBER_length; i++)
 		{
@@ -212,7 +212,7 @@ namespace OKps
 		result.resize(this->MEMBER_length + sizeof(std::size_t));
 		for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 		{
-			result[i] = ((std::byte const *)(&(this->MEMBER_length)))[i];
+			result[i] = (reinterpret_cast<std::byte const *>(&(this->MEMBER_length)))[i];
 		}
 		for (std::size_t i = 0; i < this->MEMBER_length; i++)
 		{
@@ -237,7 +237,7 @@ namespace OKps
 			std::size_t length;
 			for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 			{
-				((char *)(&length))[i] = data[position];
+				(reinterpret_cast<char *>(&length))[i] = data[position];
 				position++;
 			}
 			if (position + length > data.size())
@@ -278,7 +278,7 @@ namespace OKps
 			std::size_t length;
 			for (std::size_t i = 0; i < sizeof(std::size_t); i++)
 			{
-				((std::byte *)(&length))[i] = data[position];
+				(reinterpret_cast<std::byte *>(&length))[i] = data[position];
 				position++;
 			}
 			if (position + length > data.size())

@@ -8,13 +8,13 @@ namespace OKps
     {
         static_assert(sizeof(std::byte) == sizeof(char));
         using middle_type = std::underlying_type<std::byte>::type;
-        return (char)((middle_type)data);
+        return static_cast<char>(static_cast<middle_type>(data));
     }
     std::byte value_cast(char const data)noexcept
     {
         static_assert(sizeof(std::byte) == sizeof(char));
         using middle_type = std::underlying_type<std::byte>::type;
-        return (std::byte)((middle_type)data);
+        return static_cast<std::byte>(static_cast<middle_type>(data));
     }
     byte::~byte()noexcept
     {
@@ -84,7 +84,14 @@ namespace OKps
     }
     bool byte::INNER_at(std::size_t const & position)const noexcept
     {
-        return (bool)((this->data >> position) & (std::byte)1);
+        if (((this->data >> position) & static_cast<std::byte>(1)) == static_cast<std::byte>(0))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
     byte::reference byte::INNER_at(std::size_t const & position)noexcept
     {
@@ -98,7 +105,7 @@ namespace OKps
             throw std::invalid_argument("输入的数超出1个字节的表示范围");
             return;
         }
-        this->data = (std::byte)((std::underlying_type_t<std::byte>)input);
+        this->data = static_cast<std::byte>(static_cast<std::underlying_type_t<std::byte>>(input));
     }
     byte::byte(std::byte const & input)noexcept
         :data(input)
