@@ -793,11 +793,11 @@ namespace OKps::AES
         }
         std::random_device seed;                                 // 用于生成随机数种子
         std::mt19937 random_engine(seed());                      // 随机数生成器
-        std::uniform_int_distribution<unsigned int> distribution(0, unsigned int(std::numeric_limits<unsigned char>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
+        std::uniform_int_distribution<unsigned int> distribution(static_cast<unsigned int>(0), static_cast<unsigned int>(std::numeric_limits<std::underlying_type_t<std::byte>>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
 
         for (unsigned int counter = count; counter < 16; counter++)
         {
-            buffer[counter] = std::byte(unsigned char(distribution(random_engine)));
+            buffer[counter] = static_cast<std::byte>(static_cast<std::underlying_type_t<std::byte>>(distribution(random_engine)));
         }
     }
 
@@ -809,11 +809,11 @@ namespace OKps::AES
         }
         std::random_device seed;                                 // 用于生成随机数种子
         std::mt19937 random_engine(seed());                      // 随机数生成器
-        std::uniform_int_distribution<unsigned int> distribution(0, unsigned int(std::numeric_limits<unsigned char>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
+        std::uniform_int_distribution<unsigned int> distribution(static_cast<unsigned int>(0), static_cast<unsigned int>(std::numeric_limits<std::underlying_type_t<std::byte>>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
 
         for (unsigned int counter = count; counter < 16; counter++)
         {
-            buffer[counter] = char(unsigned char(distribution(random_engine)));
+            buffer[counter] = static_cast<char>(static_cast<std::underlying_type_t<std::byte>>(distribution(random_engine)));
         }
     }
 
