@@ -148,23 +148,55 @@ namespace OKps
     }
     bool graph::iterator::operator ==(iterator const & right)const noexcept
     {
-        if (this->MEMBER_marker.expired() and right.MEMBER_marker.expired())
-        {
-            return true;
-        }
-        else if (this->MEMBER_marker.expired() or right.MEMBER_marker.expired())
-        {
-            return false;
-        }
         return this->MEMBER_node == right.MEMBER_node;
     }
     bool graph::iterator::operator !=(iterator const & right)const noexcept
     {
-        return not((*this) == right);
+        return this->MEMBER_node != right.MEMBER_node;
     }
     graph::iterator::~iterator()
         noexcept(std::is_nothrow_destructible_v<std::weak_ptr<marker_type>>)
     {
+    }
+    void graph::iterator::operator --()
+    {
+        if (this->MEMBER_marker.expired())
+        {
+            throw std::logic_error("迭代器已失效，禁止访问");
+        }
+
+        auto finder = this->MEMBER_node->owner()->MEMBER_graph.begin();
+
+        while (finder != this->MEMBER_node->owner()->MEMBER_graph.end())
+        {
+            if (this->MEMBER_node == (*finder))
+            {
+                if (finder == this->MEMBER_node->owner()->MEMBER_graph.begin())
+                {
+                    this->MEMBER_node = nullptr;
+                    this->MEMBER_marker.reset();
+                }
+                else
+                {
+                    --finder;
+                    this->MEMBER_node = (*finder);
+                    this->MEMBER_marker = this->MEMBER_node->marker();
+                }
+                break;
+            }
+            ++finder;
+        }
+    }
+    bool graph::iterator::is_valid()const noexcept
+    {
+        if (this->MEMBER_marker.expired() or this->MEMBER_node == nullptr)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
     void graph::iterator::operator ++()
     {
@@ -286,7 +318,7 @@ namespace OKps
     }
     bool graph::iterator::operator <(iterator const & right)const noexcept
     {
-        return this < (&right);
+        return this->MEMBER_node < right.MEMBER_node;
     }
     graph * graph::iterator::owner()
     {

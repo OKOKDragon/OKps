@@ -81,6 +81,10 @@ namespace OKps
 
         std::set<node *> MEMBER_graph;
     public:
+        /*
+        迭代器可以理解为对图中节点的引用。
+        此迭代器的概念和标准库的迭代器相似，即以空迭代器作为尾迭代器，空迭代器可以和其他迭代器比较，但不能访问。
+        */
         class iterator final
         {
             friend class graph;
@@ -101,12 +105,17 @@ namespace OKps
             ~iterator()
                 noexcept(std::is_nothrow_destructible_v<std::weak_ptr<marker_type>>);
             void operator ++();
+            void operator --();
 
+            /*
+            比较两个迭代器是否引用同一个节点，但不考虑它们引用的节点是否已经失效。
+            */
             bool operator ==(iterator const & right)const noexcept;
             bool operator !=(iterator const & right)const noexcept;
             /*
-            比较两个迭代器的地址
-            仅用于std::less
+            比较两个迭代器的地址，仅用于std::less。
+
+            图中的节点之间没有定义偏序关系，所以此函数不是在比较节点之间的关系。
             */
             bool operator <(iterator const & right)const noexcept;
             /*
@@ -114,6 +123,10 @@ namespace OKps
             如果此节点和节点 target 是同一个节点，且它们都有效，则什么都不发生
             */
             void add(iterator const & target);
+            /*
+            判断迭代器是否有效
+            */
+            bool is_valid()const noexcept;
             /*
             删除从此节点指向节点 target 的指向关系
             */

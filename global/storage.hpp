@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <memory>
@@ -18,12 +17,22 @@ namespace OKps
 	*/
 	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, bool save_directory/*是否将目录保存到结果中*/);
 
+	/*
+	字段，是一串2进制数据，其结构是：
+	开头是以2进制表示的一个无符号整数 l ，l的数值为有效数据的长度；
+	后接 l 字节2进制有效数据。
+	*/
 	class field_stream final
 	{
 	private:
 		std::unique_ptr<std::byte[]> MEMBER_data;
 		std::size_t MEMBER_length;
 	public:
+		/*
+		构造空字段
+		*/
+		field_stream()
+			noexcept(std::is_nothrow_default_constructible_v<std::unique_ptr<std::byte[]>>);
 		field_stream(std::string const & data);
 		~field_stream()
 			noexcept(std::is_nothrow_destructible_v<std::unique_ptr<std::byte[]>>);
@@ -32,6 +41,11 @@ namespace OKps
 		std::string field_string()const;
 		std::vector<std::byte> raw_data()const;
 		std::vector<std::byte> field_data()const;
+		/*
+		输入的数据是由多个字段连接而成的一串2进制有效数据
+		如果格式错误则抛出异常
+		此函数将输入的数据按字段切分
+		*/
 		static std::vector<field_stream> parse(std::string const & data);
 		static std::vector<field_stream> parse(std::vector<std::byte> const & data);
 		field_stream(field_stream const & origin);
@@ -43,36 +57,6 @@ namespace OKps
 			noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>);
 		void operator =(field_stream && origin)
 			noexcept(std::is_nothrow_move_assignable_v<std::unique_ptr<std::byte[]>>);
-	};
-	class file_holder final
-	{
-	private:
-		using TYPE_path = std::filesystem::path;
-		std::unique_ptr<std::byte[]> MEMBER_buffer;
-		std::unique_ptr<TYPE_path const> MEMBER_route;
-		std::size_t MEMBER_length;
-		bool MEMBER_do_write;
-	public:
-		std::unique_ptr<std::byte[]> const & buffer()const;
-		void resize(std::size_t const size);
-		std::size_t const & size()const;
-		bool const & do_write()const;
-		bool & do_write();
-		/*
-		构造时将文件全部读入缓存
-		do_create参数控制当文件不存在时是否创建该文件
-		*/
-		file_holder(TYPE_path const & file, bool const do_create, bool const = true);
-		//析构时将缓存全部写入文件
-		~file_holder()noexcept(false);
-		file_holder(file_holder const &) = delete;
-		void operator =(file_holder const &) = delete;
-		void operator =(file_holder &&)
-			noexcept(std::is_nothrow_move_assignable_v<std::unique_ptr<std::byte[]>>
-			and std::is_nothrow_move_assignable_v<std::unique_ptr<TYPE_path const>>);
-		file_holder(file_holder &&)
-			noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>
-			and std::is_nothrow_move_constructible_v<std::unique_ptr<TYPE_path const>>);
 	};
 
 }

@@ -1,5 +1,4 @@
 ﻿#include <fstream>
-#include <random>
 
 #include ".\bits.hpp"
 #include ".\storage.hpp"
@@ -256,6 +255,12 @@ namespace OKps
 		}
 		return result;
 	}
+	field_stream::field_stream()
+		noexcept(std::is_nothrow_default_constructible_v<std::unique_ptr<std::byte[]>>)
+		:MEMBER_length(0)
+		, MEMBER_data()
+	{
+	}
 	std::vector<field_stream> field_stream::parse(std::vector<std::byte> const & data)
 	{
 		std::vector<field_stream> result;
@@ -330,185 +335,5 @@ namespace OKps
 	{
 		origin.MEMBER_length = 0;
 	}
-	bool const & file_holder::do_write()const
-	{
-		if (not this->MEMBER_route)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
-		return this->MEMBER_do_write;
-	}
-	bool & file_holder::do_write()
-	{
-		if (not this->MEMBER_route)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
-		return this->MEMBER_do_write;
-	}
-	std::unique_ptr<std::byte[]> const & file_holder::buffer()const
-	{
-		if (not this->MEMBER_route)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
-		return this->MEMBER_buffer;
-	}
-	std::size_t const & file_holder::size()const
-	{
-		if (not this->MEMBER_route)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
-		return this->MEMBER_length;
-	}
-	void file_holder::resize(std::size_t const size)
-	{
-		if (not this->MEMBER_route)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
-		if (size < this->MEMBER_length)
-		{
-			std::unique_ptr<std::byte[]> temp = std::make_unique<std::byte[]>(size);
-			for (std::size_t i = 0; i < size; i++)
-			{
-				temp[i] = this->MEMBER_buffer[i];
-			}
-			this->MEMBER_buffer = std::move(temp);
-			this->MEMBER_length = size;
-		}
-		else if (size > this->MEMBER_length)
-		{
-			std::unique_ptr<std::byte[]> temp = std::make_unique<std::byte[]>(size);
-			for (std::size_t i = 0; i < this->MEMBER_length; i++)
-			{
-				temp[i] = this->MEMBER_buffer[i];
-			}
-			std::random_device seed;
-			auto engine = std::mt19937_64(seed());
-			using TYPE_byte = std::underlying_type<std::byte>::type;
-			auto distribution = std::uniform_int_distribution<short>(std::numeric_limits<TYPE_byte>::min(), std::numeric_limits<TYPE_byte>::max());
-			for (std::size_t i = this->MEMBER_length; i < size; i++)
-			{
-				temp[i] = (std::byte)((TYPE_byte)(distribution(engine)));
-			}
-			this->MEMBER_buffer = std::move(temp);
-			this->MEMBER_length = size;
-		}
-	}
-	//构造时将文件全部读入缓存
-	file_holder::file_holder(TYPE_path const & file, bool const do_create, bool const ARG_do_write)
-		:MEMBER_do_write(ARG_do_write)
-	{
-		namespace fs = std::filesystem;
-		std::unique_ptr<TYPE_path const> abs;
-		if (file.is_absolute())
-		{
-			abs = std::make_unique<TYPE_path const>(file);
-		}
-		else
-		{
-			abs = std::make_unique<TYPE_path const>(fs::absolute(file));
-		}
-		if (not abs->has_filename())
-		{
-			std::string const hint = "路径“"
-				+ abs->string()
-				+ "”不是文件";
-			throw std::invalid_argument(hint);
-		}
-		if (not fs::exists(*abs))
-		{
-			if (not do_create)
-			{
-				std::string const hint = "文件“"
-					+ abs->string()
-					+ "”不存在";
-				throw std::invalid_argument(hint);
-			}
-			else
-			{
-				std::ofstream creator;
-				creator.open(*abs, std::ios::out | std::ios::binary | std::ios::trunc);
-				if (not creator.is_open())
-				{
-					std::string const hint = "创建文件“"
-						+ abs->string()
-						+ "”失败";
-					throw std::runtime_error(hint);
-				}
-			}
-		}
-		this->MEMBER_length = fs::file_size(*abs);
-		this->MEMBER_buffer = std::make_unique<std::byte[]>(this->MEMBER_length);
-		std::ifstream reader;
-		reader.open(*abs, std::ios::in | std::ios::binary);
-		if (not reader.is_open())
-		{
-			std::string const hint = "打开文件“"
-				+ abs->string()
-				+ "”失败";
-			throw std::runtime_error(hint);
-		}
-		if (not reader.read((char *)(this->MEMBER_buffer.get()), this->MEMBER_length))
-		{
-			std::string const hint = "读取文件“"
-				+ abs->string()
-				+ "”失败";
-			throw std::runtime_error(hint);
-		}
-		this->MEMBER_route = std::move(abs);
-	}
-	//析构时将缓存全部写入文件
-	file_holder::~file_holder()noexcept(false)
-	{
-		if (not this->MEMBER_route)
-		{
-			return;
-		}
-		if (not this->MEMBER_do_write)
-		{
-			return;
-		}
-		namespace fs = std::filesystem;
-		std::ofstream writter;
-		writter.open(*(this->MEMBER_route), std::ios::out | std::ios::binary | std::ios::trunc);
-		if (not writter.is_open())
-		{
-			std::string const hint = "打开文件“"
-				+ this->MEMBER_route->string()
-				+ "”失败";
-			throw std::runtime_error(hint);
-		}
-		if (not writter.write((char *)(this->MEMBER_buffer.get()), this->MEMBER_length))
-		{
-			std::string const hint = "修改文件“"
-				+ this->MEMBER_route->string()
-				+ "”失败";
-			throw std::runtime_error(hint);
-		}
 
-	}
-	file_holder::file_holder(file_holder && origin)
-		noexcept(std::is_nothrow_move_constructible_v<std::unique_ptr<std::byte[]>>
-			and std::is_nothrow_move_constructible_v<std::unique_ptr<TYPE_path const>>)
-		:MEMBER_buffer(std::move(origin.MEMBER_buffer))
-		, MEMBER_route(std::move(origin.MEMBER_route))
-		, MEMBER_length(origin.MEMBER_length)
-		, MEMBER_do_write(origin.MEMBER_do_write)
-	{
-	}
-	void file_holder::operator =(file_holder && origin)
-		noexcept(std::is_nothrow_move_assignable_v<std::unique_ptr<std::byte[]>>
-		and std::is_nothrow_move_assignable_v<std::unique_ptr<TYPE_path const>>)
-	{
-		if (this != (&origin))
-		{
-			this->MEMBER_buffer = std::move(origin.MEMBER_buffer);
-			this->MEMBER_route = std::move(origin.MEMBER_route);
-			this->MEMBER_length = origin.MEMBER_length;
-			this->MEMBER_do_write = origin.MEMBER_do_write;
-		}
-	}
 }
