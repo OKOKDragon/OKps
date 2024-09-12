@@ -993,21 +993,24 @@ namespace OKps::AES
         // 单个加密器线程的任务块数
         auto const single_work_block_count = block_count / this->MEMBER_thread_number;
 
-        std::vector<file_device::TYPE_cipher_ptr> cipher;
-        cipher.resize(this->MEMBER_thread_number);
-        for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
         {
-            cipher[count] = (std::make_shared<file_device::cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key));
-            cipher[count]->decrypt();
-            // 下一个加密器线程的起始点
-            begin += single_work_block_count * 16;
-        }
-        for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
-        {
-            cipher[count]->join();
+            using cipher_ptr = std::unique_ptr<cipher>;
+            auto cipher_holder = std::make_unique<cipher_ptr[]>(this->MEMBER_thread_number);
+
+            for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
+            {
+                cipher_holder[count] = std::make_unique<cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key);
+                cipher_holder[count]->decrypt();
+                // 下一个加密器线程的起始点
+                begin += single_work_block_count * 16;
+            }
+            for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
+            {
+                cipher_holder[count]->join();
+            }
         }
 
-        // 所有加密器线程结束以后，现在begin是本函数需要处理的起始点
+       // 所有加密器线程结束以后，现在begin是本函数需要处理的起始点
 
         byte_device f_aes(this->MEMBER_key);
         {
@@ -1180,21 +1183,24 @@ namespace OKps::AES
         // 单个加密器线程的任务块数
         const auto single_work_block_count = block_count / this->MEMBER_thread_number;
 
-        std::vector<file_device::TYPE_cipher_ptr> cipher;
-        cipher.resize(this->MEMBER_thread_number);
-        for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
         {
-            cipher[count] = (std::make_shared<file_device::cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key));
-            cipher[count]->encrypt();
-            // 下一个加密器线程的起始点
-            begin += single_work_block_count * 16;
-        }
-        for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
-        {
-            cipher[count]->join();
+            using cipher_ptr = std::unique_ptr<cipher>;
+            auto cipher_holder = std::make_unique<cipher_ptr[]>(this->MEMBER_thread_number);
+
+            for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
+            {
+                cipher_holder[count] = (std::make_unique<file_device::cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key));
+                cipher_holder[count]->encrypt();
+                // 下一个加密器线程的起始点
+                begin += single_work_block_count * 16;
+            }
+            for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
+            {
+                cipher_holder[count]->join();
+            }
         }
 
-        // 所有加密器线程结束以后，现在begin是本函数需要处理的起始点
+       // 所有加密器线程结束以后，现在begin是本函数需要处理的起始点
 
         char buffer[16]; // 16字节缓存，一组明文
         byte_device f_aes(this->MEMBER_key);

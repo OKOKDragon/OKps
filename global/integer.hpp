@@ -20,9 +20,9 @@ namespace OKps
     public:
         using value_type = std::uint32_t;//TYPE_full_number的一半大小的无符号整型类型
     private:
-        static inline constexpr std::size_t const half_length = sizeof(value_type) * bit_per_byte;
+        static std::size_t const half_length;
         using TYPE_full_number = std::uint64_t;//最大的内置无符号整型类型
-        static inline constexpr std::size_t const full_length = sizeof(TYPE_full_number) * bit_per_byte;
+        static std::size_t const full_length;
         static_assert(sizeof(TYPE_full_number) == sizeof(std::uintmax_t));//保证TYPE_full_number是内置类型中最大的无符号整型
         static_assert(std::is_unsigned_v<value_type> and std::is_unsigned_v<TYPE_full_number>, "数组的元素类型必须是无符号整型");
         static_assert(sizeof(TYPE_full_number) == sizeof(value_type) * 2, "为了获取乘法溢出，数组的元素类型的长度必须是最大内置整型的一半");
@@ -37,9 +37,9 @@ namespace OKps
             negative = -1
         };
 
-        static inline constexpr TYPE_full_number const base = (TYPE_full_number)1 << half_length;//TYPE_half_number类型所能表示的不同无符号整数的数量，也就是我们的大整数数组使用的进制
+        static TYPE_full_number const base;//TYPE_half_number类型所能表示的不同无符号整数的数量，也就是我们的大整数数组使用的进制
     private:
-        static inline constexpr value_type const half_base = (value_type)1 << (half_length - 1);//base的一半
+        static value_type const half_base;//base的一半
         sign_type MEMBER_sign;//符号位
         number_type MEMBER_number;//用2进制存储的整数，无符号
     public:
@@ -53,7 +53,7 @@ namespace OKps
         number_type const & number()const noexcept;
     private:
         static std::vector<integer> INNER_init_known_prime(std::uintmax_t const prime_count);
-        static inline std::vector<integer> const MEMBER_known_prime = INNER_init_known_prime((std::uintmax_t)1024 * (std::uintmax_t)64);
+        static inline std::vector<integer> const MEMBER_known_prime = INNER_init_known_prime(static_cast<std::uintmax_t>(1024) * static_cast<std::uintmax_t>(64));
         integer(number_type && number, sign_type sign)noexcept;
 
         /*

@@ -704,6 +704,11 @@ namespace OKps
         , MEMBER_module(mod)
     {
     }
+    std::size_t const integer::half_length = sizeof(value_type) * bit_per_byte;
+    std::size_t const integer::full_length = sizeof(TYPE_full_number) * bit_per_byte;
+    integer::TYPE_full_number const integer::base = static_cast<TYPE_full_number>(std::numeric_limits<value_type>::max()) + 1;
+    integer::value_type const integer::half_base = static_cast<value_type>(base / 2);
+
     integer::INNER_divide_result integer::INNER_divide_number(number_type const & left, number_type const & right)
     {
         if (right.size() == 1)

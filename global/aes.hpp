@@ -38,7 +38,7 @@ namespace OKps::AES
     private:
         byte_device(std::byte const * key) noexcept;
     public:
-        constexpr static inline std::size_t const key_length = 16;
+        static inline constexpr std::size_t const key_length = 16;
         using key_type = std::array<std::byte, key_length>;
         using byte_type = std::vector<std::byte>;
     private:
@@ -250,6 +250,6 @@ namespace OKps::AES
         public:
             void join();
         };
-        using TYPE_cipher_ptr = std::shared_ptr<cipher>;
+
     };
 }
