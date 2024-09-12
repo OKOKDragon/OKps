@@ -33,6 +33,11 @@ namespace OKps
             */
             virtual bool operator ==(data_type const & right)const noexcept;
             virtual bool operator !=(data_type const & right)const noexcept;
+            /*
+            要求子类实现此函数，其功能为复制子类对象自身
+            此函数会在图容器的复制构造函数中被使用
+            */
+            virtual std::unique_ptr<data_type> self_copy()const = 0;
         };
 
     private:
@@ -62,12 +67,12 @@ namespace OKps
                 and std::is_nothrow_default_constructible_v<std::set<node *>>
                 and noexcept(std::make_shared<marker_type>()));
             node(node && origin) = delete;
-            node(node const &) = delete;
+            node(node const & origin) = delete;
             ~node()
                 noexcept(std::is_nothrow_destructible_v<std::unique_ptr<data_type>>
                 and std::is_nothrow_destructible_v<std::set<node *>>
                 and std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>);
-            void operator =(node const &) = delete;
+            void operator =(node const & origin) = delete;
             void operator =(node &&) = delete;
             std::unique_ptr<data_type> const & data()noexcept;
             data_type const * data()const noexcept;
@@ -141,8 +146,8 @@ namespace OKps
             noexcept(std::is_nothrow_default_constructible_v<std::set<node *>>);
         ~graph()
             noexcept(std::is_nothrow_destructible_v<std::set<node *>>);
-        graph(graph const &) = delete;
-        void operator =(graph const &) = delete;
+        graph(graph const & origin);
+        void operator =(graph const & origin);
         graph(graph &&)
             noexcept(std::is_nothrow_move_constructible_v<std::set<node *>>);
         void operator =(graph &&)
@@ -155,6 +160,7 @@ namespace OKps
         删除图中的节点
         */
         void erase(iterator const &);
+        void clear();
 
         std::unique_ptr<iterator const> begin()const;
         std::unique_ptr<iterator const> end()const;

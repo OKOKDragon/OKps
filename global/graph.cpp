@@ -158,6 +158,36 @@ namespace OKps
         noexcept(std::is_nothrow_destructible_v<std::weak_ptr<marker_type>>)
     {
     }
+    graph::graph(graph const & origin)
+    {
+        for (auto i = origin.MEMBER_graph.begin();i != origin.MEMBER_graph.end();i++)
+        {
+            auto n = new node(this, std::move((*i)->data()->self_copy()));
+            this->MEMBER_graph.insert(n);
+        }
+    }
+    void graph::clear()
+    {
+        for (auto i = this->MEMBER_graph.begin();i != this->MEMBER_graph.end();i++)
+        {
+            auto n = (*i);
+            this->MEMBER_graph.erase(i);
+            delete n;
+        }
+    }
+    void graph::operator =(graph const & origin)
+    {
+        if (this == (&origin))
+        {
+            return;
+        }
+        this->clear();
+        for (auto i = origin.MEMBER_graph.begin();i != origin.MEMBER_graph.end();i++)
+        {
+            auto n = new node(this, std::move((*i)->data()->self_copy()));
+            this->MEMBER_graph.insert(n);
+        }
+    }
     void graph::iterator::operator --()
     {
         if (this->MEMBER_marker.expired())
@@ -260,7 +290,9 @@ namespace OKps
         auto f = this->MEMBER_graph.find(*i);
         if (f != this->MEMBER_graph.end())
         {
+            auto e = (*f);
             this->MEMBER_graph.erase(f);
+            delete e;
         }
     }
 

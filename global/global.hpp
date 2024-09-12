@@ -59,7 +59,6 @@ c++标准库中的异常，要么是来自外部的、不可控的严重错误�
 #include ".\blank.hpp"
 #include ".\base.hpp"
 #include ".\string.hpp"
-#include ".\tree.hpp"
 #include ".\lock.hpp"
 #include ".\fundamental.hpp"
 #include ".\timer.hpp"
