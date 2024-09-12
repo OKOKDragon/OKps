@@ -1,5 +1,6 @@
 ﻿#include <stdexcept>
 #include <typeinfo>
+#include <string>
 
 #include ".\fundamental.hpp"
 

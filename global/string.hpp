@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include ".\bits.hpp"
+
 #include ".\number.hpp"
 
 /*

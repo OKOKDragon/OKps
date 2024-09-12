@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include ".\bits.hpp"
+#include ".\number.hpp"
 #include ".\storage.hpp"
 
 namespace OKps

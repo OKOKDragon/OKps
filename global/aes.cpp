@@ -1,7 +1,7 @@
 ﻿#include <random>
 
 #include ".\aes.hpp"
-#include ".\string.hpp"
+#include ".\bits.hpp"
 
 namespace OKps::AES
 {
