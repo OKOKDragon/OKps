@@ -19,11 +19,13 @@ namespace OKps
 		class parameter
 		{
 			friend class order_matcher::handler;
-		public:
+		protected:
 			parameter()noexcept;
 			parameter(parameter const &)noexcept;
 			parameter(parameter &&)noexcept;
+		public:
 			virtual ~parameter()noexcept;
+		protected:
 			virtual void operator =(parameter const &)noexcept;
 			virtual void operator =(parameter &&)noexcept;
 
@@ -34,12 +36,13 @@ namespace OKps
 		class handler
 		{
 			friend class order_matcher;
-		public:
+		protected:
 			handler()noexcept;
 			handler(handler const &)noexcept;
 			virtual void operator =(handler const &)noexcept;
 			handler(handler &&)noexcept;
 			virtual void operator =(handler &&)noexcept;
+		public:
 			virtual ~handler()noexcept;
 		protected:
 			using argument_type = std::unique_ptr<parameter> const &;

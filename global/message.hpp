@@ -25,7 +25,7 @@ namespace OKps
 			friend class message;
 		private:
 			std::exception_ptr MEMBER_exception_holder;
-		public:
+		protected:
 			handler()
 				noexcept(std::is_nothrow_default_constructible<std::exception_ptr>::value);
 			handler(handler const &)
@@ -36,9 +36,9 @@ namespace OKps
 				noexcept(std::is_nothrow_move_constructible<std::exception_ptr>::value);
 			virtual void operator =(handler &&)
 				noexcept(std::is_nothrow_move_assignable<std::exception_ptr>::value);
+		public:
 			virtual ~handler()
 				noexcept(std::is_nothrow_destructible<std::exception_ptr>::value);
-
 		protected:
 			/*
 			引发信号时，信号处理器会调用此函数

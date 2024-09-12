@@ -17,11 +17,14 @@ namespace OKps
         */
         class data_type
         {
-        public:
+            friend class graph;
+        protected:
             data_type()noexcept;
             data_type(data_type const &)noexcept;
             data_type(data_type &&)noexcept;
+        public:
             virtual ~data_type()noexcept;
+        protected:
             virtual void operator =(data_type const &)noexcept;
             virtual void operator =(data_type &&)noexcept;
             virtual data_type & self()noexcept;
