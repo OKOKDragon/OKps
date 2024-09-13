@@ -36,8 +36,9 @@ namespace OKps
             virtual bool operator ==(data_type const & right)const noexcept;
             virtual bool operator !=(data_type const & right)const noexcept;
             /*
-            要求子类实现此函数，其功能为复制子类对象自身
-            此函数会在图容器的复制构造函数中被使用
+            要求子类实现此函数，其功能为复制子类对象自身，并要求包装到std::unique_ptr<data_type>中返回。
+            此函数会在图容器的复制构造函数中被使用。
+            如果子类实现的此函数无法正确复制子类对象，产生的任何副作用，图容器不负责。
             */
             virtual std::unique_ptr<data_type> self_copy()const = 0;
         };

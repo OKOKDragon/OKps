@@ -21,14 +21,7 @@ namespace OKps::base
 	void blank::operator =(blank const &)noexcept
 	{
 	}
-	bool blank::operator ==(blank const & right)const noexcept
-	{
-		return this == &right;
-	}
-	bool blank::operator !=(blank const & right)const noexcept
-	{
-		return not(*this == right);
-	}
+
 	blank & blank::self()noexcept
 	{
 		return *this;
@@ -157,14 +150,7 @@ namespace OKps::base
 	move_invalid::~move_invalid()noexcept
 	{
 	}
-	bool move_invalid::operator ==(move_invalid const & right)const noexcept
-	{
-		return this == &right;
-	}
-	bool move_invalid::operator !=(move_invalid const & right)const noexcept
-	{
-		return not(*this == right);
-	}
+
 	move_invalid & move_invalid::self()noexcept
 	{
 		return *this;
@@ -193,12 +179,7 @@ namespace OKps::base
 	{
 		return this->MEMBER_generator(*this->MEMBER_engine);
 	}
-	std::uintmax_t numbered::generate_random_id()
-		noexcept(noexcept(std::declval<id_generator>().generate()))
-	{
-		return numbered::MEMBER_id_generator.generate();
-	}
-	numbered::id_generator numbered::MEMBER_id_generator;
+
 
 	numbered::numbered(std::uintmax_t const id)noexcept
 		:MEMBER_id(id)
@@ -220,14 +201,7 @@ namespace OKps::base
 	numbered::~numbered()noexcept
 	{
 	}
-	bool numbered::operator ==(numbered const & right)const noexcept
-	{
-		return this == &right;
-	}
-	bool numbered::operator !=(numbered const & right)const noexcept
-	{
-		return not(*this == right);
-	}
+
 	std::uintmax_t & numbered::id() noexcept
 	{
 		return this->MEMBER_id;
@@ -244,14 +218,7 @@ namespace OKps::base
 	{
 		return *this;
 	}
-	bool worker::operator ==(worker const & right)const noexcept
-	{
-		return this == &right;
-	}
-	bool worker::operator !=(worker const & right)const noexcept
-	{
-		return not(*this == right);
-	}
+
 
 	named::named(std::string const & name)
 		noexcept(std::is_nothrow_copy_constructible<std::string>::value)
@@ -289,14 +256,7 @@ namespace OKps::base
 		return this->MEMBER_name;
 	}
 
-	bool named::operator ==(named const & right)const noexcept
-	{
-		return this == &right;
-	}
-	bool named::operator !=(named const & right)const noexcept
-	{
-		return not(*this == right);
-	}
+
 	named & named::self()noexcept
 	{
 		return *this;
@@ -342,14 +302,7 @@ namespace OKps::base
 	void parameter::operator =(parameter const &)noexcept
 	{
 	}
-	bool parameter::operator ==(parameter const & right)const noexcept
-	{
-		return this == &right;
-	}
-	bool parameter::operator !=(parameter const & right)const noexcept
-	{
-		return not(*this == right);
-	}
+
 	parameter & parameter::self()noexcept
 	{
 		return *this;
@@ -377,19 +330,38 @@ namespace OKps::base
 	void handler::operator =(handler const &)noexcept
 	{
 	}
-	bool handler::operator ==(handler const & right)const noexcept
-	{
-		return this == &right;
-	}
-	bool handler::operator !=(handler const & right)const noexcept
-	{
-		return not(*this == right);
-	}
+
 	handler & handler::self()noexcept
 	{
 		return *this;
 	}
 	handler const & handler::self()const noexcept
+	{
+		return *this;
+	}
+	copier::copier()noexcept
+	{
+	}
+	copier::copier(copier const &)noexcept
+	{
+	}
+	copier::~copier()noexcept
+	{
+	}
+	copier::copier(copier &&)noexcept
+	{
+	}
+	void copier::operator =(copier &&)noexcept
+	{
+	}
+	void copier::operator =(copier const &)noexcept
+	{
+	}
+	copier & copier::self()noexcept
+	{
+		return *this;
+	}
+	copier const & copier::self()const noexcept
 	{
 		return *this;
 	}

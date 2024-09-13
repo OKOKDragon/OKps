@@ -9,8 +9,7 @@
 
 /*
 此文件在命名空间 OKps::base 定义多种通用的基类
-基类都有self函数，返回值是到自身的引用，即{return *this;}
-基类的 == 和 != 操作符返回的结果是比较两个对象是否是同一个对象，即比较两个对象取地址的结果是否相同
+基类都有self函数，返回值是到基类对象自身的引用
 */
 
 namespace OKps::base
@@ -27,15 +26,13 @@ namespace OKps::base
 		blank(blank &&)noexcept;
 		virtual void operator =(blank &&)noexcept;
 		virtual void operator =(blank const &)noexcept;
-		virtual bool operator ==(blank const &)const noexcept;
-		virtual bool operator !=(blank const &)const noexcept;
 		virtual blank & self()noexcept;
 		virtual blank const & self()const noexcept;
 
 	};
 	/*
 	此基类有一个bool 类型标志，true代表对象有效，false代表对象无效
-	对象默认构造时为有效对象，被移动后会标识为无效对象
+	对象构造时设为有效对象，被移动后会标识为无效对象
 	*/
 	class move_invalid
 	{
@@ -43,6 +40,10 @@ namespace OKps::base
 		bool MEMBER_valid;
 	protected:
 		bool const & is_valid()const noexcept;
+		/*
+		检查当前对象是否有效，
+		如果有效则什么都不做，如果无效则抛出异常
+		*/
 		void raise_invalid_error()const noexcept(false);
 		move_invalid()noexcept;
 		move_invalid(move_invalid const &)noexcept;
@@ -50,8 +51,6 @@ namespace OKps::base
 		move_invalid(move_invalid &&)noexcept;
 		virtual void operator =(move_invalid &&)noexcept;
 		virtual ~move_invalid()noexcept;
-		virtual bool operator ==(move_invalid const &)const noexcept;
-		virtual bool operator !=(move_invalid const &)const noexcept;
 		virtual move_invalid & self()noexcept;
 		virtual move_invalid const & self()const noexcept;
 
@@ -61,7 +60,10 @@ namespace OKps::base
 	*/
 	class numbered
 	{
-	private:
+	protected:
+		/*
+		随机生成编号的辅助类
+		*/
 		class id_generator final
 		{
 		private:
@@ -82,10 +84,7 @@ namespace OKps::base
 			std::uintmax_t generate()
 				noexcept(noexcept(std::declval<std::uniform_int_distribution<std::uintmax_t>>()(*std::declval<std::unique_ptr<std::mt19937_64>>())));
 		};
-		static id_generator MEMBER_id_generator;
-	protected:
-		static std::uintmax_t generate_random_id()
-			noexcept(noexcept(std::declval<id_generator>().generate()));
+
 	private:
 		std::uintmax_t MEMBER_id;
 	protected:
@@ -95,8 +94,6 @@ namespace OKps::base
 		numbered(numbered &&)noexcept = delete;
 		virtual void operator =(numbered &&)noexcept = delete;
 		virtual ~numbered()noexcept;
-		virtual bool operator ==(numbered const &)const noexcept;
-		virtual bool operator !=(numbered const &)const noexcept;
 		std::uintmax_t & id()noexcept;
 		std::uintmax_t const & id()const noexcept;
 		virtual numbered & self()noexcept;
@@ -126,8 +123,6 @@ namespace OKps::base
 			noexcept(std::is_nothrow_destructible<std::string>::value);
 		std::string const & name()const noexcept;
 		std::string & name()noexcept;
-		virtual bool operator ==(named const &)const noexcept;
-		virtual bool operator !=(named const &)const noexcept;
 		virtual named & self()noexcept;
 		virtual named const & self()const noexcept;
 	};
@@ -144,8 +139,6 @@ namespace OKps::base
 		parameter(parameter &&)noexcept;
 		virtual void operator =(parameter &&)noexcept;
 		virtual void operator =(parameter const &)noexcept;
-		virtual bool operator ==(parameter const &)const noexcept;
-		virtual bool operator !=(parameter const &)const noexcept;
 		virtual parameter & self()noexcept;
 		virtual parameter const & self()const noexcept;
 	};
@@ -165,8 +158,6 @@ namespace OKps::base
 		handler(handler &&)noexcept;
 		virtual void operator =(handler &&)noexcept;
 		virtual void operator =(handler const &)noexcept;
-		virtual bool operator ==(handler const &)const noexcept;
-		virtual bool operator !=(handler const &)const noexcept;
 		virtual handler & self()noexcept;
 		virtual handler const & self()const noexcept;
 		/*
@@ -174,6 +165,26 @@ namespace OKps::base
 		但是又不希望不小心写出错误的 delete 或其他错误的指针操作，所以避免使用裸指针。
 		*/
 		virtual void handle(std::unique_ptr<parameter> const &) = 0;
+	};
+	/*
+	此基类要求子类实现函数self_copy，其功能为复制子类对象自身，并包装到指向基类的智能指针中返回。
+	这种做法解决的问题是，已知一个基类指针 p 指向子类对象 o，如何在编译期不知道对象 o 真正类型的情况下正确复制对象 o
+	*/
+	class copier
+	{
+	protected:
+		copier()noexcept;
+		copier(copier const &)noexcept;
+		virtual ~copier()noexcept;
+		copier(copier &&)noexcept;
+		virtual void operator =(copier &&)noexcept;
+		virtual void operator =(copier const &)noexcept;
+		virtual copier & self()noexcept;
+		virtual copier const & self()const noexcept;
+		/*
+		因为必然有动态内存分配，所以允许抛出异常
+		*/
+		virtual std::unique_ptr<copier> self_copy() const = 0;
 	};
 	/*
 	线程工作者基类
@@ -215,7 +226,5 @@ namespace OKps::base
 		将存储在基类中的异常抛出
 		*/
 		[[noreturn]] void release_error()noexcept(false);
-		virtual bool operator ==(worker const &)const noexcept;
-		virtual bool operator !=(worker const &)const noexcept;
 	};
 }
