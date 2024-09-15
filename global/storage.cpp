@@ -144,7 +144,7 @@ namespace OKps
 							+ " 打开失败";
 						throw std::runtime_error(hint);
 					}
-					this->MEMBER_worker = std::thread(&(compare_worker::work), this);
+					this->MEMBER_worker = std::thread(&compare_worker::work, this);
 				}
 				void join()
 				{
