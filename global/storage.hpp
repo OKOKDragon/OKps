@@ -4,18 +4,21 @@
 #include <vector>
 #include <memory>
 #include <type_traits>
+#include <set>
 #include <filesystem>
 
 namespace OKps
 {
 	/*
 	按字节比较两个文件的内容是否完全相同
+	thread 参数表示建议使用的线程数
 	*/
-	bool compare(std::filesystem::path const & left, std::filesystem::path const & right);
+	bool compare(std::filesystem::path const & left, std::filesystem::path const & right, std::uintmax_t const thread = 0);
 	/*
-	深度遍历文件夹，获取所有文件、子目录、子目录下的文件和子目录
+	深度遍历目录 directory，递归地获取此目录下所有文件、子目录、子目录下的文件和子目录
+	result_types 参数决定此函数返回的结果中排除哪些类型的文件
 	*/
-	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, bool save_directory/*是否将目录保存到结果中*/);
+	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, std::set<std::filesystem::file_type> const & result_types = std::set<std::filesystem::file_type>());
 
 	/*
 	字段，是一串2进制数据，其结构是：

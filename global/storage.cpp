@@ -1,4 +1,6 @@
 ﻿#include <fstream>
+#include <thread>
+#include <atomic>
 
 #include ".\bits.hpp"
 #include ".\storage.hpp"
@@ -6,7 +8,7 @@
 
 namespace OKps
 {
-	bool compare(std::filesystem::path const & left, std::filesystem::path const & right)
+	bool compare(std::filesystem::path const & left, std::filesystem::path const & right, std::uintmax_t const threads)
 	{
 		namespace fs = std::filesystem;
 
@@ -30,6 +32,10 @@ namespace OKps
 			std::string const hint = "路径 " + right.string() + " 不存在";
 			throw std::invalid_argument(hint);
 		}
+		if (left == right)
+		{
+			return true;
+		}
 		auto const length = fs::file_size(left);
 		bool result;
 		if (length != fs::file_size(right))
@@ -38,112 +44,165 @@ namespace OKps
 		}
 		else
 		{
-			constexpr std::uintmax_t const buffer_length = static_cast<std::uintmax_t>(1024) * 64;
-			std::uintmax_t const read_times = length / buffer_length;
-			std::uintmax_t last_read_length = length % buffer_length;
-			if (last_read_length == 0 and read_times != 0)
+			std::uintmax_t work_threads = threads;
+			if (work_threads == 0)
 			{
-				last_read_length = buffer_length;
+				work_threads = std::thread::hardware_concurrency();
 			}
-
-			result = true;
-			std::ifstream left_reader;
-			std::ifstream right_reader;
-			left_reader.open(left, std::ios::in | std::ios::binary);
-			right_reader.open(right, std::ios::in | std::ios::binary);
-			if (not left_reader.is_open())
+			if (work_threads == 0)
 			{
-				std::string const hint = "文件 " + left.string() + " 无法打开";
-				throw std::runtime_error(hint);
+				work_threads = 1;
 			}
-			if (not right_reader.is_open())
+			constexpr std::uintmax_t const least_buffer_length = static_cast<std::uintmax_t>(1024) * 64;
+			if (length / work_threads < least_buffer_length)
 			{
-				std::string const hint = "文件 " + right.string() + " 无法打开";
-				throw std::runtime_error(hint);
+				work_threads = length / least_buffer_length;
 			}
-			std::unique_ptr<char[]> left_buffer = std::make_unique<char[]>(buffer_length);
-			std::unique_ptr<char[]> right_buffer = std::make_unique<char[]>(buffer_length);
-			bool done = false;
-			for (std::uintmax_t j = 0; j < read_times and (not done); j++)
+			std::uintmax_t const buffer_length = length / work_threads;
+			std::uintmax_t const last_buffer_length = length - buffer_length * work_threads;
+			class compare_worker final
 			{
-				if (not left_reader.read(left_buffer.get(), buffer_length))
+			private:
+				std::atomic_bool & MEMBER_result;
+				std::thread MEMBER_worker;
+				std::unique_ptr<char[]> MEMBER_left_buffer;
+				std::unique_ptr<char[]> MEMBER_right_buffer;
+				std::ifstream MEMBER_left;
+				std::ifstream MEMBER_right;
+				std::uintmax_t const MEMBER_buffer_length;
+				std::uintmax_t const MEMBER_begin;
+				fs::path const & MEMBER_left_route;
+				fs::path const & MEMBER_right_route;
+				std::exception_ptr MEMBER_error;
+				void work()
 				{
-					std::string const hint = "读取文件 "
-						+ left.string()
-						+ " 失败";
-					throw std::runtime_error(hint);
-				}
-				if (not right_reader.read(right_buffer.get(), buffer_length))
-				{
-					std::string const hint = "读取文件 "
-						+ right.string()
-						+ " 失败";
-					throw std::runtime_error(hint);
-				}
-				for (std::size_t i = 0; i < buffer_length and (not done); i++)
-				{
-					if (left_buffer[i] != right_buffer[i])
+					if (this->MEMBER_result)
 					{
-
-						result = false;
-						done = true;
+						if (not this->MEMBER_left.read(this->MEMBER_left_buffer.get(), this->MEMBER_buffer_length))
+						{
+							try
+							{
+								std::string const hint = std::string("文件 ")
+									+ this->MEMBER_left_route.string()
+									+ " 读取失败";
+								throw std::runtime_error(hint);
+							}
+							catch (...)
+							{
+								this->MEMBER_error = std::current_exception();
+								return;
+							}
+						}
+						if (not this->MEMBER_right.read(this->MEMBER_right_buffer.get(), this->MEMBER_buffer_length))
+						{
+							try
+							{
+								std::string const hint = std::string("文件 ")
+									+ this->MEMBER_right_route.string()
+									+ " 读取失败";
+								throw std::runtime_error(hint);
+							}
+							catch (...)
+							{
+								this->MEMBER_error = std::current_exception();
+								return;
+							}
+						}
+					}
+					for (std::uintmax_t i = 0; this->MEMBER_result and i < this->MEMBER_buffer_length;i++)
+					{
+						if (this->MEMBER_left_buffer[i] != this->MEMBER_right_buffer[i])
+						{
+							this->MEMBER_result = false;
+						}
 					}
 				}
-			}
-			if (not done)
-			{
-				if (not left_reader.read(left_buffer.get(), last_read_length))
+			public:
+				compare_worker(std::atomic_bool & result, std::uintmax_t const buffer_length, std::uintmax_t const begin, fs::path const & left, fs::path const & right)noexcept
+					:MEMBER_result(result)
+					, MEMBER_left_buffer(std::make_unique<char[]>(buffer_length))
+					, MEMBER_right_buffer(std::make_unique<char[]>(buffer_length))
+					, MEMBER_buffer_length(buffer_length)
+					, MEMBER_begin(begin)
+					, MEMBER_left(left, std::ios::in | std::ios::binary)
+					, MEMBER_right(right, std::ios::in | std::ios::binary)
+					, MEMBER_error()
+					, MEMBER_left_route(left)
+					, MEMBER_right_route(right)
 				{
-					std::string const hint = "读取文件 "
-						+ left.string()
-						+ " 失败";
-					throw std::runtime_error(hint);
-				}
-				if (not right_reader.read(right_buffer.get(), last_read_length))
-				{
-					std::string const hint = "读取文件 "
-						+ right.string()
-						+ " 失败";
-					throw std::runtime_error(hint);
-				}
-				for (std::size_t i = 0; i < last_read_length and (not done); i++)
-				{
-					if (left_buffer[i] != right_buffer[i])
+					if (not this->MEMBER_left.is_open())
 					{
-
-						result = false;
-						done = true;
+						std::string const hint = std::string("文件 ")
+							+ left.string()
+							+ " 打开失败";
+						throw std::runtime_error(hint);
+					}
+					if (not this->MEMBER_right.is_open())
+					{
+						std::string const hint = std::string("文件 ")
+							+ right.string()
+							+ " 打开失败";
+						throw std::runtime_error(hint);
+					}
+					this->MEMBER_worker = std::thread(&(compare_worker::work), this);
+				}
+				void join()
+				{
+					this->MEMBER_worker.join();
+				}
+				std::exception_ptr const & error()
+				{
+					return this->MEMBER_error;
+				}
+				~compare_worker()noexcept
+				{
+					if (this->MEMBER_worker.joinable())
+					{
+						this->MEMBER_worker.join();
 					}
 				}
+				compare_worker(compare_worker const &) = delete;
+				compare_worker(compare_worker &&) = delete;
+				void operator =(compare_worker const &) = delete;
+				void operator =(compare_worker &&) = delete;
+			};
+			std::uintmax_t position = 0;
+			auto temp_result = std::atomic_bool(true);
+			auto temp_workers = std::make_unique<std::unique_ptr<compare_worker>[]>(work_threads + 1);
+
+			for (std::uintmax_t i = 0;i < work_threads;i++)
+			{
+				temp_workers[i] = std::make_unique<compare_worker>(temp_result, buffer_length, position, left, right);
+				position += buffer_length;
 			}
+			temp_workers[work_threads] = std::make_unique<compare_worker>(temp_result, last_buffer_length, position, left, right);
+			for (std::uintmax_t i = 0;i <= work_threads;i++)
+			{
+				temp_workers[i]->join();
+				if (temp_workers[i]->error())
+				{
+					std::rethrow_exception(temp_workers[i]->error());
+				}
+			}
+			result = temp_result;
+
+			return result;
 		}
-
-		return result;
 	}
-	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, bool save_directory)
+	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, std::set<std::filesystem::file_type> const & result_types)
 	{
 		namespace fs = std::filesystem;
+
 		if (not fs::is_directory(directory))
 		{
-			std::string const hint = "路径 " + directory.string() + " 不是目录";
+			std::string const hint = "路径 " + directory.string() + " 不是既存目录";
 			throw std::invalid_argument(hint);
 		}
-		if (not fs::exists(directory))
-		{
-			std::string const hint = "路径 " + directory.string() + " 不存在";
-			throw std::invalid_argument(hint);
-		}
+
 		std::vector<std::filesystem::path> result;
 		for (auto entry = fs::recursive_directory_iterator(directory, fs::directory_options::skip_permission_denied | fs::directory_options::follow_directory_symlink); entry != fs::end(entry); ++entry)
 		{
-			if (entry->is_directory())
-			{
-				if (save_directory)
-				{
-					result.push_back(entry->path());
-				}
-			}
-			else
+			if (result_types.find(entry->status().type()) == result_types.end())
 			{
 				result.push_back(entry->path());
 			}
