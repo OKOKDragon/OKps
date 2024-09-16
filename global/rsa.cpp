@@ -16,7 +16,7 @@ namespace OKps::RSA
         private:
             std::thread worker;
             byte_device const & rsa;
-            std::atomic_bool & done;
+            std::atomic<bool> & done;
             std::size_t const length;
             void check()noexcept
             {
@@ -46,7 +46,7 @@ namespace OKps::RSA
                 }
             }
         public:
-            impl(byte_device const & rsa, std::atomic_bool & done, std::size_t const length)
+            impl(byte_device const & rsa, std::atomic<bool> & done, std::size_t const length)
                 :rsa(rsa)
                 , done(done)
                 , length(length)
@@ -61,7 +61,7 @@ namespace OKps::RSA
             impl(impl &&) = delete;
 
         };
-        std::atomic_bool done = false;
+        std::atomic<bool> done = false;
         auto const thread_number = std::thread::hardware_concurrency();
 
         for (std::uintmax_t counter_1 = 0;counter_1 < times;counter_1 += thread_number)

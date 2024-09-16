@@ -166,7 +166,7 @@ namespace OKps
 			else
 			{
 				this->MEMBER_not_waiting = false;
-				using TYPE_waiting = std::atomic_bool const &;
+				using TYPE_waiting = std::atomic<bool> const &;
 				auto is_waiting = [this]()noexcept->TYPE_waiting
 				{
 					return this->MEMBER_not_waiting;

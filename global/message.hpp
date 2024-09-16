@@ -69,12 +69,12 @@ namespace OKps
 		TYPE_handler_pool MEMBER_handlers;
 		std::unique_lock<std::mutex> MEMBER_lock;
 		std::mutex MEMBER_mutex;
-		std::atomic_bool MEMBER_not_waiting;
+		std::atomic<bool> MEMBER_not_waiting;
 		std::condition_variable MEMBER_waiter;
 		std::thread MEMBER_peeker;
 		void peek()noexcept;
 		std::queue<std::uintmax_t> MEMBER_signals;
-		std::atomic_bool MEMBER_done;
+		std::atomic<bool> MEMBER_done;
 	public:
 		/*
 		生成随机的信号值signal，并将handler注册为该信号的处理函数

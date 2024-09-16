@@ -63,7 +63,7 @@ namespace OKps
 			class compare_worker final
 			{
 			private:
-				std::atomic_bool & MEMBER_result;
+				std::atomic<bool> & MEMBER_result;
 				std::thread MEMBER_worker;
 				std::unique_ptr<char[]> MEMBER_left_buffer;
 				std::unique_ptr<char[]> MEMBER_right_buffer;
@@ -118,7 +118,7 @@ namespace OKps
 					}
 				}
 			public:
-				compare_worker(std::atomic_bool & result, std::uintmax_t const buffer_length, std::uintmax_t const begin, fs::path const & left, fs::path const & right)noexcept
+				compare_worker(std::atomic<bool> & result, std::uintmax_t const buffer_length, std::uintmax_t const begin, fs::path const & left, fs::path const & right)noexcept
 					:MEMBER_result(result)
 					, MEMBER_left_buffer(std::make_unique<char[]>(buffer_length))
 					, MEMBER_right_buffer(std::make_unique<char[]>(buffer_length))
@@ -167,7 +167,7 @@ namespace OKps
 				void operator =(compare_worker &&) = delete;
 			};
 			std::uintmax_t position = 0;
-			auto temp_result = std::atomic_bool(true);
+			auto temp_result = std::atomic<bool>(true);
 			auto temp_workers = std::make_unique<std::unique_ptr<compare_worker>[]>(work_threads + 1);
 
 			for (std::uintmax_t i = 0;i < work_threads;i++)

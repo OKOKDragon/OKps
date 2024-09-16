@@ -37,7 +37,7 @@ namespace OKps
         this->MEMBER_lock = false;
     }
 
-    std::atomic_bool const & simple_spin_lock::is_locked() const noexcept
+    std::atomic<bool> const & simple_spin_lock::is_locked() const noexcept
     {
         return this->MEMBER_lock;
     }

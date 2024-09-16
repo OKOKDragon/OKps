@@ -1040,7 +1040,7 @@ namespace OKps
         private:
             integer const & checker/*用于筛查的数*/;
             integer const & num;
-            std::atomic_bool & done;
+            std::atomic<bool> & done;
             std::thread worker;
 
             void check()noexcept
@@ -1077,7 +1077,7 @@ namespace OKps
                 return;
             }
         public:
-            impl(integer const & checker/*用于筛查的数*/, integer const & num, std::atomic_bool & done)
+            impl(integer const & checker/*用于筛查的数*/, integer const & num, std::atomic<bool> & done)
                 : checker(checker)
                 , num(num)
                 , done(done)
@@ -1099,7 +1099,7 @@ namespace OKps
                 return true;
             }
         }
-        std::atomic_bool done = false;
+        std::atomic<bool> done = false;
         auto const thread_number = std::thread::hardware_concurrency();
         for (std::uintmax_t counter_1 = 0;counter_1 < actual_check_times;counter_1 += thread_number)
         {
