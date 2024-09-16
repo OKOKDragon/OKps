@@ -121,9 +121,9 @@ namespace OKps
             bool operator ==(iterator const & right)const noexcept;
             bool operator !=(iterator const & right)const noexcept;
             /*
-            比较两个迭代器的地址，仅用于std::less。
-
-            图中的节点之间没有定义偏序关系，所以此函数不是在比较节点之间的关系。
+            比较两个迭代器
+            此函数仅用于std::less，以使得迭代器可以用std::set包装。
+            此函数比较的不是迭代器所指向的图节点，图中的节点之间没有定义任何可以用来比较的偏序关系。
             */
             bool operator <(iterator const & right)const noexcept;
             /*
