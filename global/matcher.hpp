@@ -3,7 +3,6 @@
 #include <type_traits>
 #include <string>
 #include <unordered_map>
-#include <functional>
 #include <memory>
 
 namespace OKps
