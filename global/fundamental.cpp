@@ -7,6 +7,25 @@
 namespace OKps::base
 {
 	template<arithmetic_integer value_type>
+	integer<value_type>::operator std::bitset<integer<value_type>::bit_length>()const
+		noexcept(noexcept(std::bitset<integer<value_type>::bit_length>())
+		and noexcept((std::declval<std::bitset<integer<value_type>::bit_length>>())[std::declval<std::size_t>()] = std::declval<bool>()))
+	{
+		auto result = std::bitset<integer<value_type>::bit_length>();
+		for (std::size_t i = 0;i < integer<value_type>::bit_length;i++)
+		{
+			if (((this->MEMBER_value >> i) & static_cast<value_type>(1)) == static_cast<value_type>(0))
+			{
+				result[i] = false;
+			}
+			else
+			{
+				result[i] = true;
+			}
+		}
+		return result;
+	}
+	template<arithmetic_integer value_type>
 	integer<value_type>::integer(value_type const value)noexcept
 		:MEMBER_value(value)
 	{
@@ -383,6 +402,7 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	void integer<value_type>::operator *=(integer const & right)
 	{
+
 		if (this->MEMBER_value == static_cast<value_type>(0) or right.MEMBER_value == static_cast<value_type>(0))
 		{
 			this->MEMBER_value = static_cast<value_type>(0);
@@ -511,6 +531,7 @@ namespace OKps::base
 			}
 		}
 		this->MEMBER_value /= right.MEMBER_value;
+
 	}
 
 	template<arithmetic_integer value_type>
@@ -560,6 +581,7 @@ namespace OKps::base
 			}
 		}
 		this->MEMBER_value %= right.MEMBER_value;
+
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator -()const
@@ -606,6 +628,7 @@ namespace OKps::base
 	void integer<value_type>::operator &=(integer const & right)noexcept
 	{
 		this->MEMBER_value &= right.MEMBER_value;
+
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator |(integer const & right)const noexcept
@@ -616,6 +639,7 @@ namespace OKps::base
 	void integer<value_type>::operator |=(integer const & right)noexcept
 	{
 		this->MEMBER_value |= right.MEMBER_value;
+
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator ^(integer const & right)const noexcept
@@ -626,6 +650,7 @@ namespace OKps::base
 	void integer<value_type>::operator ^=(integer const & right)noexcept
 	{
 		this->MEMBER_value ^= right.MEMBER_value;
+
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator <<(integer<std::size_t> const & shift)const
@@ -656,6 +681,7 @@ namespace OKps::base
 			throw std::logic_error(hint);
 		}
 		this->MEMBER_value <<= shift.value();
+
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator >>(integer<std::size_t> const & shift)const
@@ -686,6 +712,7 @@ namespace OKps::base
 			throw std::logic_error(hint);
 		}
 		this->MEMBER_value >>= shift.value();
+
 	}
 	template<arithmetic_integer value_type>
 	template<different_arithmetic_integer<value_type> target_type>

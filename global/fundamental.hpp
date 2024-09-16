@@ -1,7 +1,10 @@
 ﻿#pragma once
 
 #include <type_traits>
+#include <bitset>
+#include <memory>
 
+#include ".\blank.hpp"
 #include ".\bits.hpp"
 
 /*
@@ -9,17 +12,17 @@
 
 此文件要求在c++20标准下编译，因为c++20标准规定了内置整数类型都要用补码形式表示，从而规范了内置整数类型的取值范围和位运算的行为。
 
-此文件提供的所有运算操作都会在运行期强制对未定义行为做检查，将影响程序的性能。
-所有包装类的初始值都是0。
+包装类提供的所有操作都会在运行期强制对未定义行为做检查，将影响程序的性能。
+默认构造的包装类的初始值都是0。
 
-规定两个数 left 和 right 之间进行四则运算，结果的类型与 left 相同，right 会先被转换成与 left 相同的类型。
+规定两个包装类 left 和 right 之间进行四则运算，结果的类型与 left 相同，而 right 会先被转换成与 left 相同的类型再运算。
 如果在转换类型过程中，发现 right 的值无法用 left 的类型表示，则抛出异常。
 
 left 和 right 进行比较，也是以 left 的类型为准，right 会先被转换成与 left 相同的类型。
 
-与c++标准不同的是，为了统一各种整数的行为，此文件提供的包装类对任何溢出都视为错误，而c++标准对无符号整数的溢出则进行取模运算。
+与c++标准不同的是，包装类对任何溢出都视为错误，而c++标准则允许无符号整数的溢出。
 
-c++标准规定：char 类型与 signed char 或 unsigned char 之一具有相同的符号性、大小和对齐，但它是单独的类型。
+c++标准规定：char 类型与 signed char 和 unsigned char 二者之一具有相同的符号性、大小和对齐，但它在语法层面是单独的类型。
 此文件专注于运算，故只提供 signed char 和 unsigned char 的包装类，并将它们当作 1 字节大小的整数类型；不提供 char 的包装类。
 */
 
@@ -115,6 +118,9 @@ namespace OKps::base
 		operator integer<target_type>()const
 			noexcept(safe_convertible<value_type, target_type>);
 
+		operator std::bitset<integer<value_type>::bit_length>()const
+			noexcept(noexcept(std::bitset<integer<value_type>::bit_length>())
+				and noexcept((std::declval<std::bitset<integer<value_type>::bit_length>>())[std::declval<std::size_t>()] = std::declval<bool>()));
 	};
 
 	template class integer<signed char>;
