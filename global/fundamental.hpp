@@ -73,6 +73,8 @@ namespace OKps::base
 		static inline constexpr value_type min = std::numeric_limits<value_type>::min();
 
 		integer(value_type const value = static_cast<value_type>(0))noexcept;
+		integer(std::bitset<integer<value_type>::bit_length> const &)
+			noexcept(noexcept(static_cast<bool>((std::declval<std::bitset<integer<value_type>::bit_length> const&>())[std::declval<std::size_t>()])));
 		integer(integer const &)noexcept;
 		integer(integer &&) = delete;
 		~integer()noexcept;

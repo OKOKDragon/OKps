@@ -715,6 +715,23 @@ namespace OKps::base
 
 	}
 	template<arithmetic_integer value_type>
+	integer<value_type>::integer(std::bitset<integer<value_type>::bit_length> const & value)
+		noexcept(noexcept(static_cast<bool>((std::declval<std::bitset<integer<value_type>::bit_length> const&>())[std::declval<std::size_t>()])))
+	{
+		for (std::size_t i = 0;i < integer<value_type>::bit_length;i++)
+		{
+			if (static_cast<bool>(value[i]))
+			{
+				this->MEMBER_value |= (static_cast<value_type>(1) << i);
+			}
+			else
+			{
+				this->MEMBER_value &= (~(static_cast<value_type>(1) << i));
+			}
+		}
+
+	}
+	template<arithmetic_integer value_type>
 	template<different_arithmetic_integer<value_type> target_type>
 	integer<value_type>::operator integer<target_type>()const
 		noexcept(safe_convertible<value_type, target_type>)
