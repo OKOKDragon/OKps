@@ -128,7 +128,7 @@ namespace OKps::base
 	};
 	/*
 	参数基类
-	和空基类一样，但专用做处理函数类的参数
+	此类和空基类一样，但专用做 处理函数类 的参数
 	*/
 	class parameter
 	{
@@ -165,6 +165,84 @@ namespace OKps::base
 		但是又不希望不小心写出错误的 delete 或其他错误的指针操作，所以避免使用裸指针。
 		*/
 		virtual void handle(std::unique_ptr<parameter> const &) = 0;
+	};
+	/*
+	引用 marked 类的包装类
+	此类的每个对象都是对一个 marked 对象的引用。
+	如果 marked 对象 m 被销毁，则引用 m 的所有此类对象自动无效化
+	*/
+	class reference;
+	/*
+	拥有唯一标记的基类
+	*/
+	class marked
+	{
+		friend class reference;
+	protected:
+		/*
+		标记类
+		*/
+		class marker_type final
+		{
+		private:
+			marked * MEMBER_owner;
+		public:
+			marker_type() = delete;
+			marker_type(marked *)noexcept;
+			~marker_type()noexcept;
+			marker_type(marker_type const &) = delete;
+			marker_type(marker_type &&) = delete;
+			void operator =(marker_type const &) = delete;
+			void operator =(marker_type &&) = delete;
+			marked & owner()noexcept;
+			marked const & owner()const noexcept;
+		};
+	private:
+		std::shared_ptr<marker_type> MEMBER_marker;
+	protected:
+		std::shared_ptr<marker_type> const & marker()const noexcept;
+
+		marked()
+			noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
+		virtual ~marked()
+			noexcept(std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>);
+		marked(marked const &)
+			noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
+		marked(marked &&)
+			noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
+		//什么都不做
+		virtual void operator =(marked const &) noexcept;
+		//什么都不做
+		virtual void operator =(marked &&) noexcept;
+		virtual marked & self()noexcept;
+		virtual marked const & self()const noexcept;
+	};
+
+	class reference
+	{
+	private:
+		std::weak_ptr<marked::marker_type> MEMBER_marker;
+	protected:
+		reference() = delete;
+		reference(std::shared_ptr<marked::marker_type> const &)
+			noexcept(noexcept(std::weak_ptr<marked::marker_type>(std::declval<std::shared_ptr<marked::marker_type> const &>())));
+		virtual ~reference()
+			noexcept(std::is_nothrow_destructible_v<std::weak_ptr<marked::marker_type>>);
+		reference(reference const &)
+			noexcept(std::is_nothrow_copy_constructible_v<std::weak_ptr<marked::marker_type>>);
+		virtual void operator =(reference const &)
+			noexcept(std::is_nothrow_copy_assignable_v<std::weak_ptr<marked::marker_type>>);
+		reference(reference &&)
+			noexcept(std::is_nothrow_move_constructible_v<std::weak_ptr<marked::marker_type>>);
+		virtual void operator =(reference &&)
+			noexcept(std::is_nothrow_move_assignable_v<std::weak_ptr<marked::marker_type>>);
+		virtual reference & self()noexcept;
+		virtual reference const & self()const noexcept;
+
+		bool is_valid()const
+			noexcept(noexcept(std::declval<std::weak_ptr<marked::marker_type>>().expired()));
+		marked & get();
+		marked const & get()const;
 	};
 	/*
 	此基类要求子类实现函数self_copy，其功能为复制子类对象自身，并包装到指向基类的智能指针中返回。

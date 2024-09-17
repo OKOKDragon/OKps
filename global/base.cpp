@@ -365,4 +365,125 @@ namespace OKps::base
 	{
 		return *this;
 	}
+
+
+
+	marked::marker_type::marker_type(marked * m)noexcept
+		:MEMBER_owner(m)
+	{
+	}
+	marked::marker_type::~marker_type()noexcept
+	{
+	}
+
+	marked & marked::marker_type::owner()noexcept
+	{
+		return *(this->MEMBER_owner);
+	}
+	marked const & marked::marker_type::owner()const noexcept
+	{
+		return *(this->MEMBER_owner);
+	}
+
+
+
+
+	std::shared_ptr<marked::marker_type> const & marked::marker()const noexcept
+	{
+		return this->MEMBER_marker;
+	}
+
+	marked::marked()
+		noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
+		:MEMBER_marker(std::make_shared<marker_type>(this))
+	{
+	}
+	marked::~marked()
+		noexcept(std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>)
+	{
+	}
+	marked::marked(marked const &)
+		noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
+		:MEMBER_marker(std::make_shared<marker_type>(this))
+	{
+	}
+	marked::marked(marked &&)
+		noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
+		:MEMBER_marker(std::make_shared<marker_type>(this))
+	{
+	}
+	marked & marked::self()noexcept
+	{
+		return *this;
+	}
+	marked const & marked::self()const noexcept
+	{
+		return *this;
+	}
+
+	void marked::operator =(marked const &) noexcept
+	{
+	}
+
+	void marked::operator =(marked &&) noexcept
+	{
+	}
+	reference::reference(std::shared_ptr<marked::marker_type> const & m)
+		noexcept(noexcept(std::weak_ptr<marked::marker_type>(std::declval<std::shared_ptr<marked::marker_type> const &>())))
+		:MEMBER_marker(m)
+	{
+	}
+	reference::~reference()
+		noexcept(std::is_nothrow_destructible_v<std::weak_ptr<marked::marker_type>>)
+	{
+	}
+	reference::reference(reference const & origin)
+		noexcept(std::is_nothrow_copy_constructible_v<std::weak_ptr<marked::marker_type>>)
+		:MEMBER_marker(origin.MEMBER_marker)
+	{
+	}
+	void reference::operator =(reference const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::weak_ptr<marked::marker_type>>)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_marker = origin.MEMBER_marker;
+		}
+	}
+	reference::reference(reference && origin)
+		noexcept(std::is_nothrow_move_constructible_v<std::weak_ptr<marked::marker_type>>)
+		:MEMBER_marker(std::move(origin.MEMBER_marker))
+	{
+	}
+	void reference::operator =(reference && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::weak_ptr<marked::marker_type>>)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_marker = std::move(origin.MEMBER_marker);
+		}
+	}
+	reference & reference::self()noexcept
+	{
+		return *this;
+	}
+	reference const & reference::self()const noexcept
+	{
+		return *this;
+	}
+
+	bool reference::is_valid()const
+		noexcept(noexcept(std::declval<std::weak_ptr<marked::marker_type>>().expired()))
+	{
+		return (not this->MEMBER_marker.expired());
+	}
+	marked & reference::get()
+	{
+		return this->MEMBER_marker.lock()->owner();
+	}
+	marked const & reference::get()const
+	{
+		return this->MEMBER_marker.lock()->owner();
+	}
+
 }
