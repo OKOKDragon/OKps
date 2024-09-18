@@ -480,10 +480,18 @@ namespace OKps::base
 	}
 	marked & reference::get()
 	{
+		if (this->MEMBER_marker.expired())
+		{
+			throw std::logic_error("引用已失效，禁止解引用");
+		}
 		return this->MEMBER_marker.lock()->owner();
 	}
 	marked const & reference::get()const
 	{
+		if (this->MEMBER_marker.expired())
+		{
+			throw std::logic_error("引用已失效，禁止解引用");
+		}
 		return this->MEMBER_marker.lock()->owner();
 	}
 
