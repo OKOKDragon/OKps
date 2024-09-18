@@ -6,6 +6,8 @@
 #include <string>
 #include <random>
 #include <memory>
+#include <map>
+#include <mutex>
 
 /*
 此文件在命名空间 OKps::base 定义多种通用的基类
@@ -244,9 +246,12 @@ namespace OKps::base
 		marked & get();
 		marked const & get()const;
 	};
+
+
 	/*
 	此基类要求子类实现函数self_copy，其功能为复制子类对象自身，并包装到指向基类的智能指针中返回。
-	这种做法解决的问题是，已知一个基类指针 p 指向子类对象 o，如何在编译期不知道对象 o 真正类型的情况下正确复制对象 o
+	这种做法解决的问题是，
+	已知一个基类指针 p 指向子类对象 o，但在编译期不知道对象 o 的真正类型，如何正确复制对象 o。
 	*/
 	class copier
 	{
@@ -265,10 +270,10 @@ namespace OKps::base
 		virtual std::unique_ptr<copier> self_copy() const = 0;
 	};
 	/*
-	线程工作者基类
+	工作线程基类
 
-	基类管理一个线程，该线程的线程函数是work函数，work函数是纯虚函数，必须由子类实现
-	work函数禁止抛出异常，如果需要使用异常，则使用此基类提供的函数，将异常存储在基类中
+	基类管理一个线程，该线程的线程函数是work函数，work函数是纯虚函数，必须由子类实现。
+	work函数禁止抛出异常，如果需要使用异常，则使用此基类提供的函数，将异常存储在基类中。
 	*/
 	class worker
 	{
@@ -295,6 +300,7 @@ namespace OKps::base
 		virtual void work()noexcept = 0;
 		std::thread & thread()noexcept;
 		std::thread const & thread()const noexcept;
+
 		std::exception_ptr const & have_error()const noexcept;
 		/*
 		将异常以 std::exception_ptr 的形式存储于基类中
@@ -304,5 +310,71 @@ namespace OKps::base
 		将存储在基类中的异常抛出
 		*/
 		[[noreturn]] void release_error()noexcept(false);
+	public:
+		/*
+		将底层的线程对象绑定到work函数，并执行
+		*/
+		void execute();
+		/*
+		等待底层的线程对象加入主线程
+		*/
+		void join();
+	};
+
+	/*
+	此基类重载了 new 和 delete 操作符，通过它们记录内存分配。
+	注意 new 操作符和 new 表达式不是同一个概念，
+	假设 {T * p1 = new T;}，{T * p2 = T::operator new(sizeof(T));}，
+	则只能有 {delete p1;}、{T::operator delete(p2);} 操作，禁止 {T::operator delete(p1);}、{delete p2;} 操作。
+	此基类通过重载 new 和 delete 操作符来记录内存分配，所以只能得到不完整的信息，仅供参考，
+	记录的内存地址和大小都不是准确值。
+	通过此基类记录的信息，只能确认有多少处内存忘记回收，不能确认这些内存的地址和大小。
+	*/
+	class memory_recorded
+	{
+	protected:
+		memory_recorded()noexcept;
+		virtual ~memory_recorded()noexcept;
+	public:
+		void * operator new(std::size_t const);
+		void operator delete(void * const, std::size_t const) noexcept;
+		void * operator new[](std::size_t const);
+		void operator delete[](void * const, std::size_t const) noexcept;
+	protected:
+		memory_recorded(memory_recorded const &)noexcept;
+		virtual void operator =(memory_recorded const &)noexcept;
+		memory_recorded(memory_recorded &&)noexcept;
+		virtual void operator =(memory_recorded &&)noexcept;
+		virtual memory_recorded & self()noexcept;
+		virtual memory_recorded const & self()const noexcept;
+	private:
+		class recorder final
+		{
+		private:
+			std::map<void *, std::size_t> MEMBER_recorder;
+			std::mutex MEMBER_lock;
+		public:
+			recorder(recorder const &) = delete;
+			recorder(recorder &&) = delete;
+			void operator =(recorder &&) = delete;
+			void operator =(recorder const &) = delete;
+			recorder()
+				noexcept(std::is_nothrow_default_constructible_v<std::map<memory_recorded *, std::size_t>>
+				and std::is_nothrow_default_constructible_v<std::mutex>);
+			~recorder()
+				noexcept(std::is_nothrow_destructible_v<std::map<memory_recorded *, std::size_t>>
+				and std::is_nothrow_destructible_v<std::mutex>);
+
+			void add(void * const, std::size_t const);
+			void erase(void * const);
+			std::map<void *, std::size_t> const & get()const noexcept;
+		};
+
+		static recorder MEMBER_recorder;
+	protected:
+		/*
+		访问记录
+		*/
+		static std::map<void *, std::size_t> const & record()noexcept;
 	};
 }
