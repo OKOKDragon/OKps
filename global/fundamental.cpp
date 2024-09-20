@@ -10,6 +10,8 @@ namespace OKps::base
 	value_type const integer<value_type>::max = std::numeric_limits<value_type>::max();
 	template<arithmetic_integer value_type>
 	value_type const integer<value_type>::min = std::numeric_limits<value_type>::min();
+	template<arithmetic_integer value_type>
+	std::size_t const integer<value_type>::size = sizeof(value_type);
 
 	template<arithmetic_integer value_type>
 	integer<value_type>::operator std::bitset<integer<value_type>::bit_length>()const

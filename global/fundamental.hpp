@@ -68,9 +68,9 @@ namespace OKps::base
 		value_type MEMBER_value;
 	public:
 		//数值占用的大小，单位是字节
-		static inline constexpr std::size_t const size = sizeof(value_type);
-		//占用的长度，单位是位
-		static inline constexpr std::size_t const bit_length = size * bit_per_byte;
+		static std::size_t const size;
+		//当前整数类型占用的长度，单位是位
+		static inline constexpr std::size_t const bit_length = sizeof(value_type) * bit_per_byte;
 		//最大值
 		static value_type const max;
 		//最小值

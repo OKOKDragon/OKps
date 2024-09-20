@@ -6,7 +6,7 @@
 namespace OKps
 {
 
-    inline const constexpr std::size_t bit_per_byte = CHAR_BIT/*c标准库定义的宏*/;// 每字节有多少位
+    inline constexpr std::size_t const bit_per_byte = CHAR_BIT/*c标准库定义的宏*/;// 每字节有多少位
 
     /*
     虽然标准库引入了类型安全的，语义更明确的std::byte来替代char和unsigned char作为单字节类型
