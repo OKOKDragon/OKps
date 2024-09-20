@@ -67,14 +67,18 @@ namespace OKps::base
 	private:
 		value_type MEMBER_value;
 	public:
+		//数值占用的大小，单位是字节
 		static inline constexpr std::size_t const size = sizeof(value_type);
+		//占用的长度，单位是位
 		static inline constexpr std::size_t const bit_length = size * bit_per_byte;
-		static inline constexpr value_type max = std::numeric_limits<value_type>::max();
-		static inline constexpr value_type min = std::numeric_limits<value_type>::min();
+		//最大值
+		static value_type const max;
+		//最小值
+		static value_type const min;
 
 		integer(value_type const value = static_cast<value_type>(0))noexcept;
 		integer(std::bitset<integer<value_type>::bit_length> const &)
-			noexcept(noexcept(static_cast<bool>((std::declval<std::bitset<integer<value_type>::bit_length> const&>())[std::declval<std::size_t>()])));
+			noexcept(noexcept(static_cast<bool>((std::declval<std::bitset<integer<value_type>::bit_length> const &>())[std::declval<std::size_t>()])));
 		integer(integer const &)noexcept;
 		integer(integer &&) = delete;
 		~integer()noexcept;

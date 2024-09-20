@@ -71,15 +71,6 @@ namespace OKps::base
 		return *this;
 	}
 
-	std::thread & worker::thread()noexcept
-	{
-		return this->MEMBER_thread;
-	}
-	std::thread const & worker::thread()const noexcept
-	{
-		return this->MEMBER_thread;
-	}
-
 	std::exception_ptr const & worker::have_error()const noexcept
 	{
 		return this->MEMBER_error;
@@ -89,7 +80,7 @@ namespace OKps::base
 	{
 		if (this->MEMBER_error)
 		{
-			throw std::logic_error("已经存储了异常，尚未得到处理");
+			throw std::logic_error("有待处理的异常，无法引入新异常");
 		}
 		this->MEMBER_error = ep;
 	}
@@ -98,6 +89,11 @@ namespace OKps::base
 	{
 		if (not this->MEMBER_error)
 		{
+			/*
+			如果异常指针为空，则将其抛出产生未定义行为
+			故作此判断
+			*/
+
 			throw std::logic_error("没有储存异常");
 		}
 		auto const ep = this->MEMBER_error;
@@ -495,93 +491,10 @@ namespace OKps::base
 		return this->MEMBER_marker.lock()->owner();
 	}
 
-	memory_recorded::memory_recorded()noexcept
-	{
-	}
-	memory_recorded::~memory_recorded()noexcept
-	{
-	}
-
-	void * memory_recorded::operator new(std::size_t const size)
-	{
-		void * block = ::operator new(size);
-		memory_recorded::MEMBER_recorder.add(block, size);
-		return block;
-	}
-	void memory_recorded::operator delete(void * const block, std::size_t const size)noexcept
-	{
-		memory_recorded::MEMBER_recorder.erase(block);
-		::operator delete(block, size);
-	}
-	void * memory_recorded::operator new[](std::size_t const size)
-	{
-		void * block = ::operator new[](size);
-		memory_recorded::MEMBER_recorder.add(block, size);
-		return block;
-	}
-	void memory_recorded::operator delete[](void * const block, std::size_t const size)noexcept
-	{
-		memory_recorded::MEMBER_recorder.erase(block);
-		::operator delete[](block, size);
-	}
-	memory_recorded::recorder memory_recorded::MEMBER_recorder;
-	memory_recorded::memory_recorded(memory_recorded const &)noexcept
-	{
-	}
-	void memory_recorded::operator =(memory_recorded const &)noexcept
-	{
-	}
-	memory_recorded::memory_recorded(memory_recorded &&)noexcept
-	{
-	}
-	void memory_recorded::operator =(memory_recorded &&)noexcept
-	{
-	}
-	memory_recorded & memory_recorded::self()noexcept
-	{
-		return *this;
-	}
-	memory_recorded const & memory_recorded::self()const noexcept
-	{
-		return *this;
-	}
-	std::map<void *, std::size_t> const & memory_recorded::record()noexcept
-	{
-		return memory_recorded::MEMBER_recorder.get();
-	}
-	memory_recorded::recorder::recorder()
-		noexcept(std::is_nothrow_default_constructible_v<std::map<memory_recorded *, std::size_t>>
-		and std::is_nothrow_default_constructible_v<std::mutex>)
-		:MEMBER_lock()
-		, MEMBER_recorder()
-	{
-	}
-	memory_recorded::recorder::~recorder()
-		noexcept(std::is_nothrow_destructible_v<std::map<memory_recorded *, std::size_t>>
-		and std::is_nothrow_destructible_v<std::mutex>)
-	{
-	}
-
-	void memory_recorded::recorder::add(void * const block, std::size_t const size)
-	{
-		this->MEMBER_lock.lock();
-		this->MEMBER_recorder.insert(std::make_pair(block, size));
-		this->MEMBER_lock.unlock();
-	}
-	void memory_recorded::recorder::erase(void * const block)
-	{
-		this->MEMBER_lock.lock();
-		this->MEMBER_recorder.erase(block);
-		this->MEMBER_lock.unlock();
-	}
-	std::map<void *, std::size_t> const & memory_recorded::recorder::get()const noexcept
-	{
-		return this->MEMBER_recorder;
-	}
-
 	void worker::execute()
 	{
 		this->MEMBER_thread = std::thread(&worker::work, std::addressof(this->self()));
+
 	}
 	void worker::join()
 	{
@@ -589,5 +502,10 @@ namespace OKps::base
 		{
 			this->MEMBER_thread.join();
 		}
+	}
+	std::thread::id worker::id()const
+		noexcept(noexcept(std::declval<std::thread>().get_id()))
+	{
+		return this->MEMBER_thread.get_id();
 	}
 }

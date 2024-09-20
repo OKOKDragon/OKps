@@ -7,6 +7,11 @@
 namespace OKps::base
 {
 	template<arithmetic_integer value_type>
+	value_type const integer<value_type>::max = std::numeric_limits<value_type>::max();
+	template<arithmetic_integer value_type>
+	value_type const integer<value_type>::min = std::numeric_limits<value_type>::min();
+
+	template<arithmetic_integer value_type>
 	integer<value_type>::operator std::bitset<integer<value_type>::bit_length>()const
 		noexcept(noexcept(std::bitset<integer<value_type>::bit_length>())
 		and noexcept((std::declval<std::bitset<integer<value_type>::bit_length>>())[std::declval<std::size_t>()] = std::declval<bool>()))
@@ -716,7 +721,7 @@ namespace OKps::base
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type>::integer(std::bitset<integer<value_type>::bit_length> const & value)
-		noexcept(noexcept(static_cast<bool>((std::declval<std::bitset<integer<value_type>::bit_length> const&>())[std::declval<std::size_t>()])))
+		noexcept(noexcept(static_cast<bool>((std::declval<std::bitset<integer<value_type>::bit_length> const &>())[std::declval<std::size_t>()])))
 	{
 		for (std::size_t i = 0;i < integer<value_type>::bit_length;i++)
 		{
