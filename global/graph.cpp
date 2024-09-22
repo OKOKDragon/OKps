@@ -573,11 +573,13 @@ namespace OKps
         {
             (*f)->end()->previous().erase(*f);
             delete (*f);
+            this->MEMBER_edge.erase(*f);
         }
         for (auto f = temp_target.begin();f != temp_target.end();f++)
         {
             (*f)->begin()->next().erase(*f);
             delete (*f);
+            this->MEMBER_edge.erase(*f);
         }
 
         this->MEMBER_node.erase(i.MEMBER_node);

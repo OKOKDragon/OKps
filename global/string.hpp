@@ -64,7 +64,6 @@ namespace OKps
         /*
         完整的命令语句字符串
         */
-        [[nodiscard("求值函数的返回值如果被抛弃，相当于什么都没有做")]]
         std::string command_string() const;
 
         command_statement(const std::string & origin_statement);

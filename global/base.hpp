@@ -183,7 +183,7 @@ namespace OKps::base
 	class marked
 	{
 		friend class reference;
-	protected:
+	private:
 		/*
 		标记类
 		*/
@@ -202,11 +202,11 @@ namespace OKps::base
 			marked & owner()noexcept;
 			marked const & owner()const noexcept;
 		};
-	private:
-		std::shared_ptr<marker_type> MEMBER_marker;
-	protected:
-		std::shared_ptr<marker_type> const & marker()const noexcept;
 
+		std::shared_ptr<marker_type> MEMBER_marker;
+
+		std::shared_ptr<marker_type> const & marker()const noexcept;
+	protected:
 		marked()
 			noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		virtual ~marked()

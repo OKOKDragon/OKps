@@ -64,6 +64,12 @@ namespace OKps
             */
             virtual std::unique_ptr<weight_type> self_copy()const = 0;
 
+            /*
+            比较两个权重的大小
+            用于最短路径等算法
+            */
+            virtual bool operator <(weight_type const & right)const noexcept = 0;
+            virtual bool operator ==(weight_type const & right)const noexcept = 0;
 
         };
     private:

@@ -29,7 +29,7 @@ namespace OKps
         void begin()noexcept;
 
         template <typename time_type>
-        [[nodiscard("求值函数的返回值如果被抛弃，相当于什么都没有做")]] end_result_type<time_type> end()noexcept;
+        end_result_type<time_type> end()noexcept;
 
     };
 

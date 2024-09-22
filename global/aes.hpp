@@ -102,16 +102,13 @@ namespace OKps::AES
         /*
         随机生成16字节aes密钥
         */
-        [[nodiscard("求值函数的返回值如果被抛弃，相当于什么都没有做")]]
         static key_type random_aes_key();
         /*
         生成随机密钥，并用该密钥进行对齐加密
         所得密文应该用对齐解密
         返回值是生成的随机密钥
         */
-        [[nodiscard("返回值是密钥，如果不保存，就无法解密")]]
         static key_type random_encrypt(std::string & origin);
-        [[nodiscard("返回值是密钥，如果不保存，就无法解密")]]
         static key_type random_encrypt(byte_type & origin);
 
     private:
@@ -121,7 +118,7 @@ namespace OKps::AES
 
         void KeyExpansion(std::byte const * key) noexcept;
 
-        [[nodiscard("求值函数的返回值如果被抛弃，相当于什么都没有做")]] static std::byte FFmul(std::byte const & a, std::byte const & b)noexcept;
+        static std::byte FFmul(std::byte const & a, std::byte const & b)noexcept;
 
         static void SubBytes(std::byte state[][4])noexcept;
 
@@ -180,7 +177,6 @@ namespace OKps::AES
 
         key_type MEMBER_key;
 
-        [[nodiscard("转换函数的返回值如果被抛弃，相当于什么都没有做")]]
         static std::string INNER_buffer_string(const char * buffer, std::size_t size);
 
     public:
