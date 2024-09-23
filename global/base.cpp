@@ -336,29 +336,29 @@ namespace OKps::base
 	{
 		return *this;
 	}
-	copier::copier()noexcept
+	self_copier::self_copier()noexcept
 	{
 	}
-	copier::copier(copier const &)noexcept
+	self_copier::self_copier(self_copier const &)noexcept
 	{
 	}
-	copier::~copier()noexcept
+	self_copier::~self_copier()noexcept
 	{
 	}
-	copier::copier(copier &&)noexcept
+	self_copier::self_copier(self_copier &&)noexcept
 	{
 	}
-	void copier::operator =(copier &&)noexcept
+	void self_copier::operator =(self_copier &&)noexcept
 	{
 	}
-	void copier::operator =(copier const &)noexcept
+	void self_copier::operator =(self_copier const &)noexcept
 	{
 	}
-	copier & copier::self()noexcept
+	self_copier & self_copier::self()noexcept
 	{
 		return *this;
 	}
-	copier const & copier::self()const noexcept
+	self_copier const & self_copier::self()const noexcept
 	{
 		return *this;
 	}
@@ -391,23 +391,29 @@ namespace OKps::base
 	}
 
 	marked::marked()
-		noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
-		:MEMBER_marker(std::make_shared<marker_type>(this))
+		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
+			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
+		:MEMBER_marker()
 	{
+		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
 	marked::~marked()
 		noexcept(std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>)
 	{
 	}
 	marked::marked(marked const &)
-		noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
-		:MEMBER_marker(std::make_shared<marker_type>(this))
+		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
+			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
+		:MEMBER_marker()
 	{
+		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
 	marked::marked(marked &&)
-		noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
-		:MEMBER_marker(std::make_shared<marker_type>(this))
+		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
+			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
+		:MEMBER_marker()
 	{
+		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
 	marked & marked::self()noexcept
 	{

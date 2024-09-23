@@ -24,13 +24,13 @@ namespace OKps
     此函数将单个数字，如 0b1、0xa，转换成字符，如'1'、'a'
     如果不能转换，则抛出异常
     */
-    char to_char(unsigned int const number, number_system const number_base);
+    char to_char(unsigned int const number, number_system const number_base = number_system::dec);
     /*
     此函数将表示数字的字符，如 '1'、'a'，转换成整数类型，不区分大小写字母
     如果不能转换，则抛出异常
     c++标准规定，整数类型的内建算术运算符的操作数至少是int类型，char、short会被隐式转换到int再参与整数运算，故此函数返回int类型
     */
-    unsigned int from_char(char const number, number_system const number_base);
+    unsigned int from_char(char const number, number_system const number_base = number_system::dec);
     /*
     命令语句分离器
     输入任意字符串，将它转换为命令语句

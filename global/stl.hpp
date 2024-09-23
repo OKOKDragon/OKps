@@ -75,7 +75,7 @@
 #include <complex>
 #include <numeric>
 #include <random>
-#include <ratio>//编译时有理数算术
+#include <ratio>//编译期有理数算术
 #include <valarray>
 //本地化
 #include <locale>

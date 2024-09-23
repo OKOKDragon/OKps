@@ -16,6 +16,7 @@
 
 namespace OKps::base
 {
+
 	/*
 	空基类
 	*/
@@ -208,13 +209,16 @@ namespace OKps::base
 		std::shared_ptr<marker_type> const & marker()const noexcept;
 	protected:
 		marked()
-			noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
+			noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
+				and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		virtual ~marked()
 			noexcept(std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>);
 		marked(marked const &)
-			noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
+			noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
+				and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		marked(marked &&)
-			noexcept(noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
+			noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
+				and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		//什么都不做
 		virtual void operator =(marked const &) noexcept;
 		//什么都不做
@@ -256,21 +260,21 @@ namespace OKps::base
 	这种做法解决的问题是，
 	已知一个基类指针 p 指向子类对象 o，但在编译期不知道对象 o 的真正类型，如何正确复制对象 o。
 	*/
-	class copier
+	class self_copier
 	{
 	protected:
-		copier()noexcept;
-		copier(copier const &)noexcept;
-		virtual ~copier()noexcept;
-		copier(copier &&)noexcept;
-		virtual void operator =(copier &&)noexcept;
-		virtual void operator =(copier const &)noexcept;
-		virtual copier & self()noexcept;
-		virtual copier const & self()const noexcept;
+		self_copier()noexcept;
+		self_copier(self_copier const &)noexcept;
+		virtual ~self_copier()noexcept;
+		self_copier(self_copier &&)noexcept;
+		virtual void operator =(self_copier &&)noexcept;
+		virtual void operator =(self_copier const &)noexcept;
+		virtual self_copier & self()noexcept;
+		virtual self_copier const & self()const noexcept;
 		/*
 		因为必然有动态内存分配，所以允许抛出异常
 		*/
-		virtual std::unique_ptr<copier> self_copy() const = 0;
+		virtual std::unique_ptr<self_copier> self_copy() const = 0;
 	};
 	/*
 	工作线程基类
