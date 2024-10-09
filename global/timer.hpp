@@ -26,10 +26,10 @@ namespace OKps
         void operator=(time_monitor const &) = delete;
         void operator=(time_monitor &&) = delete;
 
-        void begin()noexcept;
+        void begin() noexcept;
 
         template <typename time_type>
-        end_result_type<time_type> end()noexcept;
+        end_result_type<time_type> end() noexcept;
 
     };
 

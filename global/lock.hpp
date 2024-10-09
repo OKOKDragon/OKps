@@ -22,10 +22,10 @@ namespace OKps
         std::atomic<bool> MEMBER_lock;
         std::thread::id MEMBER_thread_id;
     public:
-        simple_spin_lock()noexcept;
+        simple_spin_lock() noexcept;
 
         /*
-        原子对象无法复制或移动
+        原子对象无法复制或移动，故此类也无法提供复制和移动操作。
         */
         simple_spin_lock(const simple_spin_lock &) = delete;
         simple_spin_lock(simple_spin_lock && origin) = delete;

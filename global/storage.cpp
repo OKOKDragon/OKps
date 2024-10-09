@@ -14,21 +14,25 @@ namespace OKps
 
 		if (not left.has_filename())
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = "路径 " + left.string() + " 不是文件";
 			throw std::invalid_argument(hint);
 		}
 		if (not right.has_filename())
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = "路径 " + right.string() + " 不是文件";
 			throw std::invalid_argument(hint);
 		}
 		if (not fs::exists(left))
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = "路径 " + left.string() + " 不存在";
 			throw std::invalid_argument(hint);
 		}
 		if (not fs::exists(right))
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = "路径 " + right.string() + " 不存在";
 			throw std::invalid_argument(hint);
 		}
@@ -82,6 +86,7 @@ namespace OKps
 						{
 							try
 							{
+								std::locale::global(std::locale::classic());
 								std::string const hint = std::string("文件 ")
 									+ this->MEMBER_left_route.string()
 									+ " 读取失败";
@@ -97,6 +102,7 @@ namespace OKps
 						{
 							try
 							{
+								std::locale::global(std::locale::classic());
 								std::string const hint = std::string("文件 ")
 									+ this->MEMBER_right_route.string()
 									+ " 读取失败";
@@ -132,6 +138,7 @@ namespace OKps
 				{
 					if (not this->MEMBER_left.is_open())
 					{
+						std::locale::global(std::locale::classic());
 						std::string const hint = std::string("文件 ")
 							+ left.string()
 							+ " 打开失败";
@@ -139,6 +146,7 @@ namespace OKps
 					}
 					if (not this->MEMBER_right.is_open())
 					{
+						std::locale::global(std::locale::classic());
 						std::string const hint = std::string("文件 ")
 							+ right.string()
 							+ " 打开失败";
@@ -195,6 +203,7 @@ namespace OKps
 
 		if (not fs::is_directory(directory))
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = "路径 " + directory.string() + " 不是既存目录";
 			throw std::invalid_argument(hint);
 		}
@@ -291,6 +300,7 @@ namespace OKps
 			}
 			if (data.size() < position + sizeof(std::size_t))
 			{
+				std::locale::global(std::locale::classic());
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::size_t length;
@@ -301,6 +311,7 @@ namespace OKps
 			}
 			if (position + length > data.size())
 			{
+				std::locale::global(std::locale::classic());
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::string buffer;
@@ -332,6 +343,7 @@ namespace OKps
 			}
 			if (data.size() < position + sizeof(std::size_t))
 			{
+				std::locale::global(std::locale::classic());
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::size_t length;
@@ -342,6 +354,7 @@ namespace OKps
 			}
 			if (position + length > data.size())
 			{
+				std::locale::global(std::locale::classic());
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::vector<std::byte> buffer;
@@ -395,4 +408,271 @@ namespace OKps
 		origin.MEMBER_length = 0;
 	}
 
+
+
+	byte_memory::marker_type::marker_type(byte_memory * owner)noexcept
+		:MEMBER_owner(owner)
+	{
+	}
+
+	byte_memory::marker_type::~marker_type()noexcept
+	{
+	}
+	byte_memory & byte_memory::marker_type::owner()noexcept
+	{
+		return *(this->MEMBER_owner);
+	}
+	byte_memory const & byte_memory::marker_type::owner()const noexcept
+	{
+		return *(this->MEMBER_owner);
+	}
+
+	byte_memory::reference::reference(std::shared_ptr<marker_type> const & marker, std::streampos const & position)
+		noexcept(std::is_nothrow_copy_constructible_v<std::streampos>
+		and noexcept(std::weak_ptr<marker_type>(std::declval<std::shared_ptr<marker_type> const &>())))
+		:MEMBER_marker(marker)
+		, MEMBER_position(position)
+	{
+	}
+
+	bool byte_memory::reference::is_valid()const
+		noexcept(noexcept(std::declval<std::weak_ptr<marker_type>>().expired()))
+	{
+		return (not this->MEMBER_marker.expired());
+	}
+	void byte_memory::reference::raise_invalid_error()const noexcept(false)
+	{
+		if (not this->is_valid())
+		{
+			std::locale::global(std::locale::classic());
+			throw std::logic_error("此引用已失效");
+		}
+	}
+	byte_memory::reference::operator std::byte()const
+	{
+		this->raise_invalid_error();
+		auto & data = this->MEMBER_marker.lock()->owner();
+		data.MEMBER_storage.seekg(this->MEMBER_position);
+		std::byte result;
+		if (not data.MEMBER_storage.read(reinterpret_cast<char *>(&result), 1))
+		{
+			data.MEMBER_storage.clear();
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("读取文件 ") + data.MEMBER_path.string() + " 的位置 " + std::to_string(this->MEMBER_position) + " 处失败";
+			throw std::runtime_error(hint);
+		}
+		return result;
+	}
+	void byte_memory::reference::operator = (std::byte const value)
+	{
+		this->raise_invalid_error();
+		auto & data = this->MEMBER_marker.lock()->owner();
+		data.MEMBER_storage.seekp(this->MEMBER_position);
+		if (not data.MEMBER_storage.write(reinterpret_cast<char const *>(&value), 1))
+		{
+			data.MEMBER_storage.clear();
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("写入文件 ") + data.MEMBER_path.string() + " 的位置 " + std::to_string(this->MEMBER_position) + " 处失败";
+			throw std::runtime_error(hint);
+		}
+
+	}
+
+	byte_memory::reference::~reference()
+		noexcept(std::is_nothrow_destructible_v<std::streampos>
+		and std::is_nothrow_destructible_v<std::weak_ptr<marker_type>>)
+	{
+	}
+	byte_memory::reference::reference(reference const & origin)
+		noexcept(std::is_nothrow_copy_constructible_v<std::streampos>
+		and std::is_nothrow_copy_constructible_v<std::weak_ptr<marker_type>>)
+		:MEMBER_marker(origin.MEMBER_marker)
+		, MEMBER_position(origin.MEMBER_position)
+	{
+	}
+	byte_memory::reference::reference(reference && origin)
+		noexcept(std::is_nothrow_copy_constructible_v<std::streampos>
+		and std::is_nothrow_default_constructible_v<std::streampos>
+		and std::is_nothrow_move_constructible_v<std::weak_ptr<marker_type>>)
+		:MEMBER_marker(std::move(origin.MEMBER_marker))
+		, MEMBER_position(origin.MEMBER_position)
+	{
+		origin.MEMBER_position = std::streampos();
+	}
+	void byte_memory::reference::operator =(reference const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::streampos>
+		and std::is_nothrow_copy_assignable_v<std::weak_ptr<marker_type>>)
+	{
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_marker = origin.MEMBER_marker;
+			this->MEMBER_position = origin.MEMBER_position;
+		}
+	}
+	void byte_memory::reference::operator =(reference && origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::streampos>
+		and std::is_nothrow_default_constructible_v<std::streampos>
+		and std::is_nothrow_move_assignable_v<std::weak_ptr<marker_type>>)
+	{
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_marker = std::move(origin.MEMBER_marker);
+			this->MEMBER_position = origin.MEMBER_position;
+			origin.MEMBER_position = std::streampos();
+		}
+	}
+	bool byte_memory::reference::operator <(reference const & right)const noexcept
+	{
+		return this->MEMBER_position < right.MEMBER_position;
+	}
+	byte_memory::reference byte_memory::operator [](std::streampos const & position)
+	{
+		return byte_memory::reference(this->MEMBER_marker, position);
+	}
+	std::byte byte_memory::operator [](std::streampos const & position)const
+	{
+		this->MEMBER_storage.seekg(position);
+		std::byte result;
+		if (not this->MEMBER_storage.read(reinterpret_cast<char *>(&result), 1))
+		{
+			this->MEMBER_storage.clear();
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
+			throw std::runtime_error(hint);
+		}
+		return result;
+	}
+	byte_memory::byte_memory(std::filesystem::path const & file_path)
+		:MEMBER_path(file_path)
+		, MEMBER_marker()
+		, MEMBER_storage()
+	{
+		if (std::filesystem::exists(file_path))
+		{
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("路径 ") + file_path.string() + " 已存在";
+			throw std::invalid_argument(hint);
+		}
+		this->MEMBER_storage.open(file_path, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
+		if (not this->MEMBER_storage.is_open())
+		{
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("文件 ") + file_path.string() + " 无法打开";
+			throw std::invalid_argument(hint);
+		}
+		this->MEMBER_marker = std::make_shared<marker_type>(this);
+	}
+
+	byte_memory::byte_memory(byte_memory && origin)
+		noexcept(std::is_nothrow_move_constructible_v<std::fstream>
+		and std::is_nothrow_move_constructible_v<std::filesystem::path>
+		and std::is_nothrow_move_constructible_v<std::shared_ptr<marker_type>>)
+		:MEMBER_marker(std::move(origin.MEMBER_marker))
+		, MEMBER_path(std::move(origin.MEMBER_path))
+		, MEMBER_storage(std::move(origin.MEMBER_storage))
+	{
+
+	}
+	byte_memory::~byte_memory()
+		noexcept(noexcept(std::declval<std::fstream>().close())
+			and noexcept(std::filesystem::remove(std::declval<std::filesystem::path>()))
+		and std::is_nothrow_destructible_v<std::filesystem::path>
+		and std::is_nothrow_destructible_v<std::fstream>
+		and std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>)
+	{
+		this->MEMBER_storage.close();
+		std::filesystem::remove(this->MEMBER_path);
+	}
+	std::streampos & byte_memory::reference::operator &()
+	{
+		this->raise_invalid_error();
+		return this->MEMBER_position;
+	}
+	std::streampos const & byte_memory::reference::operator &()const
+	{
+		this->raise_invalid_error();
+		return this->MEMBER_position;
+	}
+	void byte_memory::operator =(byte_memory && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::fstream>
+		and std::is_nothrow_move_assignable_v<std::filesystem::path>
+		and std::is_nothrow_move_assignable_v<std::shared_ptr<marker_type>>)
+	{
+		if (this != (&origin))
+		{
+			this->MEMBER_marker = std::move(origin.MEMBER_marker);
+			this->MEMBER_path = std::move(origin.MEMBER_path);
+			this->MEMBER_storage = std::move(origin.MEMBER_storage);
+		}
+	}
+
+	field_stream byte_memory::read(std::streampos const & position)const
+	{
+		std::size_t length;
+		this->MEMBER_storage.seekg(position);
+		if (not this->MEMBER_storage.read(reinterpret_cast<char *>(&length), sizeof(std::size_t)))
+		{
+			this->MEMBER_storage.clear();
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
+			throw std::runtime_error(hint);
+		}
+		auto buffer = std::make_unique<char[]>(length);
+		if (not this->MEMBER_storage.read(buffer.get(), length))
+		{
+			this->MEMBER_storage.clear();
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
+			throw std::runtime_error(hint);
+		}
+		std::string result;
+		result.resize(length);
+		for (std::size_t i = 0;i < result.size();++i)
+		{
+			result[i] = buffer[i];
+		}
+		return result;
+	}
+
+	field_stream byte_memory::read(std::streampos const & position, std::streamoff const length)const
+	{
+		this->MEMBER_storage.seekg(position);
+		auto buffer = std::make_unique<char[]>(length);
+		if (not this->MEMBER_storage.read(buffer.get(), length))
+		{
+			this->MEMBER_storage.clear();
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
+			throw std::runtime_error(hint);
+		}
+		std::string result;
+		result.resize(length);
+		for (std::size_t i = 0;i < result.size();++i)
+		{
+			result[i] = buffer[i];
+		}
+		return result;
+	}
+
+	void byte_memory::write(field_stream const & data, bool const raw, std::streampos const & position)
+	{
+		std::string buffer;
+		if (raw)
+		{
+			buffer = data.raw_string();
+		}
+		else
+		{
+			buffer = data.field_string();
+		}
+		this->MEMBER_storage.seekp(position);
+
+		if (not this->MEMBER_storage.write(buffer.c_str(), buffer.size()))
+		{
+			this->MEMBER_storage.clear();
+			std::locale::global(std::locale::classic());
+			std::string const hint = std::string("写入文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
+			throw std::runtime_error(hint);
+		}
+	}
 }

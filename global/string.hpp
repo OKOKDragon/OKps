@@ -42,14 +42,16 @@ namespace OKps
     template std::string value_cast<std::u8string, std::string>(std::u8string const &);
 
         /*
-        此函数仅用于向系统终端输出程序接受的命令行参数
-        在main函数开头将命令行参数转发给此函数
+        此函数仅用于向系统终端输出程序接受的命令行参数，
+        在main函数开头将命令行参数转发给此函数。
 
-        因为不同系统、不同终端模拟器可能对命令的格式规定和处理不同，用户实际输入给程序的命令行参数可能并不是他们所想的
+        因为不同系统、不同终端模拟器可能对命令的格式规定和处理不同，用户实际输入给程序的命令行参数可能并不是他们所想的。
         */
     void echo_command_line(int const argc, char const * const argv[]);
-
-    void wait_input(std::string const & hint = "输入回车以继续运行程序。在输入回车以前，输入任何字符都会被程序忽略。\n输入回车 ││ ", char const input = '\n');
+    /*
+    等待用户从标准输入std::cin输入'\n'，在此之前不做任何事。
+    */
+    void wait_enter_input();
     /*
     此函数将单个数字，如 0b1、0xa，转换成字符，如'1'、'a'
     如果不能转换，则抛出异常

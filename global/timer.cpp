@@ -12,12 +12,12 @@ namespace OKps
     {
         // this->end();
     }
-    void time_monitor::begin()noexcept
+    void time_monitor::begin() noexcept
     {
         this->MEMBER_begin_time = std::chrono::high_resolution_clock::now();
     }
     template <typename time_type>
-    time_monitor::end_result_type<time_type> time_monitor::end()noexcept
+    time_monitor::end_result_type<time_type> time_monitor::end() noexcept
     {
         auto TEMP_end_time = std::chrono::high_resolution_clock::now();
         auto const RESULT_begin_time = std::chrono::time_point_cast<time_type>(this->MEMBER_begin_time).time_since_epoch().count();

@@ -33,7 +33,7 @@ namespace OKps::RSA
 
         //移动构造会导致原来的对象origin不可用
         byte_device(byte_device && origin)noexcept;
-        void operator =(byte_device && origin)noexcept;
+        void operator =(byte_device && origin)  noexcept;
         integer encrypt(integer const & input)const;
         integer decrypt(integer const & input)const;
         integer const & key()const;

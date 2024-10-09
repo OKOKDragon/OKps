@@ -120,6 +120,7 @@ namespace OKps::base
 	{
 		if (this->MEMBER_error)
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("有待处理的异常，无法引入新异常");
 		}
 		this->MEMBER_error = ep;
@@ -133,7 +134,7 @@ namespace OKps::base
 			如果异常指针为空，则将其抛出产生未定义行为
 			故作此判断
 			*/
-
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("没有储存异常");
 		}
 		auto const ep = this->MEMBER_error;
@@ -150,6 +151,7 @@ namespace OKps::base
 	{
 		if (not this->MEMBER_valid)
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("此对象已失效，禁止访问");
 		}
 	}
@@ -543,6 +545,7 @@ namespace OKps::base
 	{
 		if (this->MEMBER_marker.expired())
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("引用已失效，禁止解引用");
 		}
 		return this->MEMBER_marker.lock()->owner();
@@ -551,6 +554,7 @@ namespace OKps::base
 	{
 		if (this->MEMBER_marker.expired())
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("引用已失效，禁止解引用");
 		}
 		return this->MEMBER_marker.lock()->owner();

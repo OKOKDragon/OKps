@@ -99,6 +99,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的整数不是单个2进制数字");
                 }
                 break;
@@ -111,6 +112,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的整数不是单个10进制数字");
                 }
                 break;
@@ -127,6 +129,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的整数不是单个16进制数字");
                 }
                 break;
@@ -139,6 +142,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的整数不是单个8进制数字");
                 }
                 break;
@@ -160,6 +164,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的字符不表示单个2进制数字");
                 }
                 break;
@@ -172,6 +177,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的字符不表示单个10进制数字");
                 }
                 break;
@@ -192,6 +198,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的字符不表示单个16进制数字");
                 }
                 break;
@@ -204,6 +211,7 @@ namespace OKps
                 }
                 else
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的字符不表示单个8进制数字");
                 }
                 break;
@@ -342,15 +350,18 @@ namespace OKps
     }
     void echo_command_line(int const argc, char const * const argv[])
     {
-        std::locale::global(std::locale::classic());
+        auto const origin_locale = std::locale::global(std::locale::classic());
         for (int counter = 0; counter < argc; counter++)
         {
             std::cout << "命令行参数" << counter << " ││ " << argv[counter] << "\n";
         }
+        std::locale::global(origin_locale);
     }
-    void wait_input(std::string const & hint, char const input)
+    void wait_enter_input()
     {
-        std::locale::global(std::locale::classic());
+        std::string const hint = "输入回车以继续运行程序。在输入回车以前，输入任何字符都会被程序忽略。\n输入回车 ││ ";
+        char const input = '\n';
+        auto const origin_locale = std::locale::global(std::locale::classic());
 
         std::cout << hint;
         while (true)
@@ -368,25 +379,30 @@ namespace OKps
                 throw std::runtime_error("std::cin输入流发生错误");
             }
         }
+        std::locale::global(origin_locale);
     }
 
     std::string read(std::fstream & file, std::uintmax_t const length)
     {
         if (not file.is_open())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象并没有打开文件");
         }
         if (file.fail())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象中有异常状态");
         }
         if (file.bad())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象中有不可恢复的严重异常状态");
         }
         char * buffer = new char[length];
         if (not file.read(buffer, length))
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("读取文件失败");
         }
         std::string result;
@@ -403,18 +419,22 @@ namespace OKps
     {
         if (not file.is_open())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象并没有打开文件");
         }
         if (file.fail())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象中有异常状态");
         }
         if (file.bad())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象中有不可恢复的严重异常状态");
         }
         if (not file.write(data.c_str(), data.size()))
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("写入文件失败");
         }
     }
@@ -423,18 +443,22 @@ namespace OKps
     {
         if (not file.is_open())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象并没有打开文件");
         }
         if (file.fail())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象中有异常状态");
         }
         if (file.bad())
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("文件对象中有不可恢复的严重异常状态");
         }
         if (not file.write(data.c_str(), data.size()))
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("写入文件失败");
         }
     }

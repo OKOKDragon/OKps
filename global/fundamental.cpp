@@ -1,6 +1,7 @@
 ﻿#include <stdexcept>
 #include <typeinfo>
 #include <string>
+#include <locale>
 
 #include ".\fundamental.hpp"
 
@@ -99,6 +100,7 @@ namespace OKps::base
 			{
 				if (integer::max - right.MEMBER_value < this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的加法 "
@@ -113,6 +115,7 @@ namespace OKps::base
 			{
 				if (integer::min - right.MEMBER_value > this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的加法 "
@@ -128,6 +131,7 @@ namespace OKps::base
 		{
 			if (integer::max - this->MEMBER_value < right.MEMBER_value)
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的加法 "
@@ -150,6 +154,7 @@ namespace OKps::base
 			{
 				if (integer::max - right.MEMBER_value < this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的加法 "
@@ -164,6 +169,7 @@ namespace OKps::base
 			{
 				if (integer::min - right.MEMBER_value > this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的加法 "
@@ -179,6 +185,7 @@ namespace OKps::base
 		{
 			if (integer::max - this->MEMBER_value < right.MEMBER_value)
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的加法 "
@@ -197,6 +204,7 @@ namespace OKps::base
 
 		if (integer::max - static_cast<value_type>(1) < this->MEMBER_value)
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
 				+ " 的值 "
@@ -217,6 +225,7 @@ namespace OKps::base
 			{
 				if (integer::min + right.MEMBER_value > this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的减法 "
@@ -231,6 +240,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max + right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的减法 "
@@ -246,6 +256,7 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value < right.MEMBER_value)
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的减法 "
@@ -268,6 +279,7 @@ namespace OKps::base
 			{
 				if (integer::min + right.MEMBER_value > this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的减法 "
@@ -282,6 +294,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max + right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的减法 "
@@ -297,6 +310,7 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value < right.MEMBER_value)
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的减法 "
@@ -315,6 +329,7 @@ namespace OKps::base
 
 		if (integer::min + static_cast<value_type>(1) > this->MEMBER_value)
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
 				+ " 的值 "
@@ -337,6 +352,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max / right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -351,6 +367,7 @@ namespace OKps::base
 			{
 				if (right.MEMBER_value < integer::min / this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -365,6 +382,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::min / right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -379,6 +397,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::max / right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -394,6 +413,7 @@ namespace OKps::base
 		{
 			if (integer::max / this->MEMBER_value < right.MEMBER_value)
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的乘法 "
@@ -421,6 +441,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > integer::max / right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -435,6 +456,7 @@ namespace OKps::base
 			{
 				if (right.MEMBER_value < integer::min / this->MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -449,6 +471,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::min / right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -463,6 +486,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value < integer::max / right.MEMBER_value)
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的乘法 "
@@ -478,6 +502,7 @@ namespace OKps::base
 		{
 			if (integer::max / this->MEMBER_value < right.MEMBER_value)
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的乘法 "
@@ -497,12 +522,14 @@ namespace OKps::base
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("除数不能为0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的除法 "
@@ -521,12 +548,14 @@ namespace OKps::base
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("除数不能为0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的除法 "
@@ -547,12 +576,14 @@ namespace OKps::base
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("除数不能为0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的除法 "
@@ -571,12 +602,14 @@ namespace OKps::base
 
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
+			std::locale::global(std::locale::classic());
 			throw std::logic_error("除数不能为0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min and right.MEMBER_value == static_cast<value_type>(-1))
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的除法 "
@@ -598,6 +631,7 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value == integer::min)
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的值 "
@@ -611,6 +645,7 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value != static_cast<value_type>(0))
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的值 "
@@ -665,6 +700,7 @@ namespace OKps::base
 
 		if (shift.value() >= integer::bit_length)
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
 				+ " 的左移 "
@@ -680,6 +716,7 @@ namespace OKps::base
 
 		if (shift.value() >= integer::bit_length)
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
 				+ " 的左移 "
@@ -696,6 +733,7 @@ namespace OKps::base
 
 		if (shift.value() >= integer::bit_length)
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
 				+ " 的右移 "
@@ -711,6 +749,7 @@ namespace OKps::base
 
 		if (shift.value() >= integer::bit_length)
 		{
+			std::locale::global(std::locale::classic());
 			std::string const hint = std::string("类型 ")
 				+ typeid(value_type).name()
 				+ " 的右移 "
@@ -757,6 +796,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("从类型 ")
 						+ typeid(value_type).name()
 						+ " 的值 "
@@ -768,6 +808,7 @@ namespace OKps::base
 				}
 				else if (this->MEMBER_value < static_cast<value_type>(integer<target_type>::min))
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("从类型 ")
 						+ typeid(value_type).name()
 						+ " 的值 "
@@ -792,6 +833,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("从类型 ")
 						+ typeid(value_type).name()
 						+ " 的值 "
@@ -808,6 +850,7 @@ namespace OKps::base
 		{
 			if (this->MEMBER_value < static_cast<value_type>(0))
 			{
+				std::locale::global(std::locale::classic());
 				std::string const hint = std::string("从类型 ")
 					+ typeid(value_type).name()
 					+ " 的值 "
@@ -826,6 +869,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("从类型 ")
 						+ typeid(value_type).name()
 						+ " 的值 "
@@ -849,6 +893,7 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
+					std::locale::global(std::locale::classic());
 					std::string const hint = std::string("从类型 ")
 						+ typeid(value_type).name()
 						+ " 的值 "

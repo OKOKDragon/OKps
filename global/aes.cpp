@@ -789,6 +789,7 @@ namespace OKps::AES
     {
         if (count > 16)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("末尾对齐处理的位数不合法");
         }
         std::random_device seed;                                 // 用于生成随机数种子
@@ -805,6 +806,7 @@ namespace OKps::AES
     {
         if (count > 16)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("末尾对齐处理的位数不合法");
         }
         std::random_device seed;                                 // 用于生成随机数种子
@@ -878,11 +880,13 @@ namespace OKps::AES
     {
         if (origin.size() % 16 != 1)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("输入串的格式错误");
         }
         unsigned int const count = static_cast<unsigned int>(origin[origin.size() - 1]);
         if (count > 16)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("输入串的格式错误");
         }
         origin.pop_back();
@@ -898,11 +902,13 @@ namespace OKps::AES
     {
         if (origin.size() % 16 != 1)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("输入串的格式错误");
         }
         unsigned int const count = static_cast<unsigned int>(origin[origin.size() - 1]);
         if (count > 16)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("输入串的格式错误");
         }
         origin.pop_back();
@@ -925,6 +931,7 @@ namespace OKps::AES
             origin[counter_1]->open(this->MEMBER_origin_route, std::ios::in | std::ios::binary);
             if (not origin[counter_1]->is_open())
             {
+                std::locale::global(std::locale::classic());
                 std::string hinter = std::string("为读取文件 ")
                     + this->MEMBER_origin_route.string()
                     + " 创建第 "
@@ -953,6 +960,7 @@ namespace OKps::AES
             result[counter_1]->open(this->MEMBER_result_route, std::ios::out | std::ios::binary);
             if (not result[counter_1]->is_open())
             {
+                std::locale::global(std::locale::classic());
                 std::string hinter = std::string("为写入文件 ")
                     + this->MEMBER_result_route.string()
                     + " 创建第 "
@@ -1113,6 +1121,7 @@ namespace OKps::AES
             origin[counter_1]->open(this->MEMBER_origin_route, std::ios::in | std::ios::binary);
             if (not origin[counter_1]->is_open())
             {
+                std::locale::global(std::locale::classic());
                 std::string hinter = std::string("为读取文件 ")
                     + this->MEMBER_origin_route.string()
                     + " 创建第 "
@@ -1141,6 +1150,7 @@ namespace OKps::AES
             result[counter_1]->open(this->MEMBER_result_route, std::ios::out | std::ios::binary);
             if (not result[counter_1]->is_open())
             {
+                std::locale::global(std::locale::classic());
                 std::string hinter = std::string("为写入文件 ")
                     + this->MEMBER_result_route.string()
                     + " 创建第 "
@@ -1401,6 +1411,7 @@ namespace OKps::AES
         namespace fs = std::filesystem;
         if (not fs::exists(origin_route))
         {
+            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + origin_route.string()
                 + " 不存在";
@@ -1408,6 +1419,7 @@ namespace OKps::AES
         }
         else if (fs::is_directory(origin_route))
         {
+            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + origin_route.string()
                 + " 不是文件";
@@ -1415,6 +1427,7 @@ namespace OKps::AES
         }
         if (fs::exists(result_route) and fs::is_directory(result_route))
         {
+            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + result_route.string()
                 + " 已经存在，但不是文件";
@@ -1463,6 +1476,7 @@ namespace OKps::AES
         namespace fs = std::filesystem;
         if (not fs::exists(origin_route))
         {
+            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + origin_route.string()
                 + " 不存在";
@@ -1470,6 +1484,7 @@ namespace OKps::AES
         }
         else if (fs::is_directory(origin_route))
         {
+            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + origin_route.string()
                 + " 不是文件";
@@ -1477,6 +1492,7 @@ namespace OKps::AES
         }
         if (fs::exists(result_route) and fs::is_directory(result_route))
         {
+            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + result_route.string()
                 + " 已经存在，但不是文件";
@@ -1486,6 +1502,7 @@ namespace OKps::AES
         this->MEMBER_file_size = std::filesystem::file_size(origin_route);
         if (not (this->MEMBER_file_size >= 17 and this->MEMBER_file_size % 16 == 1))
         {
+            std::locale::global(std::locale::classic());
             std::string hinter = std::string("要解密的文件 ")
                 + origin_route.string()
                 + " 格式错误";

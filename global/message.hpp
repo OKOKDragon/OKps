@@ -30,11 +30,11 @@ namespace OKps
 				noexcept(std::is_nothrow_default_constructible<std::exception_ptr>::value);
 			handler(handler const &)
 				noexcept(std::is_nothrow_copy_constructible<std::exception_ptr>::value);
-			virtual void operator =(handler const &)
+			void operator =(handler const &)
 				noexcept(std::is_nothrow_copy_assignable<std::exception_ptr>::value);
 			handler(handler &&)
 				noexcept(std::is_nothrow_move_constructible<std::exception_ptr>::value);
-			virtual void operator =(handler &&)
+			void operator =(handler &&)
 				noexcept(std::is_nothrow_move_assignable<std::exception_ptr>::value);
 		public:
 			virtual ~handler()
@@ -45,11 +45,12 @@ namespace OKps
 			此函数禁止直接抛出异常，如果需要使用异常，则使用handler基类提供的接口
 			*/
 			virtual void handle() noexcept = 0;
-
+		public:
 			/*
 			检查handler基类目前是否有异常
 			*/
 			std::exception_ptr const & have_exception()const noexcept;
+		protected:
 			/*
 			用新的异常替换掉handler基类目前保有的异常
 

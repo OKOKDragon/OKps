@@ -117,7 +117,7 @@ namespace OKps
         //原来的大数对象origin被移动后会置为0，可以安全使用
         integer(integer && origin)noexcept;
         //原来的大数对象origin被移动后会置为0，可以安全使用
-        void operator =(integer && origin)noexcept;
+        void operator =(integer && origin)  noexcept;
 
         integer operator +(integer const & right)const;
         //取相反数

@@ -25,8 +25,8 @@ namespace OKps
 		public:
 			virtual ~parameter()noexcept;
 		protected:
-			virtual void operator =(parameter const &)noexcept;
-			virtual void operator =(parameter &&)noexcept;
+			void operator =(parameter const &)noexcept;
+			void operator =(parameter &&)noexcept;
 
 		};
 		/*
@@ -38,9 +38,9 @@ namespace OKps
 		protected:
 			handler()noexcept;
 			handler(handler const &)noexcept;
-			virtual void operator =(handler const &)noexcept;
+			void operator =(handler const &)noexcept;
 			handler(handler &&)noexcept;
-			virtual void operator =(handler &&)noexcept;
+			void operator =(handler &&)noexcept;
 		public:
 			virtual ~handler()noexcept;
 		protected:
@@ -74,6 +74,9 @@ namespace OKps
 		work参数是一个函数对象，它指定了使用execute函数执行命令order时调用的函数
 		如果order命令已经被注册，则覆盖其对应的函数对象
 		work函数对象需要自行解决其参数的运行时多态的类型安全问题
+
+		推荐对命令字符串order使用与c++默认本地环境，即std::locale::classic()环境相同的编码，
+		否则可能导致此类抛出的异常信息不可读。
 		*/
 		void regist(std::string const & order, TYPE_work && work);
 		//删除命令

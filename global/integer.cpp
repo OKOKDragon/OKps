@@ -335,6 +335,7 @@ namespace OKps
         {
             if (position >= temp_input.size())
             {
+                std::locale::global(std::locale::classic());
                 throw std::invalid_argument("输入的流格式错误");
             }
             (reinterpret_cast<char *>(&this->MEMBER_sign))[count_1] = temp_input[position];
@@ -351,6 +352,7 @@ namespace OKps
             {
                 if (position >= temp_input.size())
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::invalid_argument("输入的流格式错误");
                 }
                 (reinterpret_cast<char *>(&temp_number))[count_2] = temp_input[position];
@@ -606,6 +608,7 @@ namespace OKps
     {
         if (right.MEMBER_sign == sign_type::zero)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("除数为0，引发除0错误");
         }
         if (this->MEMBER_sign == sign_type::zero)
@@ -642,6 +645,7 @@ namespace OKps
     {
         if (right.MEMBER_sign == sign_type::zero)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("除数为0，引发除0错误");
         }
         if (this->MEMBER_sign == sign_type::zero)
@@ -675,6 +679,7 @@ namespace OKps
     {
         if (pow.MEMBER_sign == sign_type::negative)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("此函数不接受负数作为指数");
         }
         integer result(1, sign_type::positive);
@@ -697,6 +702,7 @@ namespace OKps
     {
         if (right.MEMBER_sign == sign_type::zero)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("除数为0，引发除0错误");
         }
         if (left.MEMBER_sign == sign_type::zero)
@@ -788,7 +794,8 @@ namespace OKps
         auto const d = base / (static_cast<holder_type>(v[0]) + 1);//因为v[0] > 0，所以 base / (v[0]+1) <= half_base，也就是说d可以用half_number类型存储
         if (debug and static_cast<value_type>(d >> half_length) != 0)
         {
-            throw std::logic_error("d值不能用half_number类型表示，不符合预期。检查Knuth除法算法的实现。");
+            std::locale::global(std::locale::classic());
+            throw std::logic_error("d值不能用value_type类型表示，不符合预期。检查Knuth除法算法的实现。");
         }
         {
             number_type TEMP_d;
@@ -803,10 +810,12 @@ namespace OKps
             v = INNER_multiply_number(v, TEMP_d);
             if (debug and v.size() != n)
             {
+                std::locale::global(std::locale::classic());
                 throw std::logic_error("数组v的长度不符合预期。检查Knuth除法算法的实现。");
             }
             if (debug and v[0] < half_base)
             {
+                std::locale::global(std::locale::classic());
                 throw std::logic_error("数组v的最高位小于half_base，没有完成规格化。检查Knuth除法算法的实现。");
             }
         }
@@ -827,6 +836,7 @@ namespace OKps
             {
                 if (debug and q_ == 0)
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::logic_error("商的估计值q_为0，无法执行自减运算。检查Knuth除法的实现");
                 }
                 q_--;
@@ -851,6 +861,7 @@ namespace OKps
             {
                 if (debug and q[j] == 0)
                 {
+                    std::locale::global(std::locale::classic());
                     throw std::logic_error("商的估计值q_为0，无法执行自减运算。检查Knuth除法的实现");
                 }
                 q[j]--;
@@ -874,11 +885,13 @@ namespace OKps
         auto TEMP_1 = INNER_divide_number(u, (value_type)d);
         if (debug and TEMP_1.mod().size() != 0)
         {
+            std::locale::global(std::locale::classic());
             throw std::logic_error("数组u进行反规范化时，余数不为0。检查Knuth试商算法的实现");
         }
         u = TEMP_1.divide();
         if (debug and integer(u, sign_type::positive).INNER_compare_number(integer(right, sign_type::positive)) != compare_result::smaller)
         {
+            std::locale::global(std::locale::classic());
             throw std::logic_error("余数不小于除数right。检查Knuth除法算法的实现");
         }
         return INNER_divide_result(q, u);
@@ -1227,6 +1240,7 @@ namespace OKps
     {
         if (sign == sign_type::zero or length == 0)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("素数不能为0");
         }
         auto result = random(length, sign);
@@ -1270,6 +1284,7 @@ namespace OKps
         auto const one = integer(1, sign_type::positive);
         if (gcd != one)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("输入的参数不存在模逆元");
         }
         if (x.MEMBER_sign == sign_type::negative)
@@ -1278,6 +1293,7 @@ namespace OKps
         }
         if ((num * x) % mod != one)
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("求模逆运算结果错误，检查扩展欧几里得算法的实现");
         }
         return x;
@@ -1286,6 +1302,7 @@ namespace OKps
     {
         if (pow.MEMBER_sign == sign_type::negative)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("此函数不接受负数作为指数");
         }
         auto const one = integer(1, sign_type::positive);
@@ -1359,6 +1376,7 @@ namespace OKps
     {
         if (this->MEMBER_sign == sign_type::negative)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("此函数不能对负数求平方根。未来可能会实现复数运算，但目前没有。");
         }
         if (this->MEMBER_sign == sign_type::zero)

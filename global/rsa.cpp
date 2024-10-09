@@ -59,8 +59,8 @@ namespace OKps::RSA
             }
             impl(impl const &) = delete;
             impl(impl &&) = delete;
-            void operator =(impl const&) = delete;
-            void operator =(impl&&) = delete;
+            void operator =(impl const &) = delete;
+            void operator =(impl &&) = delete;
         };
         std::atomic<bool> done = false;
         auto const thread_number = std::thread::hardware_concurrency();
@@ -132,6 +132,7 @@ namespace OKps::RSA
     {
         if ((not this->MEMBER_valid) or (not right.MEMBER_valid))
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("rsa对象已失效，无法使用");
         }
         if (this->MEMBER_key == right.MEMBER_key and this->MEMBER_public_key == right.MEMBER_public_key and this->MEMBER_private_key == right.MEMBER_private_key)
@@ -147,7 +148,7 @@ namespace OKps::RSA
     {
         return not(*this == right);
     }
-    void byte_device::operator =(byte_device && origin)noexcept
+    void byte_device::operator =(byte_device && origin) noexcept
     {
         if (this != (&origin))
         {
@@ -170,6 +171,7 @@ namespace OKps::RSA
     {
         if (length <= 5)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("素数长度太小，安全性非常低");
             /*
             在一台使用 n 位CPU的机器上，本库使用“长为 n/2 位的c++语言内置整数类型”组成的数组来存储大数，而编译器可能会提供长为 2n 位的整数类型作为扩展支持
@@ -217,14 +219,17 @@ namespace OKps::RSA
     {
         if (not this->MEMBER_valid)
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("此rsa对象已失效，无法使用");
         }
         if (input.sign() == integer::sign_type::negative)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("rsa加密时，原文必须为非负数");
         }
         if (input >= this->MEMBER_key)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("rsa加密时，原文必须小于密钥n");
         }
         return input.power_mod(this->MEMBER_public_key, this->MEMBER_key);
@@ -233,14 +238,17 @@ namespace OKps::RSA
     {
         if (not this->MEMBER_valid)
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("此rsa对象已失效，无法使用");
         }
         if (input.sign() == integer::sign_type::negative)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("rsa解密时，密文必须为非负数");
         }
         if (input >= this->MEMBER_key)
         {
+            std::locale::global(std::locale::classic());
             throw std::invalid_argument("rsa解密时，密文必须小于密钥n");
         }
         return input.power_mod(this->MEMBER_private_key, this->MEMBER_key);
@@ -249,6 +257,7 @@ namespace OKps::RSA
     {
         if (not this->MEMBER_valid)
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("此rsa对象已失效，无法使用");
         }
         return this->MEMBER_key;
@@ -257,6 +266,7 @@ namespace OKps::RSA
     {
         if (not this->MEMBER_valid)
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("此rsa对象已失效，无法使用");
         }
         return this->MEMBER_public_key;
@@ -265,6 +275,7 @@ namespace OKps::RSA
     {
         if (not this->MEMBER_valid)
         {
+            std::locale::global(std::locale::classic());
             throw std::runtime_error("此rsa对象已失效，无法使用");
         }
         return this->MEMBER_private_key;
