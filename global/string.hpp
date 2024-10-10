@@ -50,8 +50,9 @@ namespace OKps
     void echo_command_line(int const argc, char const * const argv[]);
     /*
     等待用户从标准输入std::cin输入'\n'，在此之前不做任何事。
+    提示信息必须符合 std::locale::classic() 本地环境的编码，否则可能无法正常显示。
     */
-    void wait_enter_input();
+    void wait_input(std::string const & hint/*提示信息*/ = "输入回车以继续运行程序。在输入回车以前，输入任何字符都会被程序忽略。\n输入回车 ││ ", char const signal/*要等待的字符*/ = '\n');
     /*
     此函数将单个数字，如 0b1、0xa，转换成字符，如'1'、'a'
     如果不能转换，则抛出异常

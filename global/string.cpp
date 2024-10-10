@@ -357,10 +357,8 @@ namespace OKps
         }
         std::locale::global(origin_locale);
     }
-    void wait_enter_input()
+    void wait_input(std::string const & hint, char const signal)
     {
-        std::string const hint = "输入回车以继续运行程序。在输入回车以前，输入任何字符都会被程序忽略。\n输入回车 ││ ";
-        char const input = '\n';
         auto const origin_locale = std::locale::global(std::locale::classic());
 
         std::cout << hint;
@@ -369,7 +367,7 @@ namespace OKps
             char temp;
             if (std::cin.get(temp))
             {
-                if (temp == input)
+                if (temp == signal)
                 {
                     break;
                 }
