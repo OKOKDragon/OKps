@@ -1,4 +1,4 @@
-﻿#include <random>
+#include <random>
 
 #include ".\cipher.hpp"
 
@@ -10,12 +10,10 @@ namespace OKps::crypt
     {
         if (not this->MEMBER_rsa->is_valid())
         {
-            std::locale::global(std::locale::classic());
             throw std::invalid_argument("输入的RSA密钥不可用");
         }
         if (aes_count < 1)
         {
-            std::locale::global(std::locale::classic());
             throw std::invalid_argument("aes密钥数量至少为1");
         }
         for (std::uintmax_t counter_1 = 0;counter_1 < aes_count;counter_1++)
@@ -67,13 +65,11 @@ namespace OKps::crypt
     {
         if (not this->MEMBER_rsa)
         {
-            std::locale::global(std::locale::classic());
             throw std::logic_error("此密钥已失效，禁止访问");
         }
         namespace fs = std::filesystem;
         if (not fs::is_directory(temp_route))
         {
-            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + temp_route.string()
                 + " 不是既存目录，无法作为临时目录使用";
@@ -116,13 +112,11 @@ namespace OKps::crypt
     {
         if (not this->MEMBER_rsa)
         {
-            std::locale::global(std::locale::classic());
             throw std::logic_error("此密钥已失效，禁止访问");
         }
         namespace fs = std::filesystem;
         if (not fs::is_directory(temp_route))
         {
-            std::locale::global(std::locale::classic());
             std::string const hint = std::string("路径 ")
                 + temp_route.string()
                 + " 不是既存目录，无法作为临时目录使用";
@@ -166,7 +160,6 @@ namespace OKps::crypt
         file.open(route, std::ios::in | std::ios::binary);
         if (not file.is_open())
         {
-            std::locale::global(std::locale::classic());
             std::string hint = "文件“";
             hint += route.string();
             hint += "”打开失败";
@@ -182,7 +175,6 @@ namespace OKps::crypt
         auto const data = field_stream::parse(buffer);
         if (data.size() <= 3)
         {
-            std::locale::global(std::locale::classic());
             std::string hint = "密钥文件“";
             hint += route.string();
             hint += "”格式错误";
@@ -196,7 +188,6 @@ namespace OKps::crypt
             {
                 if (count_1 + count_2 >= data.size())
                 {
-                    std::locale::global(std::locale::classic());
                     std::string hint = "密钥文件“";
                     hint += route.string();
                     hint += "”格式错误";
@@ -230,7 +221,6 @@ namespace OKps::crypt
     {
         if (not (this->MEMBER_rsa and right.MEMBER_rsa))
         {
-            std::locale::global(std::locale::classic());
             throw std::runtime_error("密钥已失效，禁止访问");
         }
         if ((*(this->MEMBER_rsa)) == (*(right.MEMBER_rsa)) and this->MEMBER_aes == right.MEMBER_aes)
@@ -250,7 +240,6 @@ namespace OKps::crypt
     {
         if (not this->MEMBER_rsa)
         {
-            std::locale::global(std::locale::classic());
             throw std::logic_error("此密钥已失效，禁止访问");
         }
         /*
@@ -275,7 +264,6 @@ namespace OKps::crypt
         file.open(route, std::ios::binary | std::ios::out | std::ios::trunc);
         if (not file.is_open())
         {
-            std::locale::global(std::locale::classic());
             std::string hint = "文件“";
             hint += route.string();
             hint += "”打开失败";
@@ -283,7 +271,6 @@ namespace OKps::crypt
         }
         if (not file.write(result.c_str(), result.size()))
         {
-            std::locale::global(std::locale::classic());
             std::string hint = "文件“";
             hint += route.string();
             hint += "”写入失败";

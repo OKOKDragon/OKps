@@ -1,4 +1,4 @@
-﻿#include <stdexcept>
+#include <stdexcept>
 #include <locale>
 
 #include ".\matcher.hpp"
@@ -74,7 +74,6 @@ namespace OKps
 	{
 		if (not work)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::invalid_argument("禁止输入空指针");
 		}
 		auto ref = this->MEMBER_orders.find(order);
@@ -106,7 +105,6 @@ namespace OKps
 		}
 		else
 		{
-			std::locale::global(std::locale::classic());
 			std::string const hint = std::string("命令“") + order + "”不存在";
 			throw std::invalid_argument(hint);
 		}
@@ -116,7 +114,6 @@ namespace OKps
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())
 		{
-			std::locale::global(std::locale::classic());
 			throw std::invalid_argument("该命令不存在");
 		}
 		return *(ref->second);
@@ -126,7 +123,6 @@ namespace OKps
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())
 		{
-			std::locale::global(std::locale::classic());
 			throw std::invalid_argument("该命令不存在");
 		}
 		return *(ref->second);

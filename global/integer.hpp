@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include ".\bit.hpp"
 #include ".\number.hpp"

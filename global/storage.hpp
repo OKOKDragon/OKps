@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 #include <vector>
@@ -40,6 +40,9 @@ namespace OKps
 		*/
 		field_stream()
 			noexcept(std::is_nothrow_default_constructible_v<std::unique_ptr<std::byte[]>>);
+		/*
+		将std::string作为无格式2进制数据使用
+		*/
 		field_stream(std::string const & data);
 		~field_stream()
 			noexcept(std::is_nothrow_destructible_v<std::unique_ptr<std::byte[]>>);

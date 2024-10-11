@@ -1,4 +1,4 @@
-﻿#include <stdexcept>
+#include <stdexcept>
 #include <locale>
 
 #include ".\log.hpp"
@@ -20,7 +20,6 @@ namespace OKps
 	{
 		if (not this->MEMBER_valid)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::logic_error("此对象已失效，禁止访问");
 		}
 		return this->MEMBER_hint;
@@ -29,7 +28,6 @@ namespace OKps
 	{
 		if (not this->MEMBER_valid)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::logic_error("此对象已失效，禁止访问");
 		}
 		return this->MEMBER_location;

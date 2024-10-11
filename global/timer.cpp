@@ -1,4 +1,4 @@
-﻿#include ".\timer.hpp"
+#include ".\timer.hpp"
 
 namespace OKps
 {

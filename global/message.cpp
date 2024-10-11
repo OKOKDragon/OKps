@@ -1,4 +1,4 @@
-﻿#include <string>
+#include <string>
 #include <random>
 
 #include ".\message.hpp"
@@ -42,7 +42,6 @@ namespace OKps
 	{
 		if (this->MEMBER_exception_holder)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::logic_error("已经存储了一个异常，尚未得到处理");
 		}
 		this->MEMBER_exception_holder = p;
@@ -51,7 +50,6 @@ namespace OKps
 	{
 		if (not this->MEMBER_exception_holder)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::logic_error("没有存储异常");
 		}
 		auto const p = this->MEMBER_exception_holder;
@@ -62,7 +60,6 @@ namespace OKps
 	{
 		if (not h)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::invalid_argument("处理函数不能为空");
 		}
 		std::random_device seed;
@@ -90,7 +87,6 @@ namespace OKps
 	{
 		if (not h)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::invalid_argument("处理函数不能为空");
 		}
 		this->MEMBER_mutex.lock();
@@ -110,7 +106,6 @@ namespace OKps
 	{
 		if (this->MEMBER_done)
 		{
-			std::locale::global(std::locale::classic());
 			throw std::runtime_error("message对象正在析构，无法再引发新信号");
 		}
 		this->MEMBER_mutex.lock();
@@ -125,7 +120,6 @@ namespace OKps
 		else
 		{
 			this->MEMBER_mutex.unlock();
-			std::locale::global(std::locale::classic());
 			std::string hint = "信号"
 				+ std::to_string(signal)
 				+ "未注册";

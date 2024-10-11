@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include ".\aes.hpp"
 #include ".\rsa.hpp"

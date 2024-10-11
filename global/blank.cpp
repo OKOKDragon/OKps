@@ -1,4 +1,4 @@
-﻿#include ".\blank.hpp"
+#include ".\blank.hpp"
 
 namespace OKps
 {

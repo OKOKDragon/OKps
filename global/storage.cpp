@@ -1,4 +1,4 @@
-﻿#include <fstream>
+#include <fstream>
 #include <thread>
 #include <atomic>
 
@@ -14,25 +14,25 @@ namespace OKps
 
 		if (not left.has_filename())
 		{
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = "路径 " + left.string() + " 不是文件";
 			throw std::invalid_argument(hint);
 		}
 		if (not right.has_filename())
 		{
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = "路径 " + right.string() + " 不是文件";
 			throw std::invalid_argument(hint);
 		}
 		if (not fs::exists(left))
 		{
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = "路径 " + left.string() + " 不存在";
 			throw std::invalid_argument(hint);
 		}
 		if (not fs::exists(right))
 		{
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = "路径 " + right.string() + " 不存在";
 			throw std::invalid_argument(hint);
 		}
@@ -86,7 +86,7 @@ namespace OKps
 						{
 							try
 							{
-								std::locale::global(std::locale::classic());
+
 								std::string const hint = std::string("文件 ")
 									+ this->MEMBER_left_route.string()
 									+ " 读取失败";
@@ -102,7 +102,7 @@ namespace OKps
 						{
 							try
 							{
-								std::locale::global(std::locale::classic());
+
 								std::string const hint = std::string("文件 ")
 									+ this->MEMBER_right_route.string()
 									+ " 读取失败";
@@ -138,7 +138,7 @@ namespace OKps
 				{
 					if (not this->MEMBER_left.is_open())
 					{
-						std::locale::global(std::locale::classic());
+
 						std::string const hint = std::string("文件 ")
 							+ left.string()
 							+ " 打开失败";
@@ -146,7 +146,7 @@ namespace OKps
 					}
 					if (not this->MEMBER_right.is_open())
 					{
-						std::locale::global(std::locale::classic());
+
 						std::string const hint = std::string("文件 ")
 							+ right.string()
 							+ " 打开失败";
@@ -203,7 +203,7 @@ namespace OKps
 
 		if (not fs::is_directory(directory))
 		{
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = "路径 " + directory.string() + " 不是既存目录";
 			throw std::invalid_argument(hint);
 		}
@@ -300,7 +300,7 @@ namespace OKps
 			}
 			if (data.size() < position + sizeof(std::size_t))
 			{
-				std::locale::global(std::locale::classic());
+
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::size_t length;
@@ -311,7 +311,7 @@ namespace OKps
 			}
 			if (position + length > data.size())
 			{
-				std::locale::global(std::locale::classic());
+
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::string buffer;
@@ -343,7 +343,7 @@ namespace OKps
 			}
 			if (data.size() < position + sizeof(std::size_t))
 			{
-				std::locale::global(std::locale::classic());
+
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::size_t length;
@@ -354,7 +354,7 @@ namespace OKps
 			}
 			if (position + length > data.size())
 			{
-				std::locale::global(std::locale::classic());
+
 				throw std::invalid_argument("输入的流格式错误，无法解析为字段流");
 			}
 			std::vector<std::byte> buffer;
@@ -444,7 +444,7 @@ namespace OKps
 	{
 		if (not this->is_valid())
 		{
-			std::locale::global(std::locale::classic());
+
 			throw std::logic_error("此引用已失效");
 		}
 	}
@@ -457,7 +457,7 @@ namespace OKps
 		if (not data.MEMBER_storage.read(reinterpret_cast<char *>(&result), 1))
 		{
 			data.MEMBER_storage.clear();
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("读取文件 ") + data.MEMBER_path.string() + " 的位置 " + std::to_string(this->MEMBER_position) + " 处失败";
 			throw std::runtime_error(hint);
 		}
@@ -471,7 +471,7 @@ namespace OKps
 		if (not data.MEMBER_storage.write(reinterpret_cast<char const *>(&value), 1))
 		{
 			data.MEMBER_storage.clear();
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("写入文件 ") + data.MEMBER_path.string() + " 的位置 " + std::to_string(this->MEMBER_position) + " 处失败";
 			throw std::runtime_error(hint);
 		}
@@ -536,7 +536,7 @@ namespace OKps
 		if (not this->MEMBER_storage.read(reinterpret_cast<char *>(&result), 1))
 		{
 			this->MEMBER_storage.clear();
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
 			throw std::runtime_error(hint);
 		}
@@ -549,14 +549,14 @@ namespace OKps
 	{
 		if (std::filesystem::exists(file_path))
 		{
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("路径 ") + file_path.string() + " 已存在";
 			throw std::invalid_argument(hint);
 		}
 		this->MEMBER_storage.open(file_path, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
 		if (not this->MEMBER_storage.is_open())
 		{
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("文件 ") + file_path.string() + " 无法打开";
 			throw std::invalid_argument(hint);
 		}
@@ -613,7 +613,7 @@ namespace OKps
 		if (not this->MEMBER_storage.read(reinterpret_cast<char *>(&length), sizeof(std::size_t)))
 		{
 			this->MEMBER_storage.clear();
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
 			throw std::runtime_error(hint);
 		}
@@ -621,7 +621,7 @@ namespace OKps
 		if (not this->MEMBER_storage.read(buffer.get(), length))
 		{
 			this->MEMBER_storage.clear();
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
 			throw std::runtime_error(hint);
 		}
@@ -641,7 +641,7 @@ namespace OKps
 		if (not this->MEMBER_storage.read(buffer.get(), length))
 		{
 			this->MEMBER_storage.clear();
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("读取文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
 			throw std::runtime_error(hint);
 		}
@@ -670,7 +670,7 @@ namespace OKps
 		if (not this->MEMBER_storage.write(buffer.c_str(), buffer.size()))
 		{
 			this->MEMBER_storage.clear();
-			std::locale::global(std::locale::classic());
+
 			std::string const hint = std::string("写入文件 ") + this->MEMBER_path.string() + " 的位置 " + std::to_string(position) + " 处失败";
 			throw std::runtime_error(hint);
 		}

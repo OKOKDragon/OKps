@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <vector>
 #include <string>
@@ -11,6 +11,19 @@
 
 namespace OKps
 {
+    namespace text_encoding
+    {
+        /*
+        utf-8字符编码的本地环境
+        */
+        extern std::locale const utf_8;
+        /*
+        用于初始化全局本地环境
+        在main函数执行之前，将程序的全局本地环境初始化为 utf_8
+        */
+        class locale_initializer;
+    }
+
     /*
     c++20标准要求，char8_t与unsigned char具有相同的符号性、大小和对齐，
     又要求一个值从char转换到unsigned char再转换回char，值不变，
@@ -49,8 +62,8 @@ namespace OKps
         */
     void echo_command_line(int const argc, char const * const argv[]);
     /*
-    等待用户从标准输入std::cin输入'\n'，在此之前不做任何事。
-    提示信息必须符合 std::locale::classic() 本地环境的编码，否则可能无法正常显示。
+    等待用户从标准输入std::cin输入字符 signal ，在此之前不做任何事。
+    hint是等待用户输入之前，向标准输出std::cout输出的提示信息，其编码必须符合 page 参数所指定的本地环境的编码，否则可能无法正常显示。
     */
     void wait_input(std::string const & hint/*提示信息*/ = "输入回车以继续运行程序。在输入回车以前，输入任何字符都会被程序忽略。\n输入回车 ││ ", char const signal/*要等待的字符*/ = '\n');
     /*
@@ -64,13 +77,69 @@ namespace OKps
     c++标准规定，整数类型的内建算术运算符的操作数至少是int类型，char、short会被隐式转换到int再参与整数运算，故此函数返回int类型
     */
     unsigned int from_char(char const number, number_system const number_base = number_system::dec);
+
     /*
-    命令语句分离器
-    输入任意字符串，将它转换为命令语句
-    也就是，头部和尾部没有空格，中间也不会出现连续多个空格
-    也就是说，任何字符串都会被转换成 "命令 参数1 参数2 参数3 ···"的形式
-    这里所说的空格，只是普通半角空格，不支持空字符、制表符、全角空格或其他特殊字符
+    带编码信息的字符串
     */
+    class string final
+    {
+    private:
+        std::string MEMBER_content;
+        std::locale MEMBER_page;
+    public:
+        /*
+        默认编码为 utf-8
+        */
+        string(std::string const & content = "", std::locale const & page = text_encoding::utf_8)
+            noexcept(std::is_nothrow_copy_constructible_v<std::string>
+            and std::is_nothrow_copy_constructible_v<std::locale>);
+        string(string const &)
+            noexcept(std::is_nothrow_copy_constructible_v<std::string>
+and std::is_nothrow_copy_constructible_v<std::locale>);
+        void operator =(string const &)
+            noexcept(std::is_nothrow_copy_assignable_v<std::string>
+    and std::is_nothrow_copy_assignable_v<std::locale>);
+        string(string &&)
+            noexcept(std::is_nothrow_move_constructible_v<std::string>
+            and std::is_nothrow_copy_constructible_v<std::locale>
+            and std::is_nothrow_copy_assignable_v<std::locale>);
+        void operator =(string &&)
+            noexcept(std::is_nothrow_move_assignable_v<std::string>
+and std::is_nothrow_copy_assignable_v<std::locale>);
+        ~string()
+            noexcept(std::is_nothrow_destructible_v<std::string>
+            and std::is_nothrow_destructible_v<std::locale>);
+
+        /*
+        返回当前对象保存的字符串。
+        如果 set_locale 为 true，则返回之前，先将全局本地环境设为当前对象保存的本地环境。
+        */
+        std::string & content(bool const set_locale = false)
+            noexcept(noexcept(std::locale::global(std::declval<std::locale>())));
+        std::string const & content(bool const set_locale = false)const
+            noexcept(noexcept(std::locale::global(std::declval<std::locale>())));
+
+        std::locale & page()noexcept;
+        std::locale const & page()const noexcept;
+/*
+将当前对象保存的字符串转换到utf-8编码
+
+此函数执行过程中会改变全局本地环境，但最终会恢复原样。
+所以，若线程A执行此函数的过程中，线程B更改了全局本地环境，将引发未定义行为。
+*/
+        std::string utf_8()const
+            noexcept(noexcept(std::locale::global(std::declval<std::locale>())));
+    };
+
+
+
+        /*
+        命令语句分离器
+        输入任意字符串，将它转换为命令语句
+        也就是，头部和尾部没有空格，中间也不会出现连续多个空格
+        也就是说，任何字符串都会被转换成 "命令 参数1 参数2 参数3 ···"的形式
+        这里所说的空格，只是普通半角空格，不支持空字符、制表符、全角空格或其他特殊字符
+        */
     class command_statement final
     {
     private:
