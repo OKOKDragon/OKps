@@ -60,6 +60,7 @@ namespace OKps
         sign_type const & sign()const noexcept;
         number_type const & number()const noexcept;
     private:
+        static std::vector<holder_type> INNER_get_known_prime();
         static std::vector<integer> INNER_init_known_prime();
         static std::vector<integer> const MEMBER_known_prime;
         integer(number_type && number, sign_type const sign)noexcept;

@@ -16,7 +16,7 @@
 
 大部分主流c++编译器都默认c++源文件使用 utf-8 编码，尤其是新版clang只支持 utf-8 编码的源文件。非windows的操作系统，大多数也默认使用 utf-8 编码的系统 api 和终端模拟器。
 故为保持一致性，此库的所有源文件都以utf-8编码保存，所有char const *类型的字符串字面量都是utf-8编码。
-此库的所有函数中的std::string类型参数都要求传入utf-8编码的字符串，std::filesystem::path类型参数都要求以utf-8编码的字符串构造，除非有注释否定这一点。
+此库的所有函数的std::string、std::u8string类型参数都要求传入utf-8编码的字符串，std::filesystem::path类型参数都要求以utf-8编码的字符串构造，除非有特殊注释。
 调用此库的所有函数之前都需保证全局本地环境是 OKps::text_encoding::utf_8，除非有特殊注释。
 此库的所有异常的提示信息都是 utf-8 编码的字符串，除非用户不遵守上面的规则。
 
@@ -68,8 +68,6 @@ c++标准库中的异常，要么是来自外部的、不可控的严重错误�
 
 #include ".\blank.hpp"
 #include ".\base.hpp"
-#include ".\string.hpp"
-#include ".\value_cast.hpp"
 #include ".\lock.hpp"
 #include ".\fundamental.hpp"
 #include ".\timer.hpp"

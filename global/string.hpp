@@ -1,9 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <string>
+#include <locale>
+#include <filesystem>
+#include <iostream>
 
 #include ".\number.hpp"
+#include ".\value_cast.hpp"
 
 /*
 可以用 std::locale::global(std::locale("zh_CN.UTF-8")); 将本地环境设置为utf8编码、简体中文
@@ -21,7 +23,21 @@ namespace OKps
         用于初始化全局本地环境
         在main函数执行之前，将程序的全局本地环境初始化为 utf_8
         */
-        class locale_initializer;
+        class locale_initializer final
+        {
+        public:
+            locale_initializer() = delete;
+            locale_initializer(locale_initializer const &) = delete;
+            locale_initializer(locale_initializer &&) = delete;
+            ~locale_initializer() = delete;
+            void operator =(locale_initializer const &) = delete;
+            void operator =(locale_initializer &&) = delete;
+        private:
+
+            static void const * const MEMBER_place_holder;
+
+            static void const * INNER_initialize();
+        };
     }
 
     /*
@@ -47,6 +63,17 @@ namespace OKps
     c++标准规定，整数类型的内建算术运算符的操作数至少是int类型，char、short会被隐式转换到int再参与整数运算，故此函数返回int类型。
     */
     unsigned int from_char(char const number, number_system const number_base = number_system::dec);
+
+    class string;
+
+    template<>
+    constexpr bool const safe_convertible<std::string, string> = noexcept(std::locale::global(std::declval<std::locale>()))
+        and noexcept(value_cast<std::string>(std::declval<std::filesystem::path>().u8string()))
+        and noexcept(std::filesystem::path(std::declval<std::string const>()));
+    template<>
+    constexpr bool const safe_convertible<std::u8string, string> = noexcept(std::locale::global(std::declval<std::locale>()))
+        and noexcept(std::declval<std::filesystem::path>().u8string())
+        and noexcept(std::filesystem::path(std::declval<std::string const>()));
 
     /*
     带编码信息的字符串
@@ -91,25 +118,61 @@ and std::is_nothrow_copy_assignable_v<std::locale>);
 
         std::locale & page()noexcept;
         std::locale const & page()const noexcept;
-/*
-将当前对象保存的字符串转换到utf-8编码
 
-此函数执行过程中会改变全局本地环境，但最终会恢复原样。
-所以，若线程A执行此函数的过程中，线程B更改了全局本地环境，将引发未定义行为。
-*/
-        std::string utf_8()const
-            noexcept(noexcept(std::locale::global(std::declval<std::locale>())));
-    };
-
-
+    public:
 
         /*
-        命令语句分离器
-        输入任意字符串，将它转换为命令语句
-        也就是，头部和尾部没有空格，中间也不会出现连续多个空格
-        也就是说，任何字符串都会被转换成 "命令 参数1 参数2 参数3 ···"的形式
-        这里所说的空格，只是普通半角空格，不支持空字符、制表符、全角空格或其他特殊字符
+        将当前对象保存的字符串转换到utf-8编码
+
+        此函数执行过程中会改变全局本地环境，但最终会恢复原样。
         */
+        template<typename target_type>
+        target_type utf_8()const
+            noexcept(safe_convertible<target_type, string>);
+
+        template<>
+        std::string utf_8<std::string>()const
+            noexcept(safe_convertible<std::string, string>);
+        template<>
+        std::u8string utf_8<std::u8string>()const
+            noexcept(safe_convertible<std::u8string, string>);
+
+        /*
+        通过std::getline函数以 std::locale::classic() 格式从std::cin输入一行字符串到当前对象。
+        使用此函数后，当前对象的编码将改成 std::locale::classic()
+
+        此函数执行过程中会改变全局本地环境，但最终会恢复原样。
+        */
+        void get_line()
+            noexcept(noexcept(std::getline(std::cin, std::declval<std::string &>()))
+            and noexcept(std::declval<std::locale &>() = std::locale::classic()));
+    };
+
+    /*
+    将字符串输出到标准输出流
+
+    此函数执行过程中会改变全局本地环境，但最终会恢复原样。
+    */
+    std::ostream & operator <<(std::ostream &, string const &)
+        noexcept(noexcept(std::declval<std::ostream &>() << std::declval<string const &>().utf_8<std::string>()));
+    /*
+    从标准输入流以 std::locale::classic() 格式输入字符串，
+    即使用此函数后，object 的编码将无条件改成 std::locale::classic()，其内容则被标准输入流输入的字符串覆盖。
+
+    此函数执行过程中会改变全局本地环境，但最终会恢复原样。
+    */
+    std::istream & operator >>(std::istream &, string & object)
+        noexcept(noexcept(std::declval<std::istream &>() >> std::declval<std::string &>())
+        and noexcept(std::declval<std::locale &>() = std::locale::classic()));
+
+
+    /*
+    命令语句分离器
+    输入任意字符串，将它转换为命令语句，
+    也就是，头部和尾部没有空格，中间也不会出现连续多个空格。
+    也就是说，任何字符串都会被转换成 "命令 参数1 参数2 参数3 ···"的形式。
+    这里所说的空格，仅包括char类型的普通半角空格，即字符字面量 ' '，不支持空字符、制表符、全角空格或其他特殊字符。
+    */
     class command_statement final
     {
     private:

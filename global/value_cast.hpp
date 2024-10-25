@@ -6,7 +6,6 @@
 */
 
 #include <type_traits>
-#include <bitset>
 #include <string>
 #include <vector>
 

@@ -1,9 +1,5 @@
 #include <stdexcept>
-#include <iostream>
 #include <fstream>
-#include <filesystem>
-
-#include ".\value_cast.hpp"
 
 #include ".\string.hpp"
 
@@ -77,13 +73,7 @@ namespace OKps
     namespace text_encoding
     {
         std::locale const utf_8 = std::locale(".utf-8");
-        class locale_initializer final
-        {
-        private:
-            static void const * const MEMBER_place_holder;
 
-            static void const * INNER_initialize();
-        };
         void const * const locale_initializer::MEMBER_place_holder = INNER_initialize();
         void const * locale_initializer::INNER_initialize()
         {
@@ -92,6 +82,33 @@ namespace OKps
         }
     }
 
+    void string::get_line()
+        noexcept(noexcept(std::getline(std::cin, std::declval<std::string &>()))
+        and noexcept(std::declval<std::locale &>() = std::locale::classic()))
+    {
+        this->MEMBER_page = std::locale::classic();
+        auto const origin_locale = std::locale::global(std::locale::classic());
+        std::getline(std::cin, this->MEMBER_content);
+        std::locale::global(origin_locale);
+    }
+    std::ostream & operator <<(std::ostream & output, string const & object)
+        noexcept(noexcept(std::declval<std::ostream &>() << std::declval<string const &>().utf_8<std::string>()))
+    {
+        auto const origin_locale = std::locale::global(text_encoding::utf_8);
+        auto & result = output << object.utf_8<std::string>();
+        std::locale::global(origin_locale);
+        return result;
+    }
+    std::istream & operator >>(std::istream & input, string & object)
+        noexcept(noexcept(std::declval<std::istream &>() >> std::declval<std::string &>())
+        and noexcept(std::declval<std::locale &>() = std::locale::classic()))
+    {
+        auto const origin_locale = std::locale::global(std::locale::classic());
+        object.page() = std::locale::classic();
+        auto & result = input >> object.content();
+        std::locale::global(origin_locale);
+        return result;
+    }
     string::string(std::string const & content, std::locale const & page)
         noexcept(std::is_nothrow_copy_constructible_v<std::string>
         and std::is_nothrow_copy_constructible_v<std::locale>)
@@ -169,12 +186,23 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
     {
         return this->MEMBER_page;
     }
-    std::string string::utf_8()const
-        noexcept(noexcept(std::locale::global(std::declval<std::locale>())))
+    template<>
+    std::string string::utf_8<std::string>()const
+        noexcept(safe_convertible<std::string, string>)
     {
         auto const origin_page = std::locale::global(this->MEMBER_page);
         auto temp = std::filesystem::path(this->MEMBER_content);
         std::string result = value_cast<std::string>(temp.u8string());
+        std::locale::global(origin_page);
+        return result;
+    }
+    template<>
+    std::u8string string::utf_8<std::u8string>()const
+        noexcept(safe_convertible<std::u8string, string>)
+    {
+        auto const origin_page = std::locale::global(this->MEMBER_page);
+        auto temp = std::filesystem::path(this->MEMBER_content);
+        std::u8string result = temp.u8string();
         std::locale::global(origin_page);
         return result;
     }
