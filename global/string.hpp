@@ -19,25 +19,6 @@ namespace OKps
         utf-8字符编码的本地环境
         */
         extern std::locale const utf_8;
-        /*
-        用于初始化全局本地环境
-        在main函数执行之前，将程序的全局本地环境初始化为 utf_8
-        */
-        class locale_initializer final
-        {
-        public:
-            locale_initializer() = delete;
-            locale_initializer(locale_initializer const &) = delete;
-            locale_initializer(locale_initializer &&) = delete;
-            ~locale_initializer() = delete;
-            void operator =(locale_initializer const &) = delete;
-            void operator =(locale_initializer &&) = delete;
-        private:
-
-            static void const * const MEMBER_place_holder;
-
-            static void const * INNER_initialize();
-        };
     }
 
     /*
@@ -138,13 +119,13 @@ and std::is_nothrow_copy_assignable_v<std::locale>);
             noexcept(safe_convertible<std::u8string, string>);
 
         /*
-        通过std::getline函数以 std::locale::classic() 格式从std::cin输入一行字符串到当前对象。
+        通过std::getline函数以 std::locale::classic() 格式从标准输入流 input 输入一行字符串，覆盖当前对象。
         使用此函数后，当前对象的编码将改成 std::locale::classic()
 
         此函数执行过程中会改变全局本地环境，但最终会恢复原样。
         */
-        void get_line()
-            noexcept(noexcept(std::getline(std::cin, std::declval<std::string &>()))
+        void get_line(std::istream &)
+            noexcept(noexcept(std::getline(std::declval<std::istream &>(), std::declval<std::string &>()))
             and noexcept(std::declval<std::locale &>() = std::locale::classic()));
     };
 

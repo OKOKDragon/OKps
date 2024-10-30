@@ -23,7 +23,7 @@ namespace OKps::sample
 
             std::cout << "输入文件路径 ││ ";
             string path_input_temp;
-            path_input_temp.get_line();
+            path_input_temp.get_line(std::cin);
             file_path = std::filesystem::path(path_input_temp.utf_8<std::u8string>());
             if (not std::filesystem::exists(file_path))
             {
@@ -70,7 +70,7 @@ namespace OKps::sample
             while (not input_done)
             {
                 std::cout << "输入本地环境 ││ ";
-                user_page.get_line();
+                user_page.get_line(std::cin);
                 try
                 {
                     std::locale::global(std::locale(user_page.content(true)));

@@ -174,7 +174,7 @@ namespace OKps::test
         std::cout << "输入要加密的文件 ││ ";
         {
             string TEMP_input_str;
-            TEMP_input_str.get_line();
+            TEMP_input_str.get_line(std::cin);
             origin_route = TEMP_input_str.utf_8<std::string>();
         }
 

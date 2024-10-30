@@ -73,22 +73,15 @@ namespace OKps
     namespace text_encoding
     {
         std::locale const utf_8 = std::locale(".utf-8");
-
-        void const * const locale_initializer::MEMBER_place_holder = INNER_initialize();
-        void const * locale_initializer::INNER_initialize()
-        {
-            std::locale::global(utf_8);
-            return nullptr;
-        }
     }
 
-    void string::get_line()
-        noexcept(noexcept(std::getline(std::cin, std::declval<std::string &>()))
+    void string::get_line(std::istream & input)
+        noexcept(noexcept(std::getline(std::declval<std::istream &>(), std::declval<std::string &>()))
         and noexcept(std::declval<std::locale &>() = std::locale::classic()))
     {
         this->MEMBER_page = std::locale::classic();
         auto const origin_locale = std::locale::global(std::locale::classic());
-        std::getline(std::cin, this->MEMBER_content);
+        std::getline(input, this->MEMBER_content);
         std::locale::global(origin_locale);
     }
     std::ostream & operator <<(std::ostream & output, string const & object)

@@ -20,22 +20,7 @@ namespace OKps::base
 	{
 		return this;
 	}
-	numbered * numbered::operator &()noexcept
-	{
-		return this;
-	}
-	numbered const * numbered::operator &()const noexcept
-	{
-		return this;
-	}
-	named * named::operator &()noexcept
-	{
-		return this;
-	}
-	named const * named::operator &()const noexcept
-	{
-		return this;
-	}
+
 	handler * handler::operator &()noexcept
 	{
 		return this;
@@ -96,14 +81,7 @@ namespace OKps::base
 	{
 		return (&(*this)) < (&right);
 	}
-	bool named::operator <(named const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	bool numbered::operator <(numbered const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
+
 	bool move_invalid::operator <(move_invalid const & right)const noexcept
 	{
 		return (&(*this)) < (&right);
@@ -143,15 +121,13 @@ namespace OKps::base
 	worker::worker()
 		noexcept(std::is_nothrow_default_constructible<std::thread>::value
 			and std::is_nothrow_default_constructible<std::exception_ptr>::value)
-		:blank()
 	{
 	}
 
 	worker::worker(worker && origin)
 		noexcept(std::is_nothrow_move_constructible<std::thread>::value
 			and std::is_nothrow_copy_constructible<std::exception_ptr>::value)
-		:blank(std::move(origin.blank::self()))
-		, MEMBER_thread(std::move(origin.MEMBER_thread))
+		:MEMBER_thread(std::move(origin.MEMBER_thread))
 		, MEMBER_error(origin.MEMBER_error)
 	{
 		origin.MEMBER_error = nullptr;
@@ -162,7 +138,6 @@ namespace OKps::base
 	{
 		if (this != std::addressof(origin))
 		{
-			this->blank::self() = std::move(origin.blank::self());
 			this->MEMBER_thread = std::move(origin.MEMBER_thread);
 			this->MEMBER_error = origin.MEMBER_error;
 			origin.MEMBER_error = nullptr;
@@ -225,27 +200,23 @@ namespace OKps::base
 	}
 
 	move_invalid::move_invalid()noexcept
-		:blank()
-		, MEMBER_valid(true)
+		:MEMBER_valid(true)
 	{
 	}
 
 	move_invalid::move_invalid(move_invalid const & origin)noexcept
-		:blank(origin.blank::self())
-		, MEMBER_valid(origin.MEMBER_valid)
+		:MEMBER_valid(origin.MEMBER_valid)
 	{
 	}
 	void move_invalid::operator =(move_invalid const & origin)noexcept
 	{
 		if (this != std::addressof(origin))
 		{
-			this->blank::self() = origin.blank::self();
 			this->MEMBER_valid = origin.MEMBER_valid;
 		}
 	}
 	move_invalid::move_invalid(move_invalid && origin)noexcept
-		:blank(std::move(origin.blank::self()))
-		, MEMBER_valid(origin.MEMBER_valid)
+		:MEMBER_valid(origin.MEMBER_valid)
 	{
 		origin.MEMBER_valid = false;
 	}
@@ -253,7 +224,6 @@ namespace OKps::base
 	{
 		if (this != std::addressof(origin))
 		{
-			this->blank::self() = std::move(origin.blank::self());
 			this->MEMBER_valid = origin.MEMBER_valid;
 			origin.MEMBER_valid = false;
 		}
@@ -272,167 +242,23 @@ namespace OKps::base
 		return *this;
 	}
 
-	numbered::id_generator::id_generator()
-		:MEMBER_seed()
-		, MEMBER_engine()
-		, MEMBER_generator(std::numeric_limits<std::uintmax_t>::min(), std::numeric_limits<std::uintmax_t>::max())
-	{
-		this->MEMBER_engine = std::make_unique<std::mt19937_64>(this->MEMBER_seed());
-	}
-	numbered::id_generator::~id_generator()
-		noexcept(std::is_nothrow_destructible_v<std::random_device>
-			and std::is_nothrow_destructible_v<std::unique_ptr<std::mt19937_64>>
-			and std::is_nothrow_destructible_v<std::uniform_int_distribution<std::uintmax_t>>)
-	{
-	}
-
-	std::uintmax_t numbered::id_generator::generate()
-		noexcept(noexcept(std::declval<std::uniform_int_distribution<std::uintmax_t>>()(*std::declval<std::unique_ptr<std::mt19937_64>>())))
-	{
-		return this->MEMBER_generator(*this->MEMBER_engine);
-	}
-
-
-	numbered::numbered(std::uintmax_t const id)noexcept
-		:blank()
-		, MEMBER_id(id)
-	{
-	}
-
-	numbered::numbered(numbered const & origin)noexcept
-		:blank(origin.blank::self())
-		, MEMBER_id(origin.MEMBER_id)
-	{
-	}
-	void numbered::operator =(numbered const & origin)noexcept
-	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = origin.blank::self();
-			this->MEMBER_id = origin.MEMBER_id;
-		}
-	}
-
-	numbered::~numbered()noexcept
-	{
-	}
-
-	std::uintmax_t & numbered::id() noexcept
-	{
-		return this->MEMBER_id;
-	}
-	std::uintmax_t const & numbered::id()const noexcept
-	{
-		return this->MEMBER_id;
-	}
-	numbered & numbered::self()noexcept
-	{
-		return *this;
-	}
-	numbered const & numbered::self()const noexcept
-	{
-		return *this;
-	}
-
-
-	named::named(std::string const & name)
-		noexcept(std::is_nothrow_copy_constructible<std::string>::value)
-		:blank()
-		, MEMBER_name(name)
-	{
-	}
-	named::named(std::string && name)
-		noexcept(std::is_nothrow_move_constructible<std::string>::value)
-		:blank()
-		, MEMBER_name(std::move(name))
-	{
-	}
-
-	named::named(named const & origin)
-		noexcept(std::is_nothrow_copy_constructible<std::string>::value)
-		:blank(origin.blank::self())
-		, MEMBER_name(origin.MEMBER_name)
-	{
-	}
-	named::named(named && origin)
-		noexcept(std::is_nothrow_move_constructible<std::string>::value)
-		:blank(std::move(origin.blank::self()))
-		, MEMBER_name(std::move(origin.MEMBER_name))
-	{
-	}
-	named::~named()
-		noexcept(std::is_nothrow_destructible<std::string>::value)
-	{
-	}
-
-	std::string const & named::name()const noexcept
-	{
-		return this->MEMBER_name;
-	}
-
-	std::string & named::name()noexcept
-	{
-		return this->MEMBER_name;
-	}
-
-
-	named & named::self()noexcept
-	{
-		return *this;
-	}
-	named const & named::self()const noexcept
-	{
-		return *this;
-	}
-
-	void named::operator =(named const & origin)
-		noexcept(std::is_nothrow_copy_assignable<std::string>::value)
-	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = origin.blank::self();
-			this->MEMBER_name = origin.MEMBER_name;
-		}
-	}
-
-	void named::operator =(named && origin)
-		noexcept(std::is_nothrow_move_assignable<std::string>::value)
-	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = std::move(origin.blank::self());
-			this->MEMBER_name = std::move(origin.MEMBER_name);
-		}
-	}
-
 	handler::handler()noexcept
-		:blank()
 	{
 	}
 	handler::handler(handler const & origin)noexcept
-		:blank(origin.blank::self())
 	{
 	}
 	handler::~handler()noexcept
 	{
 	}
 	handler::handler(handler && origin)noexcept
-		:blank(std::move(origin.blank::self()))
 	{
 	}
 	void handler::operator =(handler && origin)noexcept
 	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = std::move(origin.blank::self());
-		}
 	}
 	void handler::operator =(handler const & origin)noexcept
 	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = origin.blank::self();
-		}
 	}
 
 	handler & handler::self()noexcept
@@ -444,33 +270,22 @@ namespace OKps::base
 		return *this;
 	}
 	self_copier::self_copier()noexcept
-		:blank()
 	{
 	}
 	self_copier::self_copier(self_copier const & origin)noexcept
-		:blank(origin.blank::self())
 	{
 	}
 	self_copier::~self_copier()noexcept
 	{
 	}
 	self_copier::self_copier(self_copier && origin)noexcept
-		:blank(std::move(origin.blank::self()))
 	{
 	}
 	void self_copier::operator =(self_copier && origin)noexcept
 	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = std::move(origin.blank::self());
-		}
 	}
 	void self_copier::operator =(self_copier const & origin)noexcept
 	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = origin.blank::self();
-		}
 	}
 	self_copier & self_copier::self()noexcept
 	{
@@ -506,8 +321,7 @@ namespace OKps::base
 	marked::marked()
 		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
 			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
-		:blank()
-		, MEMBER_marker()
+		:MEMBER_marker()
 	{
 		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
@@ -518,16 +332,14 @@ namespace OKps::base
 	marked::marked(marked const & origin)
 		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
 			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
-		:blank(origin.blank::self())
-		, MEMBER_marker()
+		:MEMBER_marker()
 	{
 		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
 	marked::marked(marked && origin)
 		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
 			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
-		:blank(std::move(origin.blank::self()))
-		, MEMBER_marker()
+		: MEMBER_marker()
 	{
 		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
@@ -542,23 +354,14 @@ namespace OKps::base
 
 	void marked::operator =(marked const & origin) noexcept
 	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = origin.blank::self();
-		}
 	}
 
 	void marked::operator =(marked && origin) noexcept
 	{
-		if (this != std::addressof(origin))
-		{
-			this->blank::self() = std::move(origin.blank::self());
-		}
 	}
 	reference::reference(marked const & m)
 		noexcept(noexcept(std::weak_ptr<marked::marker_type>(std::declval<std::shared_ptr<marked::marker_type> const &>())))
-		:blank()
-		, MEMBER_marker(m.marker())
+		:MEMBER_marker(m.marker())
 	{
 	}
 	reference::~reference()
@@ -567,8 +370,7 @@ namespace OKps::base
 	}
 	reference::reference(reference const & origin)
 		noexcept(std::is_nothrow_copy_constructible_v<std::weak_ptr<marked::marker_type>>)
-		:blank(origin.blank::self())
-		, MEMBER_marker(origin.MEMBER_marker)
+		: MEMBER_marker(origin.MEMBER_marker)
 	{
 	}
 	void reference::operator =(reference const & origin)
@@ -576,14 +378,12 @@ namespace OKps::base
 	{
 		if (this != std::addressof(origin))
 		{
-			this->blank::self() = origin.blank::self();
 			this->MEMBER_marker = origin.MEMBER_marker;
 		}
 	}
 	reference::reference(reference && origin)
 		noexcept(std::is_nothrow_move_constructible_v<std::weak_ptr<marked::marker_type>>)
-		:blank(std::move(origin.blank::self()))
-		, MEMBER_marker(std::move(origin.MEMBER_marker))
+		: MEMBER_marker(std::move(origin.MEMBER_marker))
 	{
 	}
 	void reference::operator =(reference && origin)
@@ -591,7 +391,6 @@ namespace OKps::base
 	{
 		if (this != std::addressof(origin))
 		{
-			this->blank::self() = std::move(origin.blank::self());
 			this->MEMBER_marker = std::move(origin.MEMBER_marker);
 		}
 	}
