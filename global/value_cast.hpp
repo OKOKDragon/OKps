@@ -66,7 +66,7 @@ namespace OKps
     保证转换前后值不变
     */
     template<typename target_type, copy_passing origin_type>
-    target_type value_cast(origin_type const value)
+    typename std::enable_if_t<is_convertible<target_type, origin_type>, target_type> value_cast(origin_type const value)
         noexcept(safe_convertible<target_type, origin_type>);
     /*
     从 origin_type 类型转换到 target_type 类型
@@ -85,6 +85,11 @@ namespace OKps
 
     template<>
     constexpr bool const is_convertible<int, std::byte> = true;
+
+    template<>
+    constexpr bool const is_convertible<std::byte, unsigned long long> = true;
+    template<>
+    constexpr bool const is_convertible<std::byte, long long> = true;
 
     template<>
     constexpr bool const is_convertible<unsigned int, std::byte> = true;
@@ -117,6 +122,11 @@ namespace OKps
     constexpr bool const safe_convertible<std::byte, unsigned int> = noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<unsigned int> const &>()));
 
     template<>
+    constexpr bool const safe_convertible<std::byte, unsigned long long> = noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<unsigned long long> const &>()));
+    template<>
+    constexpr bool const safe_convertible<std::byte, long long> = noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<long long> const &>()));
+
+    template<>
     constexpr bool const safe_convertible<char, std::byte> = true;
 
     template<>
@@ -134,31 +144,36 @@ namespace OKps
 但是<fstream>仍然使用char类型字符串作读写缓存，故需要char和unsigned char与std::byte之间的转换。
 */
 
-
-    template<>
-    std::byte value_cast(char const value)
+    template
+        std::byte value_cast<std::byte, unsigned long long>(unsigned long long const value)
+        noexcept(safe_convertible<std::byte, unsigned long long>);
+    template
+        std::byte value_cast<std::byte, long long>(long long const value)
+        noexcept(safe_convertible<std::byte, long long>);
+    template
+        std::byte value_cast<std::byte, char>(char const value)
         noexcept(safe_convertible<std::byte, char>);
     template
         std::byte value_cast<std::byte, std::bitset<bit_per_byte>>(std::bitset<bit_per_byte> const & value)
         noexcept(safe_convertible<std::byte, std::bitset<bit_per_byte>>);
-    template<>
-    std::byte value_cast(int const value)
+    template
+        std::byte value_cast<std::byte, int>(int const value)
         noexcept(safe_convertible<std::byte, int>);
-    template<>
-    std::byte value_cast(unsigned int const value)
+    template
+        std::byte value_cast<std::byte, unsigned int>(unsigned int const value)
         noexcept(safe_convertible<std::byte, unsigned int>);
 
-    template<>
-    char value_cast(std::byte const value)
+    template
+        char value_cast<char, std::byte>(std::byte const value)
         noexcept(safe_convertible<char, std::byte>);
-    template<>
-    std::bitset<bit_per_byte> value_cast(std::byte const value)
+    template
+        std::bitset<bit_per_byte> value_cast<std::bitset<bit_per_byte>, std::byte>(std::byte const value)
         noexcept(safe_convertible<std::bitset<bit_per_byte>, std::byte>);
-    template<>
-    int value_cast(std::byte const value)
+    template
+        int value_cast<int, std::byte>(std::byte const value)
         noexcept(safe_convertible<int, std::byte>);
-    template<>
-    unsigned int value_cast(std::byte const value)
+    template
+        unsigned int value_cast<unsigned int, std::byte>(std::byte const value)
         noexcept(safe_convertible<unsigned int, std::byte>);
 
     template<>

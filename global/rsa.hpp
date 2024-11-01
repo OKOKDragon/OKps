@@ -10,10 +10,12 @@ namespace OKps::RSA
         integer MEMBER_public_key;
         integer MEMBER_private_key;
         integer MEMBER_key;
-        bool MEMBER_valid;
+
     public:
-        bool operator ==(byte_device const & right)const;
-        bool operator !=(byte_device const & right)const;
+        bool operator ==(byte_device const & right)const
+            noexcept(noexcept(std::declval<integer>() == std::declval<integer>()));
+        bool operator !=(byte_device const & right)const
+            noexcept(noexcept(std::declval<integer>() == std::declval<integer>()));
 
         byte_device(integer const & key, integer const & public_key, integer const & private_key);
 
@@ -28,19 +30,23 @@ namespace OKps::RSA
 
         ~byte_device()noexcept;
 
-        byte_device(byte_device const & origin);
-        void operator =(byte_device const & origin);
+        byte_device(byte_device const & origin)
+            noexcept(std::is_nothrow_copy_constructible_v<integer>);
+        void operator =(byte_device const & origin)
+            noexcept(std::is_nothrow_copy_assignable_v<integer>);
 
-        //移动构造会导致原来的对象origin不可用
-        byte_device(byte_device && origin)noexcept;
-        void operator =(byte_device && origin)  noexcept;
+        /*
+        移动后，禁止使用原来的对象 origin
+        */
+        byte_device(byte_device && origin)
+            noexcept(std::is_nothrow_move_constructible_v<integer>);
+        void operator =(byte_device && origin)
+            noexcept(std::is_nothrow_move_assignable_v<integer>);
         integer encrypt(integer const & input)const;
         integer decrypt(integer const & input)const;
-        integer const & key()const;
-        integer const & public_key()const;
-        integer const & private_key()const;
-        //检查当前rsa对象是否有效
-        bool is_valid()const noexcept;
+        integer const & key()const noexcept;
+        integer const & public_key()const noexcept;
+        integer const & private_key()const noexcept;
 
     private:
         /*

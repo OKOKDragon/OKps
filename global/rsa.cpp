@@ -5,10 +5,6 @@
 namespace OKps::RSA
 {
 
-    bool byte_device::is_valid()const noexcept
-    {
-        return this->MEMBER_valid;
-    }
     bool byte_device::INNER_test_keys(std::size_t const length, std::uintmax_t const times)const
     {
         class impl final
@@ -129,12 +125,8 @@ namespace OKps::RSA
         }
     }
     bool byte_device::operator ==(byte_device const & right)const
+        noexcept(noexcept(std::declval<integer>() == std::declval<integer>()))
     {
-        if ((not this->MEMBER_valid) or (not right.MEMBER_valid))
-        {
-
-            throw std::runtime_error("rsa对象已失效，无法使用");
-        }
         if (this->MEMBER_key == right.MEMBER_key and this->MEMBER_public_key == right.MEMBER_public_key and this->MEMBER_private_key == right.MEMBER_private_key)
         {
             return true;
@@ -145,29 +137,27 @@ namespace OKps::RSA
         }
     }
     bool byte_device::operator !=(byte_device const & right)const
+        noexcept(noexcept(std::declval<integer>() == std::declval<integer>()))
     {
         return not(*this == right);
     }
-    void byte_device::operator =(byte_device && origin) noexcept
+    void byte_device::operator =(byte_device && origin)
+        noexcept(std::is_nothrow_move_assignable_v<integer>)
     {
         if (this != (&origin))
         {
             this->MEMBER_key = std::move(origin.MEMBER_key);
             this->MEMBER_public_key = std::move(origin.MEMBER_public_key);
             this->MEMBER_private_key = std::move(origin.MEMBER_private_key);
-            this->MEMBER_valid = origin.MEMBER_valid;
-            origin.MEMBER_valid = false;
         }
     }
     byte_device::byte_device(integer const & key, integer const & public_key, integer const & private_key)
         :MEMBER_key(key)
         , MEMBER_public_key(public_key)
         , MEMBER_private_key(private_key)
-        , MEMBER_valid(true)
     {
     }
     byte_device::byte_device(std::size_t const length, std::uintmax_t const key_check, std::uintmax_t const prime_check)
-        :MEMBER_valid(true)
     {
         if (length <= 5)
         {
@@ -191,93 +181,63 @@ namespace OKps::RSA
     {
     }
     byte_device::byte_device(byte_device const & origin)
+        noexcept(std::is_nothrow_copy_constructible_v<integer>)
         :MEMBER_key(origin.MEMBER_key)
         , MEMBER_public_key(origin.MEMBER_public_key)
         , MEMBER_private_key(origin.MEMBER_private_key)
-        , MEMBER_valid(origin.MEMBER_valid)
     {
     }
     void  byte_device::operator =(byte_device const & origin)
+        noexcept(std::is_nothrow_copy_assignable_v<integer>)
     {
         if (this != (&origin))
         {
             this->MEMBER_key = origin.MEMBER_key;
             this->MEMBER_public_key = origin.MEMBER_public_key;
             this->MEMBER_private_key = origin.MEMBER_private_key;
-            this->MEMBER_valid = origin.MEMBER_valid;
         }
     }
-    byte_device::byte_device(byte_device && origin)noexcept
+    byte_device::byte_device(byte_device && origin)
+        noexcept(std::is_nothrow_move_constructible_v<integer>)
         :MEMBER_key(std::move(origin.MEMBER_key))
         , MEMBER_public_key(std::move(origin.MEMBER_public_key))
         , MEMBER_private_key(std::move(origin.MEMBER_private_key))
-        , MEMBER_valid(origin.MEMBER_valid)
     {
-        origin.MEMBER_valid = false;
     }
     integer byte_device::encrypt(integer const & input)const
     {
-        if (not this->MEMBER_valid)
-        {
-
-            throw std::runtime_error("此rsa对象已失效，无法使用");
-        }
         if (input.sign() == integer::sign_type::negative)
         {
-
             throw std::invalid_argument("rsa加密时，原文必须为非负数");
         }
         if (input >= this->MEMBER_key)
         {
-
             throw std::invalid_argument("rsa加密时，原文必须小于密钥n");
         }
         return input.power_mod(this->MEMBER_public_key, this->MEMBER_key);
     }
     integer byte_device::decrypt(integer const & input)const
     {
-        if (not this->MEMBER_valid)
-        {
-
-            throw std::runtime_error("此rsa对象已失效，无法使用");
-        }
         if (input.sign() == integer::sign_type::negative)
         {
-
             throw std::invalid_argument("rsa解密时，密文必须为非负数");
         }
         if (input >= this->MEMBER_key)
         {
-
             throw std::invalid_argument("rsa解密时，密文必须小于密钥n");
         }
         return input.power_mod(this->MEMBER_private_key, this->MEMBER_key);
     }
-    integer const & byte_device::key()const
+    integer const & byte_device::key()const noexcept
     {
-        if (not this->MEMBER_valid)
-        {
-
-            throw std::runtime_error("此rsa对象已失效，无法使用");
-        }
         return this->MEMBER_key;
     }
-    integer const & byte_device::public_key()const
+    integer const & byte_device::public_key()const noexcept
     {
-        if (not this->MEMBER_valid)
-        {
-
-            throw std::runtime_error("此rsa对象已失效，无法使用");
-        }
         return this->MEMBER_public_key;
     }
-    integer const & byte_device::private_key()const
+    integer const & byte_device::private_key()const noexcept
     {
-        if (not this->MEMBER_valid)
-        {
-
-            throw std::runtime_error("此rsa对象已失效，无法使用");
-        }
         return this->MEMBER_private_key;
     }
 

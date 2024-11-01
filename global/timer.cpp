@@ -10,7 +10,6 @@ namespace OKps
 
     time_monitor::~time_monitor()noexcept
     {
-        // this->end();
     }
     void time_monitor::begin() noexcept
     {

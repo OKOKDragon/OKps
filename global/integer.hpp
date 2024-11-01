@@ -10,18 +10,16 @@ namespace OKps
 {
     /*
     无限精度整数
-    实现参考了 openssl 和 java jdk 的代码
 
-    虽然有很多成熟的高精度数学库，但它们大多数是c语言的，
-    要不然就是几乎完全用c语言风格写的c++。
-    我希望能充分利用c++的运算符重载、类型别名、枚举类、异常，而且不要像c语言一样手动创建和销毁上下文、使用复杂的宏定义和宏函数。
+    虽然有很多成熟的数学库，但它们大多数是c语言的，或是几乎完全用c语言风格写的所谓“c with class” c++。
+    我希望能充分利用c++的运算符重载、类型别名、枚举类、异常和标准库，而不要像c语言一样手动创建和销毁上下文、使用复杂的宏定义和宏函数。
     因此我从头实现了这个高精度整数类。
     */
     class integer final
     {
     public:
         /*
-        无符号整数类型，其大小是最大的无符号整数的一半。
+        内置无符号整数类型，其大小是最大的无符号整数的一半。
         用此类型的数组存储大整数。
         */
         using value_type = std::uint32_t;
@@ -29,7 +27,7 @@ namespace OKps
         static std::size_t const half_length;
     public:
         /*
-        最大的无符号整数类型
+        最大的内置无符号整数类型
         用此类型可以存储任意两个 value_type 类型的加法或乘法结果。
         */
         using holder_type = std::uint64_t;
@@ -41,14 +39,14 @@ namespace OKps
         //正负性符号
         enum class sign_type :signed char
         {
-            zero = 0,
-            positive = 1,
-            negative = -1
+            zero = 0,//零
+            positive = 1,//正
+            negative = -1//负
         };
 
 
     private:
-        static holder_type const base;//TYPE_half_number类型所能表示的不同无符号整数的数量，也就是我们的大整数数组使用的进制
+        static holder_type const base;//value_type类型所能表示的不同无符号整数的数量，也就是我们的大整数数组使用的进制
         static value_type const half_base;//base的一半
         sign_type MEMBER_sign;//符号位
         number_type MEMBER_number;//用2进制存储的整数，无符号

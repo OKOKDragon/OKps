@@ -112,9 +112,9 @@ namespace OKps::AES
         static key_type random_encrypt(byte_type & origin);
 
     private:
-        static const std::byte Sbox[256];
-        static const std::byte InvSbox[256];
-        std::byte w[11][4][4];
+        static const std::byte MEMBER_Sbox[256];
+        static const std::byte MEMBER_InvSbox[256];
+        std::byte MEMBER_widen_key[11][4][4];
 
         void KeyExpansion(std::byte const * key) noexcept;
 
@@ -182,7 +182,6 @@ namespace OKps::AES
     public:
         file_device()noexcept;
 
-        // 禁用拷贝构造函数，因为 std::thread 不应该复制
         file_device(file_device const &) = delete;
         void operator=(file_device const &) = delete;
 

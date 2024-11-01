@@ -6,12 +6,8 @@ namespace OKps::crypt
 {
 
     cipher::cipher(RSA::byte_device && rsa, std::uintmax_t const aes_count)
-        :MEMBER_rsa(std::make_unique<RSA::byte_device>(std::move(rsa)))
+        :MEMBER_rsa(std::move(rsa))
     {
-        if (not this->MEMBER_rsa->is_valid())
-        {
-            throw std::invalid_argument("输入的RSA密钥不可用");
-        }
         if (aes_count < 1)
         {
             throw std::invalid_argument("aes密钥数量至少为1");
@@ -22,37 +18,52 @@ namespace OKps::crypt
             std::array<integer, AES::byte_device::key_length> TEMP_aes_crypt;
             for (std::uintmax_t counter_2 = 0;counter_2 < AES::byte_device::key_length;counter_2++)
             {
-                TEMP_aes_crypt[counter_2] = this->MEMBER_rsa->encrypt(integer((std::underlying_type_t<std::byte>)(this->MEMBER_aes[counter_1].key()[counter_2]), integer::sign_type::positive));
+                TEMP_aes_crypt[counter_2] = this->MEMBER_rsa.encrypt(integer((std::underlying_type_t<std::byte>)(this->MEMBER_aes[counter_1].key()[counter_2]), integer::sign_type::positive));
             }
             this->MEMBER_crypt_aes.push_back(TEMP_aes_crypt);
         }
     }
-    cipher::~cipher()noexcept
+    cipher::~cipher()
+        noexcept(std::is_nothrow_destructible_v<RSA::byte_device>
+        and std::is_nothrow_destructible_v<std::vector<AES::byte_device>>
+        and std::is_nothrow_destructible_v<std::vector<std::array<integer, AES::byte_device::key_length>>>)
     {
     }
     cipher::cipher(cipher const & origin)
-        :MEMBER_rsa(std::make_unique<RSA::byte_device>(*(origin.MEMBER_rsa)))
+        noexcept(std::is_nothrow_copy_constructible_v<RSA::byte_device>
+and std::is_nothrow_copy_constructible_v<std::vector<AES::byte_device>>
+and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::byte_device::key_length>>>)
+    :MEMBER_rsa(origin.MEMBER_rsa)
         , MEMBER_aes(origin.MEMBER_aes)
         , MEMBER_crypt_aes(origin.MEMBER_crypt_aes)
     {
     }
     void cipher::operator =(cipher const & origin)
+        noexcept(std::is_nothrow_copy_assignable_v<RSA::byte_device>
+        and std::is_nothrow_copy_assignable_v<std::vector<AES::byte_device>>
+        and std::is_nothrow_copy_assignable_v<std::vector<std::array<integer, AES::byte_device::key_length>>>)
     {
         if (this != (&origin))
         {
-            this->MEMBER_rsa = std::make_unique<RSA::byte_device>(*(origin.MEMBER_rsa));
+            this->MEMBER_rsa = origin.MEMBER_rsa;
             this->MEMBER_aes = origin.MEMBER_aes;
             this->MEMBER_crypt_aes = origin.MEMBER_crypt_aes;
         }
     }
 
-    cipher::cipher(cipher && origin)noexcept
+    cipher::cipher(cipher && origin)
+        noexcept(std::is_nothrow_move_constructible_v<RSA::byte_device>
+        and std::is_nothrow_move_constructible_v<std::vector<AES::byte_device>>
+        and std::is_nothrow_move_constructible_v<std::vector<std::array<integer, AES::byte_device::key_length>>>)
         :MEMBER_rsa(std::move(origin.MEMBER_rsa))
         , MEMBER_aes(std::move(origin.MEMBER_aes))
         , MEMBER_crypt_aes(std::move(origin.MEMBER_crypt_aes))
     {
     }
-    void cipher::operator =(cipher && origin)noexcept
+    void cipher::operator =(cipher && origin)
+        noexcept(std::is_nothrow_move_assignable_v<RSA::byte_device>
+        and std::is_nothrow_move_assignable_v<std::vector<AES::byte_device>>
+        and std::is_nothrow_move_assignable_v<std::vector<std::array<integer, AES::byte_device::key_length>>>)
     {
         if (this != (&origin))
         {
@@ -63,10 +74,6 @@ namespace OKps::crypt
     }
     void cipher::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count)const
     {
-        if (not this->MEMBER_rsa)
-        {
-            throw std::logic_error("此密钥已失效，禁止访问");
-        }
         namespace fs = std::filesystem;
         if (not fs::is_directory(temp_route))
         {
@@ -110,10 +117,6 @@ namespace OKps::crypt
     }
     void cipher::decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count)const
     {
-        if (not this->MEMBER_rsa)
-        {
-            throw std::logic_error("此密钥已失效，禁止访问");
-        }
         namespace fs = std::filesystem;
         if (not fs::is_directory(temp_route))
         {
@@ -180,7 +183,7 @@ namespace OKps::crypt
             hint += "”格式错误";
             throw std::invalid_argument(hint);
         }
-        this->MEMBER_rsa = std::make_unique<RSA::byte_device>(integer(data[0]), integer(data[1]), integer(data[2]));
+        this->MEMBER_rsa = RSA::byte_device(integer(data[0]), integer(data[1]), integer(data[2]));
         for (std::size_t count_1 = 3;count_1 < data.size();count_1 += AES::byte_device::key_length)
         {
             std::array<integer, AES::byte_device::key_length> temp_aes_key;
@@ -203,7 +206,7 @@ namespace OKps::crypt
             AES::byte_device::key_type temp_aes_key;
             for (std::size_t count_2 = 0;count_2 < AES::byte_device::key_length;count_2++)
             {
-                auto temp_real_aes_key = this->MEMBER_rsa->decrypt(this->MEMBER_crypt_aes[count_1][count_2]);
+                auto temp_real_aes_key = this->MEMBER_rsa.decrypt(this->MEMBER_crypt_aes[count_1][count_2]);
                 if (temp_real_aes_key.sign() == integer::sign_type::zero)
                 {
                     temp_aes_key[count_2] = (std::byte)0;
@@ -218,12 +221,10 @@ namespace OKps::crypt
 
     }
     bool cipher::operator ==(cipher const & right)const
+        noexcept(noexcept(std::declval<RSA::byte_device const>() == std::declval<RSA::byte_device const>())
+        and noexcept(std::declval<std::vector<AES::byte_device> const>() == std::declval<std::vector<AES::byte_device> const>()))
     {
-        if (not (this->MEMBER_rsa and right.MEMBER_rsa))
-        {
-            throw std::runtime_error("密钥已失效，禁止访问");
-        }
-        if ((*(this->MEMBER_rsa)) == (*(right.MEMBER_rsa)) and this->MEMBER_aes == right.MEMBER_aes)
+        if (this->MEMBER_rsa == right.MEMBER_rsa and this->MEMBER_aes == right.MEMBER_aes)
         {
             return true;
         }
@@ -233,15 +234,12 @@ namespace OKps::crypt
         }
     }
     bool cipher::operator !=(cipher const & right)const
+        noexcept(noexcept(std::declval<cipher const>() == std::declval<cipher const &>()))
     {
         return not(*this == right);
     }
     void cipher::save(TYPE_path const & route)const
     {
-        if (not this->MEMBER_rsa)
-        {
-            throw std::logic_error("此密钥已失效，禁止访问");
-        }
         /*
         密钥文件的结构
         用std::size_t表示一段数据的长度，后接数据，称为一个字段
@@ -249,9 +247,9 @@ namespace OKps::crypt
         字段的顺序是：rsa密钥，rsa公钥，rsa私钥，aes密钥
         */
         std::string result
-            = this->MEMBER_rsa->key().field_stream().field_string()
-            + this->MEMBER_rsa->public_key().field_stream().field_string()
-            + this->MEMBER_rsa->private_key().field_stream().field_string();
+            = this->MEMBER_rsa.key().field_stream().field_string()
+            + this->MEMBER_rsa.public_key().field_stream().field_string()
+            + this->MEMBER_rsa.private_key().field_stream().field_string();
 
         for (std::size_t count_1 = 0;count_1 < this->MEMBER_crypt_aes.size();count_1++)
         {

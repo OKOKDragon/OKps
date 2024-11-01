@@ -5,18 +5,25 @@
 namespace OKps
 {
 
-    simple_spin_lock::simple_spin_lock() noexcept
-        :MEMBER_lock(false)
+    simple_spin_lock::simple_spin_lock()
+        noexcept(std::is_nothrow_default_constructible_v<std::thread::id>
+and noexcept(std::atomic<bool>(std::declval<bool>())))
+    :MEMBER_lock(false)
         , MEMBER_thread_id()
     {
     }
 
-    simple_spin_lock::~simple_spin_lock() noexcept
+    simple_spin_lock::~simple_spin_lock()
+        noexcept(std::is_nothrow_destructible_v<std::atomic<bool>>
+and std::is_nothrow_destructible_v<std::thread::id>
+and noexcept(std::declval<simple_spin_lock *>()->unlock()))
     {
         this->unlock();
     }
 
-    void simple_spin_lock::lock() noexcept
+    void simple_spin_lock::lock()
+        noexcept(noexcept(std::declval<std::atomic<bool>>().compare_exchange_strong(std::declval<bool &>(), std::declval<bool>()))
+        and noexcept(std::declval<std::thread::id>() = std::this_thread::get_id()))
     {
         while (true)
         {
@@ -30,7 +37,9 @@ namespace OKps
         }
     }
 
-    void simple_spin_lock::unlock() noexcept
+    void simple_spin_lock::unlock()
+        noexcept(noexcept(std::declval<std::thread::id>() = std::thread::id())
+and noexcept(std::declval<std::atomic<bool>>() = std::declval<bool>()))
     {
         this->MEMBER_thread_id = std::thread::id();
         this->MEMBER_lock = false;

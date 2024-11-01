@@ -47,39 +47,6 @@ namespace OKps::base
 	};
 
 	/*
-	此基类的对象构造时设为有效对象，被移动后会标识为无效对象。
-	适用于不能弃置移动构造函数，但是又要禁止使用 被移动后的对象 的情形。
-	例如，有函数 T f()，需要在f的函数体内构造T类的对象t并返回，为了执行c++标准中的复制消除优化，类T需要有移动构造函数，
-	但是由于某种原因，假设 T类对象t1、t2，不能出现执行过 {t1 = std::move(t2);} 之后又访问 t2 的情况，
-	则可以让类T继承此基类。
-	*/
-	class move_invalid
-	{
-	private:
-		bool MEMBER_valid;
-	public:
-		bool const & is_valid()const noexcept;
-	protected:
-		/*
-		检查当前对象是否有效，
-		如果有效则什么都不做，如果无效则抛出异常
-		*/
-		void raise_invalid_error()const noexcept(false);
-	public:
-		move_invalid()noexcept;
-		move_invalid(move_invalid const &)noexcept;
-		void operator =(move_invalid const &)noexcept;
-		move_invalid(move_invalid &&)noexcept;
-		void operator =(move_invalid &&)noexcept;
-		virtual ~move_invalid()noexcept;
-		virtual move_invalid & self()noexcept;
-		virtual move_invalid const & self()const noexcept;
-		virtual move_invalid * operator &()noexcept;
-		virtual move_invalid const * operator &()const noexcept;
-		bool operator <(move_invalid const &)const noexcept;
-	};
-
-	/*
 	处理函数基类
 	可以用作回调函数的标准类型，而不用 lambda 配合模板的形式
 	例如，想要在函数 f 中使用回调函数 h，则可以写成

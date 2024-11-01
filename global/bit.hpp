@@ -1,9 +1,10 @@
 #pragma once
 
-#include <climits>
 #include <cstddef>
+#include <limits>
+#include <type_traits>
 
 namespace OKps
 {
-    inline constexpr std::size_t const bit_per_byte = CHAR_BIT/*c标准库定义的宏*/;//每字节有多少位
+    inline constexpr std::size_t const bit_per_byte = std::numeric_limits<std::underlying_type_t<std::byte>>::digits;//每字节有多少位
 }

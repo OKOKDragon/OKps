@@ -2,84 +2,72 @@
 
 namespace OKps
 {
-    template<>
-    std::byte value_cast(int const value)
-        noexcept(safe_convertible<std::byte, int>)
+    template<typename target_type, copy_passing origin_type>
+    typename std::enable_if_t<is_convertible<target_type, origin_type>, target_type> value_cast(origin_type const value)
+        noexcept(safe_convertible<target_type, origin_type>)
     {
+        static_assert(not std::is_same_v<origin_type, target_type>);
         using middle_type = std::underlying_type<std::byte>::type;
-        base::integer<int> const temp = base::integer<int>(value);
-        base::integer<middle_type> const result = temp;
-        return static_cast<std::byte>(result.value());
-    }
-    template<>
-    std::byte value_cast(unsigned int const value)
-        noexcept(safe_convertible<std::byte, unsigned int>)
-    {
-        using middle_type = std::underlying_type<std::byte>::type;
-        base::integer<unsigned int> const temp = base::integer<unsigned int>(value);
-        base::integer<middle_type> const result = temp;
-        return static_cast<std::byte>(result.value());
-    }
-    template<>
-    char value_cast(std::byte const value)
-        noexcept(safe_convertible<char, std::byte>)
-    {
-        static_assert(sizeof(std::byte) == sizeof(char));
-        using middle_type = std::underlying_type<std::byte>::type;
-        return static_cast<char>(static_cast<middle_type>(value));
-    }
-    template<>
-    std::bitset<bit_per_byte> value_cast(std::byte const value)
-        noexcept(safe_convertible<std::bitset<bit_per_byte>, std::byte>)
-    {
-        using middle_type = std::underlying_type<std::byte>::type;
-        std::byte const one = static_cast<std::byte>(static_cast<middle_type>(1));
-        std::bitset<bit_per_byte> result;
-        for (std::size_t i = 0;i < bit_per_byte;++i)
+        if constexpr (std::is_same_v<origin_type, std::byte>)
         {
-            if (((value & (one << i)) >> i) == one)
+            if constexpr (std::is_same_v<target_type, std::bitset<bit_per_byte>>)
             {
-                result[i] = true;
+                std::byte const one = static_cast<std::byte>(static_cast<middle_type>(1));
+                std::bitset<bit_per_byte> result;
+                for (std::size_t i = 0;i < bit_per_byte;++i)
+                {
+                    if (((value & (one << i)) >> i) == one)
+                    {
+                        result[i] = true;
+                    }
+                    else
+                    {
+                        result[i] = false;
+                    }
+                }
+                return result;
+            }
+            else if constexpr (std::is_same_v<target_type, char>)
+            {
+                static_assert(sizeof(std::byte) == sizeof(char));
+                return static_cast<char>(static_cast<middle_type>(value));
+            }
+            else if constexpr (base::arithmetic_integer<target_type> and (not std::is_same_v<target_type, middle_type>))
+            {
+                base::integer<middle_type> const temp = base::integer<middle_type>(static_cast<middle_type>(value));
+                base::integer<target_type> const result = temp;
+                return result.value();
             }
             else
             {
-                result[i] = false;
+                static_assert(false, "此类型转换未实现");
             }
         }
-        return result;
-    }
-    template<>
-    std::byte value_cast(char const data)
-        noexcept(safe_convertible<std::byte, char>)
-    {
-        static_assert(sizeof(std::byte) == sizeof(char));
-        using middle_type = std::underlying_type<std::byte>::type;
-        return static_cast<std::byte>(static_cast<middle_type>(data));
-    }
-
-    template<>
-    int value_cast(std::byte const value)
-        noexcept(safe_convertible<int, std::byte>)
-    {
-        using middle_type = std::underlying_type<std::byte>::type;
-        base::integer<middle_type> const temp = base::integer<middle_type>(static_cast<middle_type>(value));
-        base::integer<int> const result = temp;
-        return result.value();
-    }
-    template<>
-    unsigned int value_cast(std::byte const value)
-        noexcept(safe_convertible<unsigned int, std::byte>)
-    {
-        using middle_type = std::underlying_type<std::byte>::type;
-        base::integer<middle_type> const temp = base::integer<middle_type>(static_cast<middle_type>(value));
-        base::integer<unsigned int> const result = temp;
-        return result.value();
+        if constexpr (std::is_same_v<target_type, std::byte>)
+        {
+            if constexpr (std::is_same_v<origin_type, char>)
+            {
+                static_assert(sizeof(std::byte) == sizeof(char));
+                return static_cast<std::byte>(static_cast<middle_type>(value));
+            }
+            else if constexpr (base::arithmetic_integer<origin_type> and (not std::is_same_v<origin_type, middle_type>))
+            {
+                base::integer<origin_type> const temp = base::integer<origin_type>(value);
+                base::integer<middle_type> const result = temp;
+                return static_cast<std::byte>(result.value());
+            }
+            else
+            {
+                static_assert(false, "此类型转换未实现");
+            }
+        }
     }
 
     template<typename target_type, reference_passing origin_type>
     typename std::enable_if_t<is_convertible<target_type, origin_type>, target_type> value_cast(origin_type const & value)
         noexcept(safe_convertible<target_type, origin_type>)
     {
+        static_assert(not std::is_same_v<origin_type, target_type>);
         if constexpr (std::is_same_v<std::byte, target_type> and std::is_same_v<origin_type, std::bitset<bit_per_byte>>)
         {
             using middle_type = std::underlying_type<std::byte>::type;
@@ -118,6 +106,10 @@ namespace OKps
                 result[i] = static_cast<typename target_type::value_type>(value[i]);
             }
             return result;
+        }
+        else
+        {
+            static_assert(false, "此类型转换未实现");
         }
     }
 }

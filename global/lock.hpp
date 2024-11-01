@@ -22,7 +22,9 @@ namespace OKps
         std::atomic<bool> MEMBER_lock;
         std::thread::id MEMBER_thread_id;
     public:
-        simple_spin_lock() noexcept;
+        simple_spin_lock()
+            noexcept(std::is_nothrow_default_constructible_v<std::thread::id>
+            and noexcept(std::atomic<bool>(std::declval<bool>())));
 
         /*
         原子对象无法复制或移动，故此类也无法提供复制和移动操作。
@@ -35,10 +37,17 @@ namespace OKps
         /*
         如果锁处于上锁状态，则析构时会解锁
         */
-        ~simple_spin_lock()noexcept;
+        ~simple_spin_lock()
+            noexcept(std::is_nothrow_destructible_v<std::atomic<bool>>
+            and std::is_nothrow_destructible_v<std::thread::id>
+            and noexcept(std::declval<simple_spin_lock *>()->unlock()));
 
-        void lock()noexcept;
-        void unlock() noexcept;
+        void lock()
+            noexcept(noexcept(std::declval<std::atomic<bool>>().compare_exchange_strong(std::declval<bool &>(), std::declval<bool>()))
+            and noexcept(std::declval<std::thread::id>() = std::this_thread::get_id()));
+        void unlock()
+            noexcept(noexcept(std::declval<std::thread::id>() = std::thread::id())
+            and noexcept(std::declval<std::atomic<bool>>() = std::declval<bool>()));
         std::atomic<bool> const & is_locked()const noexcept;
         /*
         返回锁的所有者线程ID

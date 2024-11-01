@@ -15,7 +15,7 @@ namespace OKps::AES
     {
         return this->MEMBER_key != right.MEMBER_key;
     }
-    const std::byte byte_device::Sbox[256] =
+    const std::byte byte_device::MEMBER_Sbox[256] =
     {
         /*  0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f */
         std::byte(0x63), std::byte(0x7c), std::byte(0x77), std::byte(0x7b), std::byte(0xf2), std::byte(0x6b), std::byte(0x6f), std::byte(0xc5), std::byte(0x30), std::byte(0x01), std::byte(0x67), std::byte(0x2b), std::byte(0xfe), std::byte(0xd7), std::byte(0xab), std::byte(0x76), /*0*/
@@ -36,7 +36,7 @@ namespace OKps::AES
         std::byte(0x8c), std::byte(0xa1), std::byte(0x89), std::byte(0x0d), std::byte(0xbf), std::byte(0xe6), std::byte(0x42), std::byte(0x68), std::byte(0x41), std::byte(0x99), std::byte(0x2d), std::byte(0x0f), std::byte(0xb0), std::byte(0x54), std::byte(0xbb), std::byte(0x16) /*f*/
     };
 
-    const std::byte byte_device::InvSbox[256] =
+    const std::byte byte_device::MEMBER_InvSbox[256] =
     {
         /*  0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f  */
         std::byte(0x52), std::byte(0x09), std::byte(0x6a), std::byte(0xd5), std::byte(0x30), std::byte(0x36), std::byte(0xa5), std::byte(0x38), std::byte(0xbf), std::byte(0x40), std::byte(0xa3), std::byte(0x9e), std::byte(0x81), std::byte(0xf3), std::byte(0xd7), std::byte(0xfb), /*0*/
@@ -61,9 +61,9 @@ namespace OKps::AES
     byte_device::byte_device(byte_device const & origin)noexcept
         :MEMBER_key(origin.MEMBER_key)
     {
-        std::byte buffer[16];
+        std::byte buffer[key_length];
 
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = origin.MEMBER_key[count];
         }
@@ -77,9 +77,9 @@ namespace OKps::AES
         }
         this->MEMBER_key = origin.MEMBER_key;
 
-        std::byte buffer[16];
+        std::byte buffer[key_length];
 
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = origin.MEMBER_key[count];
         }
@@ -92,14 +92,14 @@ namespace OKps::AES
     {
         origin.MEMBER_key = random_aes_key();
 
-        std::byte buffer[16];
+        std::byte buffer[key_length];
 
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = this->MEMBER_key[count];
         }
         this->KeyExpansion(buffer);
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = origin.MEMBER_key[count];
         }
@@ -108,9 +108,9 @@ namespace OKps::AES
     byte_device::byte_device()
         :MEMBER_key(random_aes_key())
     {
-        std::byte buffer[16];
+        std::byte buffer[key_length];
 
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = this->MEMBER_key[count];
         }
@@ -124,14 +124,14 @@ namespace OKps::AES
         }
         this->MEMBER_key = std::move(origin.MEMBER_key);
         origin.MEMBER_key = random_aes_key();
-        std::byte buffer[16];
+        std::byte buffer[key_length];
 
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = this->MEMBER_key[count];
         }
         this->KeyExpansion(buffer);
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = origin.MEMBER_key[count];
         }
@@ -140,7 +140,7 @@ namespace OKps::AES
 
     byte_device::byte_device(std::byte const * key) noexcept
     {
-        for (unsigned int count = 0;count < 16;count++)
+        for (unsigned int count = 0;count < key_length;count++)
         {
             this->MEMBER_key[count] = key[count];
         }
@@ -150,9 +150,9 @@ namespace OKps::AES
     byte_device::byte_device(byte_device::key_type const & key)noexcept
         :MEMBER_key(key)
     {
-        std::byte buffer[16];
+        std::byte buffer[key_length];
 
-        for (unsigned int count = 0; count < 16; count++)
+        for (unsigned int count = 0; count < key_length; count++)
         {
             buffer[count] = key[count];
         }
@@ -189,56 +189,56 @@ namespace OKps::AES
         state[3][2] = input[11];
         state[3][3] = input[15];
 
-        byte_device::AddRoundKey(state, this->w[0]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[0]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[1]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[1]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[2]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[2]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[3]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[3]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[4]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[4]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[5]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[5]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[6]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[6]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[7]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[7]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[8]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[8]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
         byte_device::MixColumns(state);
-        byte_device::AddRoundKey(state, this->w[9]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[9]);
 
         byte_device::SubBytes(state);
         byte_device::ShiftRows(state);
-        byte_device::AddRoundKey(state, this->w[10]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[10]);
 
         input[0] = state[0][0];
         input[4] = state[0][1];
@@ -290,56 +290,56 @@ namespace OKps::AES
         state[3][2] = input[11];
         state[3][3] = input[15];
 
-        byte_device::AddRoundKey(state, this->w[10]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[10]);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[9]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[9]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[8]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[8]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[7]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[7]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[6]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[6]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[5]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[5]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[4]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[4]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[3]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[3]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[2]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[2]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[1]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[1]);
         byte_device::InvMixColumns(state);
 
         byte_device::InvShiftRows(state);
         byte_device::InvSubBytes(state);
-        byte_device::AddRoundKey(state, this->w[0]);
+        byte_device::AddRoundKey(state, this->MEMBER_widen_key[0]);
 
         input[0] = state[0][0];
         input[4] = state[0][1];
@@ -395,80 +395,80 @@ namespace OKps::AES
     {
         std::byte  t[4];
 
-        t[0] = 0 ? this->w[i][0][0 - 1] : this->w[i - 1][0][3];
-        t[1] = 0 ? this->w[i][1][0 - 1] : this->w[i - 1][1][3];
-        t[2] = 0 ? this->w[i][2][0 - 1] : this->w[i - 1][2][3];
-        t[3] = 0 ? this->w[i][3][0 - 1] : this->w[i - 1][3][3];
+        t[0] = 0 ? this->MEMBER_widen_key[i][0][0 - 1] : this->MEMBER_widen_key[i - 1][0][3];
+        t[1] = 0 ? this->MEMBER_widen_key[i][1][0 - 1] : this->MEMBER_widen_key[i - 1][1][3];
+        t[2] = 0 ? this->MEMBER_widen_key[i][2][0 - 1] : this->MEMBER_widen_key[i - 1][2][3];
+        t[3] = 0 ? this->MEMBER_widen_key[i][3][0 - 1] : this->MEMBER_widen_key[i - 1][3][3];
 
         std::byte temp = t[0];
 
-        t[0] = byte_device::Sbox[static_cast<unsigned int>(t[1])];
-        t[1] = byte_device::Sbox[static_cast<unsigned int>(t[2])];
-        t[2] = byte_device::Sbox[static_cast<unsigned int>(t[3])];
-        t[3] = byte_device::Sbox[static_cast<unsigned int>(t[0])];
+        t[0] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(t[1])];
+        t[1] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(t[2])];
+        t[2] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(t[3])];
+        t[3] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(t[0])];
 
-        t[3] = byte_device::Sbox[static_cast<unsigned int>(temp)];
+        t[3] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(temp)];
         t[0] ^= rc[i - 1];
 
-        this->w[i][0][0] = this->w[i - 1][0][0] ^ t[0];
-        this->w[i][1][0] = this->w[i - 1][1][0] ^ t[1];
-        this->w[i][2][0] = this->w[i - 1][2][0] ^ t[2];
-        this->w[i][3][0] = this->w[i - 1][3][0] ^ t[3];
+        this->MEMBER_widen_key[i][0][0] = this->MEMBER_widen_key[i - 1][0][0] ^ t[0];
+        this->MEMBER_widen_key[i][1][0] = this->MEMBER_widen_key[i - 1][1][0] ^ t[1];
+        this->MEMBER_widen_key[i][2][0] = this->MEMBER_widen_key[i - 1][2][0] ^ t[2];
+        this->MEMBER_widen_key[i][3][0] = this->MEMBER_widen_key[i - 1][3][0] ^ t[3];
 
-        t[0] = 1 ? this->w[i][0][0] : this->w[i - 1][0][3];
-        t[1] = 1 ? this->w[i][1][0] : this->w[i - 1][1][3];
-        t[2] = 1 ? this->w[i][2][0] : this->w[i - 1][2][3];
-        t[3] = 1 ? this->w[i][3][0] : this->w[i - 1][3][3];
+        t[0] = 1 ? this->MEMBER_widen_key[i][0][0] : this->MEMBER_widen_key[i - 1][0][3];
+        t[1] = 1 ? this->MEMBER_widen_key[i][1][0] : this->MEMBER_widen_key[i - 1][1][3];
+        t[2] = 1 ? this->MEMBER_widen_key[i][2][0] : this->MEMBER_widen_key[i - 1][2][3];
+        t[3] = 1 ? this->MEMBER_widen_key[i][3][0] : this->MEMBER_widen_key[i - 1][3][3];
 
-        this->w[i][0][1] = this->w[i - 1][0][1] ^ t[0];
-        this->w[i][1][1] = this->w[i - 1][1][1] ^ t[1];
-        this->w[i][2][1] = this->w[i - 1][2][1] ^ t[2];
-        this->w[i][3][1] = this->w[i - 1][3][1] ^ t[3];
+        this->MEMBER_widen_key[i][0][1] = this->MEMBER_widen_key[i - 1][0][1] ^ t[0];
+        this->MEMBER_widen_key[i][1][1] = this->MEMBER_widen_key[i - 1][1][1] ^ t[1];
+        this->MEMBER_widen_key[i][2][1] = this->MEMBER_widen_key[i - 1][2][1] ^ t[2];
+        this->MEMBER_widen_key[i][3][1] = this->MEMBER_widen_key[i - 1][3][1] ^ t[3];
 
-        t[0] = 2 ? w[i][0][1] : w[i - 1][0][3];
-        t[1] = 2 ? w[i][1][1] : w[i - 1][1][3];
-        t[2] = 2 ? w[i][2][1] : w[i - 1][2][3];
-        t[3] = 2 ? w[i][3][1] : w[i - 1][3][3];
+        t[0] = 2 ? MEMBER_widen_key[i][0][1] : MEMBER_widen_key[i - 1][0][3];
+        t[1] = 2 ? MEMBER_widen_key[i][1][1] : MEMBER_widen_key[i - 1][1][3];
+        t[2] = 2 ? MEMBER_widen_key[i][2][1] : MEMBER_widen_key[i - 1][2][3];
+        t[3] = 2 ? MEMBER_widen_key[i][3][1] : MEMBER_widen_key[i - 1][3][3];
 
-        this->w[i][0][2] = this->w[i - 1][0][2] ^ t[0];
-        this->w[i][1][2] = this->w[i - 1][1][2] ^ t[1];
-        this->w[i][2][2] = this->w[i - 1][2][2] ^ t[2];
-        this->w[i][3][2] = this->w[i - 1][3][2] ^ t[3];
+        this->MEMBER_widen_key[i][0][2] = this->MEMBER_widen_key[i - 1][0][2] ^ t[0];
+        this->MEMBER_widen_key[i][1][2] = this->MEMBER_widen_key[i - 1][1][2] ^ t[1];
+        this->MEMBER_widen_key[i][2][2] = this->MEMBER_widen_key[i - 1][2][2] ^ t[2];
+        this->MEMBER_widen_key[i][3][2] = this->MEMBER_widen_key[i - 1][3][2] ^ t[3];
 
-        t[0] = 3 ? this->w[i][0][2] : this->w[i - 1][0][3];
-        t[1] = 3 ? this->w[i][1][2] : this->w[i - 1][1][3];
-        t[2] = 3 ? this->w[i][2][2] : this->w[i - 1][2][3];
-        t[3] = 3 ? this->w[i][3][2] : this->w[i - 1][3][3];
+        t[0] = 3 ? this->MEMBER_widen_key[i][0][2] : this->MEMBER_widen_key[i - 1][0][3];
+        t[1] = 3 ? this->MEMBER_widen_key[i][1][2] : this->MEMBER_widen_key[i - 1][1][3];
+        t[2] = 3 ? this->MEMBER_widen_key[i][2][2] : this->MEMBER_widen_key[i - 1][2][3];
+        t[3] = 3 ? this->MEMBER_widen_key[i][3][2] : this->MEMBER_widen_key[i - 1][3][3];
 
-        this->w[i][0][3] = this->w[i - 1][0][3] ^ t[0];
-        this->w[i][1][3] = this->w[i - 1][1][3] ^ t[1];
-        this->w[i][2][3] = this->w[i - 1][2][3] ^ t[2];
-        this->w[i][3][3] = this->w[i - 1][3][3] ^ t[3];
+        this->MEMBER_widen_key[i][0][3] = this->MEMBER_widen_key[i - 1][0][3] ^ t[0];
+        this->MEMBER_widen_key[i][1][3] = this->MEMBER_widen_key[i - 1][1][3] ^ t[1];
+        this->MEMBER_widen_key[i][2][3] = this->MEMBER_widen_key[i - 1][2][3] ^ t[2];
+        this->MEMBER_widen_key[i][3][3] = this->MEMBER_widen_key[i - 1][3][3] ^ t[3];
     }
 
     void byte_device::KeyExpansion(std::byte const * key) noexcept
     {
         constexpr std::byte const rc[] = {std::byte(0x01), std::byte(0x02), std::byte(0x04), std::byte(0x08), std::byte(0x10), std::byte(0x20), std::byte(0x40), std::byte(0x80), std::byte(0x1b), std::byte(0x36)};
 
-        this->w[0][0][0] = key[0];
-        this->w[0][0][1] = key[4];
-        this->w[0][0][2] = key[8];
-        this->w[0][0][3] = key[12];
+        this->MEMBER_widen_key[0][0][0] = key[0];
+        this->MEMBER_widen_key[0][0][1] = key[4];
+        this->MEMBER_widen_key[0][0][2] = key[8];
+        this->MEMBER_widen_key[0][0][3] = key[12];
 
-        this->w[0][1][0] = key[1];
-        this->w[0][1][1] = key[5];
-        this->w[0][1][2] = key[9];
-        this->w[0][1][3] = key[13];
+        this->MEMBER_widen_key[0][1][0] = key[1];
+        this->MEMBER_widen_key[0][1][1] = key[5];
+        this->MEMBER_widen_key[0][1][2] = key[9];
+        this->MEMBER_widen_key[0][1][3] = key[13];
 
-        this->w[0][2][0] = key[2];
-        this->w[0][2][1] = key[6];
-        this->w[0][2][2] = key[10];
-        this->w[0][2][3] = key[14];
+        this->MEMBER_widen_key[0][2][0] = key[2];
+        this->MEMBER_widen_key[0][2][1] = key[6];
+        this->MEMBER_widen_key[0][2][2] = key[10];
+        this->MEMBER_widen_key[0][2][3] = key[14];
 
-        this->w[0][3][0] = key[3];
-        this->w[0][3][1] = key[7];
-        this->w[0][3][2] = key[11];
-        this->w[0][3][3] = key[15];
+        this->MEMBER_widen_key[0][3][0] = key[3];
+        this->MEMBER_widen_key[0][3][1] = key[7];
+        this->MEMBER_widen_key[0][3][2] = key[11];
+        this->MEMBER_widen_key[0][3][3] = key[15];
 
         this->INNER_KeyExpansion(1, rc);
         this->INNER_KeyExpansion(2, rc);
@@ -532,25 +532,25 @@ namespace OKps::AES
     void byte_device::SubBytes(std::byte state[][4])noexcept
     {
 
-        state[0][0] = byte_device::Sbox[static_cast<unsigned int>(state[0][0])];
-        state[0][1] = byte_device::Sbox[static_cast<unsigned int>(state[0][1])];
-        state[0][2] = byte_device::Sbox[static_cast<unsigned int>(state[0][2])];
-        state[0][3] = byte_device::Sbox[static_cast<unsigned int>(state[0][3])];
+        state[0][0] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[0][0])];
+        state[0][1] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[0][1])];
+        state[0][2] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[0][2])];
+        state[0][3] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[0][3])];
 
-        state[1][0] = byte_device::Sbox[static_cast<unsigned int>(state[1][0])];
-        state[1][1] = byte_device::Sbox[static_cast<unsigned int>(state[1][1])];
-        state[1][2] = byte_device::Sbox[static_cast<unsigned int>(state[1][2])];
-        state[1][3] = byte_device::Sbox[static_cast<unsigned int>(state[1][3])];
+        state[1][0] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[1][0])];
+        state[1][1] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[1][1])];
+        state[1][2] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[1][2])];
+        state[1][3] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[1][3])];
 
-        state[2][0] = byte_device::Sbox[static_cast<unsigned int>(state[2][0])];
-        state[2][1] = byte_device::Sbox[static_cast<unsigned int>(state[2][1])];
-        state[2][2] = byte_device::Sbox[static_cast<unsigned int>(state[2][2])];
-        state[2][3] = byte_device::Sbox[static_cast<unsigned int>(state[2][3])];
+        state[2][0] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[2][0])];
+        state[2][1] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[2][1])];
+        state[2][2] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[2][2])];
+        state[2][3] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[2][3])];
 
-        state[3][0] = byte_device::Sbox[static_cast<unsigned int>(state[3][0])];
-        state[3][1] = byte_device::Sbox[static_cast<unsigned int>(state[3][1])];
-        state[3][2] = byte_device::Sbox[static_cast<unsigned int>(state[3][2])];
-        state[3][3] = byte_device::Sbox[static_cast<unsigned int>(state[3][3])];
+        state[3][0] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[3][0])];
+        state[3][1] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[3][1])];
+        state[3][2] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[3][2])];
+        state[3][3] = byte_device::MEMBER_Sbox[static_cast<unsigned int>(state[3][3])];
     }
 
     void byte_device::ShiftRows(std::byte state[][4])noexcept
@@ -673,25 +673,25 @@ namespace OKps::AES
     void byte_device::InvSubBytes(std::byte state[][4])noexcept
     {
 
-        state[0][0] = byte_device::InvSbox[static_cast<unsigned int>(state[0][0])];
-        state[0][1] = byte_device::InvSbox[static_cast<unsigned int>(state[0][1])];
-        state[0][2] = byte_device::InvSbox[static_cast<unsigned int>(state[0][2])];
-        state[0][3] = byte_device::InvSbox[static_cast<unsigned int>(state[0][3])];
+        state[0][0] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[0][0])];
+        state[0][1] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[0][1])];
+        state[0][2] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[0][2])];
+        state[0][3] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[0][3])];
 
-        state[1][0] = byte_device::InvSbox[static_cast<unsigned int>(state[1][0])];
-        state[1][1] = byte_device::InvSbox[static_cast<unsigned int>(state[1][1])];
-        state[1][2] = byte_device::InvSbox[static_cast<unsigned int>(state[1][2])];
-        state[1][3] = byte_device::InvSbox[static_cast<unsigned int>(state[1][3])];
+        state[1][0] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[1][0])];
+        state[1][1] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[1][1])];
+        state[1][2] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[1][2])];
+        state[1][3] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[1][3])];
 
-        state[2][0] = byte_device::InvSbox[static_cast<unsigned int>(state[2][0])];
-        state[2][1] = byte_device::InvSbox[static_cast<unsigned int>(state[2][1])];
-        state[2][2] = byte_device::InvSbox[static_cast<unsigned int>(state[2][2])];
-        state[2][3] = byte_device::InvSbox[static_cast<unsigned int>(state[2][3])];
+        state[2][0] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[2][0])];
+        state[2][1] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[2][1])];
+        state[2][2] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[2][2])];
+        state[2][3] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[2][3])];
 
-        state[3][0] = byte_device::InvSbox[static_cast<unsigned int>(state[3][0])];
-        state[3][1] = byte_device::InvSbox[static_cast<unsigned int>(state[3][1])];
-        state[3][2] = byte_device::InvSbox[static_cast<unsigned int>(state[3][2])];
-        state[3][3] = byte_device::InvSbox[static_cast<unsigned int>(state[3][3])];
+        state[3][0] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[3][0])];
+        state[3][1] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[3][1])];
+        state[3][2] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[3][2])];
+        state[3][3] = byte_device::MEMBER_InvSbox[static_cast<unsigned int>(state[3][3])];
     }
 
     void byte_device::InvShiftRows(std::byte state[][4])noexcept
@@ -789,7 +789,7 @@ namespace OKps::AES
 
     void byte_device::make_align(std::byte * buffer, const unsigned int count)
     {
-        if (count > 16)
+        if (count > key_length)
         {
             throw std::invalid_argument("末尾对齐处理的位数不合法");
         }
@@ -797,7 +797,7 @@ namespace OKps::AES
         std::mt19937 random_engine(seed());                      // 随机数生成器
         std::uniform_int_distribution<unsigned int> distribution(static_cast<unsigned int>(0), static_cast<unsigned int>(std::numeric_limits<std::underlying_type_t<std::byte>>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
 
-        for (unsigned int counter = count; counter < 16; counter++)
+        for (unsigned int counter = count; counter < key_length; counter++)
         {
             buffer[counter] = static_cast<std::byte>(static_cast<std::underlying_type_t<std::byte>>(distribution(random_engine)));
         }
@@ -805,7 +805,7 @@ namespace OKps::AES
 
     void byte_device::make_align(char * buffer, const unsigned int count)
     {
-        if (count > 16)
+        if (count > key_length)
         {
             throw std::invalid_argument("末尾对齐处理的位数不合法");
         }
@@ -813,7 +813,7 @@ namespace OKps::AES
         std::mt19937 random_engine(seed());                      // 随机数生成器
         std::uniform_int_distribution<unsigned int> distribution(static_cast<unsigned int>(0), static_cast<unsigned int>(std::numeric_limits<std::underlying_type_t<std::byte>>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
 
-        for (unsigned int counter = count; counter < 16; counter++)
+        for (unsigned int counter = count; counter < key_length; counter++)
         {
             buffer[counter] = static_cast<char>(static_cast<std::underlying_type_t<std::byte>>(distribution(random_engine)));
         }
@@ -822,13 +822,13 @@ namespace OKps::AES
     void byte_device::align_encrypt(std::string & origin)const
     {
         std::size_t count = 0;
-        while (count + 16 <= origin.size())
+        while (count + key_length <= origin.size())
         {
-            count += 16;
+            count += key_length;
         }
         count = origin.size() - count; // 末尾对齐的原文位数
         this->encrypt(origin);
-        std::byte buffer[16];
+        std::byte buffer[key_length];
 
         for (std::size_t count1 = 0; count1 < count; count1++)
         {
@@ -840,24 +840,24 @@ namespace OKps::AES
         {
             origin[origin.size() - count + count1] = value_cast<char>(buffer[count1]);
         }
-        for (int count1 = count; count1 < 16; count1++)
+        for (int count1 = count; count1 < key_length; count1++)
         {
             origin.push_back(value_cast<char>(buffer[count1]));
         }
-        origin.push_back(value_cast<char>(static_cast<std::byte>(static_cast<std::underlying_type_t<std::byte>>(count))));
+        origin.push_back(value_cast<char>(value_cast<std::byte>(count)));
 
     }
 
     void byte_device::align_encrypt(byte_type & origin)const
     {
         std::size_t count = 0;
-        while (count + 16 <= origin.size())
+        while (count + byte_device::key_length <= origin.size())
         {
-            count += 16;
+            count += byte_device::key_length;
         }
         count = origin.size() - count; // 末尾对齐的原文位数
         this->encrypt(origin);
-        std::byte buffer[16];
+        std::byte buffer[byte_device::key_length];
 
         for (std::size_t count1 = 0; count1 < count; count1++)
         {
@@ -869,27 +869,27 @@ namespace OKps::AES
         {
             origin[origin.size() - count + count1] = buffer[count1];
         }
-        for (int count1 = count; count1 < 16; count1++)
+        for (std::size_t count1 = count; count1 < byte_device::key_length; count1++)
         {
             origin.push_back(buffer[count1]);
         }
-        origin.push_back((std::byte)((std::underlying_type_t<std::byte>)count));
+        origin.push_back(value_cast<std::byte>(count));
     }
 
     void byte_device::align_decrypt(std::string & origin)const
     {
-        if (origin.size() % 16 != 1)
+        if (origin.size() % byte_device::key_length != 1)
         {
             throw std::invalid_argument("输入串的格式错误");
         }
-        unsigned int const count = static_cast<unsigned int>(origin[origin.size() - 1]);
-        if (count > 16)
+        unsigned int const count = origin[origin.size() - 1];
+        if (count > byte_device::key_length)
         {
             throw std::invalid_argument("输入串的格式错误");
         }
         origin.pop_back();
         this->decrypt(origin);
-        for (unsigned int count1 = 0; count1 < static_cast<unsigned int>(16) - count; count1++)
+        for (std::size_t count1 = 0; count1 < byte_device::key_length - count; count1++)
         {
             origin.pop_back();
         }
@@ -898,18 +898,18 @@ namespace OKps::AES
 
     void byte_device::align_decrypt(byte_type & origin)const
     {
-        if (origin.size() % 16 != 1)
+        if (origin.size() % byte_device::key_length != 1)
         {
             throw std::invalid_argument("输入串的格式错误");
         }
-        unsigned int const count = static_cast<unsigned int>(origin[origin.size() - 1]);
-        if (count > 16)
+        unsigned int const count = value_cast<unsigned int>(origin[origin.size() - 1]);
+        if (count > byte_device::key_length)
         {
             throw std::invalid_argument("输入串的格式错误");
         }
         origin.pop_back();
         this->decrypt(origin);
-        for (unsigned int count1 = 0; count1 < static_cast<unsigned int>(16) - count; count1++)
+        for (std::size_t count1 = 0; count1 < byte_device::key_length - count; count1++)
         {
             origin.pop_back();
         }
@@ -989,7 +989,7 @@ namespace OKps::AES
         则应该分给每个加密器线程 n/m 块，而留下 n-(n/m)*m 块，再加上末尾的 16+1 字节，由本函数处理
         */
         // 一般16字节密文块的块数 n
-        auto const block_count = this->MEMBER_file_size / 16 - 1;
+        auto const block_count = this->MEMBER_file_size / byte_device::key_length - 1;
         // 加密器线程的任务起始点
         auto begin = static_cast<decltype(block_count)>(0);
         // 单个加密器线程的任务块数
@@ -1004,7 +1004,7 @@ namespace OKps::AES
                 cipher_holder[count] = std::make_unique<cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key);
                 cipher_holder[count]->decrypt();
                 // 下一个加密器线程的起始点
-                begin += single_work_block_count * 16;
+                begin += single_work_block_count * byte_device::key_length;
             }
             for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
             {
@@ -1016,32 +1016,32 @@ namespace OKps::AES
 
         byte_device f_aes(this->MEMBER_key);
         {
-            char buffer[16];
+            char buffer[byte_device::key_length];
             // 处理剩余的 n-(n/m)*m 块
             for (auto count = static_cast<decltype(block_count)>(0); count < block_count - single_work_block_count * this->MEMBER_thread_number; count++)
             {
 
-                origin[this->MEMBER_thread_number - 1]->read(buffer, 16);
+                origin[this->MEMBER_thread_number - 1]->read(buffer, byte_device::key_length);
 
-                std::string TEMP_buffer = file_device::INNER_buffer_string(buffer, 16);
+                std::string TEMP_buffer = file_device::INNER_buffer_string(buffer, byte_device::key_length);
 
                 f_aes.decrypt(TEMP_buffer);
 
-                result[this->MEMBER_thread_number - 1]->write(TEMP_buffer.c_str(), 16);
+                result[this->MEMBER_thread_number - 1]->write(TEMP_buffer.c_str(), byte_device::key_length);
             }
         }
         // 处理末尾对齐
         {
-            char buffer[17];
+            char buffer[byte_device::key_length + 1];
             // 读取最后16+1字节，则buf[16]是 end_info ，末尾对齐处理的位数
 
-            origin[this->MEMBER_thread_number - 1]->read(buffer, 17);
+            origin[this->MEMBER_thread_number - 1]->read(buffer, byte_device::key_length + 1);
 
-            std::string TEMP_buffer = file_device::INNER_buffer_string(buffer, 17);
+            std::string TEMP_buffer = file_device::INNER_buffer_string(buffer, byte_device::key_length + 1);
 
             f_aes.decrypt(TEMP_buffer);
 
-            result[this->MEMBER_thread_number - 1]->write(TEMP_buffer.c_str(), static_cast<unsigned int>(TEMP_buffer[16]));
+            result[this->MEMBER_thread_number - 1]->write(TEMP_buffer.c_str(), static_cast<unsigned int>(TEMP_buffer[byte_device::key_length]));
 
         }
 
@@ -1059,10 +1059,10 @@ namespace OKps::AES
         std::uniform_int_distribution<unsigned int> distribution(0, static_cast<unsigned int>(std::numeric_limits<unsigned char>::max())); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
         byte_device::key_type result;
 
-        for (std::size_t counter = 0; counter < (std::size_t)16; counter++)
+        for (std::size_t counter = 0; counter < byte_device::key_length; counter++)
         {
 
-            result[counter] = static_cast<std::byte>(static_cast<unsigned char>(distribution(random_engine))); // 生成一个0到255的随机整数，转换为unsigned char，存储到key中
+            result[counter] = value_cast<std::byte>(distribution(random_engine)); // 生成一个0到255的随机整数，转换为unsigned char，存储到key中
         }
         return result;
     }
@@ -1194,7 +1194,7 @@ namespace OKps::AES
                 cipher_holder[count] = (std::make_unique<file_device::cipher>(origin[count], result[count], begin, single_work_block_count, this->MEMBER_key));
                 cipher_holder[count]->encrypt();
                 // 下一个加密器线程的起始点
-                begin += single_work_block_count * 16;
+                begin += single_work_block_count * byte_device::key_length;
             }
             for (auto count = static_cast<decltype(this->MEMBER_thread_number)>(0); count < this->MEMBER_thread_number; count++)
             {
@@ -1204,7 +1204,7 @@ namespace OKps::AES
 
        // 所有加密器线程结束以后，现在begin是本函数需要处理的起始点
 
-        char buffer[16]; // 16字节缓存，一组明文
+        char buffer[byte_device::key_length]; // 16字节缓存，一组明文
         byte_device f_aes(this->MEMBER_key);
         // 处理原文中剩余的 完整16字节块
         for (auto count = static_cast<decltype(block_count)>(0); count < block_count - single_work_block_count * this->MEMBER_thread_number; count++)
@@ -1305,46 +1305,21 @@ namespace OKps::AES
 
             /*
             初始化缓冲区
-            手动循环展开，因为msvc不会优化
             */
-            buffer[0] = value_cast<std::byte>(origin[count]);
-            buffer[1] = value_cast<std::byte>(origin[count + 1]);
-            buffer[2] = value_cast<std::byte>(origin[count + 2]);
-            buffer[3] = value_cast<std::byte>(origin[count + 3]);
-            buffer[4] = value_cast<std::byte>(origin[count + 4]);
-            buffer[5] = value_cast<std::byte>(origin[count + 5]);
-            buffer[6] = value_cast<std::byte>(origin[count + 6]);
-            buffer[7] = value_cast<std::byte>(origin[count + 7]);
-            buffer[8] = value_cast<std::byte>(origin[count + 8]);
-            buffer[9] = value_cast<std::byte>(origin[count + 9]);
-            buffer[10] = value_cast<std::byte>(origin[count + 10]);
-            buffer[11] = value_cast<std::byte>(origin[count + 11]);
-            buffer[12] = value_cast<std::byte>(origin[count + 12]);
-            buffer[13] = value_cast<std::byte>(origin[count + 13]);
-            buffer[14] = value_cast<std::byte>(origin[count + 14]);
-            buffer[15] = value_cast<std::byte>(origin[count + 15]);
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                buffer[i] = value_cast<std::byte>(origin[count + i]);
+            }
 
             this->encrypt(buffer);
 
             /*
             密文写入原串
             */
-            origin[count] = value_cast<char>(buffer[0]);
-            origin[count + 1] = value_cast<char>(buffer[1]);
-            origin[count + 2] = value_cast<char>(buffer[2]);
-            origin[count + 3] = value_cast<char>(buffer[3]);
-            origin[count + 4] = value_cast<char>(buffer[4]);
-            origin[count + 5] = value_cast<char>(buffer[5]);
-            origin[count + 6] = value_cast<char>(buffer[6]);
-            origin[count + 7] = value_cast<char>(buffer[7]);
-            origin[count + 8] = value_cast<char>(buffer[8]);
-            origin[count + 9] = value_cast<char>(buffer[9]);
-            origin[count + 10] = value_cast<char>(buffer[10]);
-            origin[count + 11] = value_cast<char>(buffer[11]);
-            origin[count + 12] = value_cast<char>(buffer[12]);
-            origin[count + 13] = value_cast<char>(buffer[13]);
-            origin[count + 14] = value_cast<char>(buffer[14]);
-            origin[count + 15] = value_cast<char>(buffer[15]);
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                origin[count + i] = value_cast<char>(buffer[i]);
+            }
         }
     }
     void byte_device::encrypt(byte_type & origin)const
@@ -1356,46 +1331,21 @@ namespace OKps::AES
 
             /*
             初始化缓冲区
-            手动循环展开，因为msvc不会优化
             */
-            buffer[0] = origin[count];
-            buffer[1] = origin[count + 1];
-            buffer[2] = origin[count + 2];
-            buffer[3] = origin[count + 3];
-            buffer[4] = origin[count + 4];
-            buffer[5] = origin[count + 5];
-            buffer[6] = origin[count + 6];
-            buffer[7] = origin[count + 7];
-            buffer[8] = origin[count + 8];
-            buffer[9] = origin[count + 9];
-            buffer[10] = origin[count + 10];
-            buffer[11] = origin[count + 11];
-            buffer[12] = origin[count + 12];
-            buffer[13] = origin[count + 13];
-            buffer[14] = origin[count + 14];
-            buffer[15] = origin[count + 15];
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                buffer[i] = origin[count + i];
+            }
 
             this->encrypt(buffer);
 
             /*
             密文写入原串
             */
-            origin[count] = buffer[0];
-            origin[count + 1] = buffer[1];
-            origin[count + 2] = buffer[2];
-            origin[count + 3] = buffer[3];
-            origin[count + 4] = buffer[4];
-            origin[count + 5] = buffer[5];
-            origin[count + 6] = buffer[6];
-            origin[count + 7] = buffer[7];
-            origin[count + 8] = buffer[8];
-            origin[count + 9] = buffer[9];
-            origin[count + 10] = buffer[10];
-            origin[count + 11] = buffer[11];
-            origin[count + 12] = buffer[12];
-            origin[count + 13] = buffer[13];
-            origin[count + 14] = buffer[14];
-            origin[count + 15] = buffer[15];
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                origin[count + i] = buffer[i];
+            }
         }
     }
     void file_device::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count)
@@ -1486,7 +1436,7 @@ namespace OKps::AES
         }
         this->MEMBER_error = std::current_exception();
         this->MEMBER_file_size = std::filesystem::file_size(origin_route);
-        if (not (this->MEMBER_file_size >= 17 and this->MEMBER_file_size % 16 == 1))
+        if (not (this->MEMBER_file_size >= (byte_device::key_length + 1) and this->MEMBER_file_size % byte_device::key_length == 1))
         {
             std::string hinter = std::string("要解密的文件 ")
                 + origin_route.string()
@@ -1538,46 +1488,22 @@ namespace OKps::AES
 
             /*
             初始化缓冲区
-            手动循环展开，因为msvc不会优化
             */
-            buffer[0] = value_cast<std::byte>(origin[count]);
-            buffer[1] = value_cast<std::byte>(origin[count + 1]);
-            buffer[2] = value_cast<std::byte>(origin[count + 2]);
-            buffer[3] = value_cast<std::byte>(origin[count + 3]);
-            buffer[4] = value_cast<std::byte>(origin[count + 4]);
-            buffer[5] = value_cast<std::byte>(origin[count + 5]);
-            buffer[6] = value_cast<std::byte>(origin[count + 6]);
-            buffer[7] = value_cast<std::byte>(origin[count + 7]);
-            buffer[8] = value_cast<std::byte>(origin[count + 8]);
-            buffer[9] = value_cast<std::byte>(origin[count + 9]);
-            buffer[10] = value_cast<std::byte>(origin[count + 10]);
-            buffer[11] = value_cast<std::byte>(origin[count + 11]);
-            buffer[12] = value_cast<std::byte>(origin[count + 12]);
-            buffer[13] = value_cast<std::byte>(origin[count + 13]);
-            buffer[14] = value_cast<std::byte>(origin[count + 14]);
-            buffer[15] = value_cast<std::byte>(origin[count + 15]);
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                buffer[i] = value_cast<std::byte>(origin[count + i]);
+            }
 
             this->decrypt(buffer);
 
             /*
             密文写入原串
             */
-            origin[count] = value_cast<char>(buffer[0]);
-            origin[count + 1] = value_cast<char>(buffer[1]);
-            origin[count + 2] = value_cast<char>(buffer[2]);
-            origin[count + 3] = value_cast<char>(buffer[3]);
-            origin[count + 4] = value_cast<char>(buffer[4]);
-            origin[count + 5] = value_cast<char>(buffer[5]);
-            origin[count + 6] = value_cast<char>(buffer[6]);
-            origin[count + 7] = value_cast<char>(buffer[7]);
-            origin[count + 8] = value_cast<char>(buffer[8]);
-            origin[count + 9] = value_cast<char>(buffer[9]);
-            origin[count + 10] = value_cast<char>(buffer[10]);
-            origin[count + 11] = value_cast<char>(buffer[11]);
-            origin[count + 12] = value_cast<char>(buffer[12]);
-            origin[count + 13] = value_cast<char>(buffer[13]);
-            origin[count + 14] = value_cast<char>(buffer[14]);
-            origin[count + 15] = value_cast<char>(buffer[15]);
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                origin[count + i] = value_cast<char>(buffer[i]);
+            }
+
         }
 
     }
@@ -1590,46 +1516,22 @@ namespace OKps::AES
 
             /*
             初始化缓冲区
-            手动循环展开，因为msvc不会优化
             */
-            buffer[0] = origin[count];
-            buffer[1] = origin[count + 1];
-            buffer[2] = origin[count + 2];
-            buffer[3] = origin[count + 3];
-            buffer[4] = origin[count + 4];
-            buffer[5] = origin[count + 5];
-            buffer[6] = origin[count + 6];
-            buffer[7] = origin[count + 7];
-            buffer[8] = origin[count + 8];
-            buffer[9] = origin[count + 9];
-            buffer[10] = origin[count + 10];
-            buffer[11] = origin[count + 11];
-            buffer[12] = origin[count + 12];
-            buffer[13] = origin[count + 13];
-            buffer[14] = origin[count + 14];
-            buffer[15] = origin[count + 15];
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                buffer[i] = origin[count + i];
+            }
 
             this->decrypt(buffer);
 
             /*
             密文写入原串
             */
-            origin[count] = buffer[0];
-            origin[count + 1] = buffer[1];
-            origin[count + 2] = buffer[2];
-            origin[count + 3] = buffer[3];
-            origin[count + 4] = buffer[4];
-            origin[count + 5] = buffer[5];
-            origin[count + 6] = buffer[6];
-            origin[count + 7] = buffer[7];
-            origin[count + 8] = buffer[8];
-            origin[count + 9] = buffer[9];
-            origin[count + 10] = buffer[10];
-            origin[count + 11] = buffer[11];
-            origin[count + 12] = buffer[12];
-            origin[count + 13] = buffer[13];
-            origin[count + 14] = buffer[14];
-            origin[count + 15] = buffer[15];
+            for (std::size_t i = 0;i < key_length;++i)
+            {
+                origin[count + i] = buffer[i];
+            }
+
         }
     }
 }

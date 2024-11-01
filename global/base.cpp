@@ -12,14 +12,6 @@ namespace OKps::base
 	{
 		return this;
 	}
-	move_invalid * move_invalid::operator &()noexcept
-	{
-		return this;
-	}
-	move_invalid const * move_invalid::operator &()const noexcept
-	{
-		return this;
-	}
 
 	handler * handler::operator &()noexcept
 	{
@@ -78,11 +70,6 @@ namespace OKps::base
 		return (&(*this)) < (&right);
 	}
 	bool handler::operator <(handler const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-
-	bool move_invalid::operator <(move_invalid const & right)const noexcept
 	{
 		return (&(*this)) < (&right);
 	}
@@ -184,62 +171,6 @@ namespace OKps::base
 		auto const ep = this->MEMBER_error;
 		this->MEMBER_error = nullptr;
 		std::rethrow_exception(ep);
-	}
-
-	bool const & move_invalid::is_valid()const noexcept
-	{
-		return this->MEMBER_valid;
-	}
-
-	void move_invalid::raise_invalid_error()const noexcept(false)
-	{
-		if (not this->MEMBER_valid)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
-	}
-
-	move_invalid::move_invalid()noexcept
-		:MEMBER_valid(true)
-	{
-	}
-
-	move_invalid::move_invalid(move_invalid const & origin)noexcept
-		:MEMBER_valid(origin.MEMBER_valid)
-	{
-	}
-	void move_invalid::operator =(move_invalid const & origin)noexcept
-	{
-		if (this != std::addressof(origin))
-		{
-			this->MEMBER_valid = origin.MEMBER_valid;
-		}
-	}
-	move_invalid::move_invalid(move_invalid && origin)noexcept
-		:MEMBER_valid(origin.MEMBER_valid)
-	{
-		origin.MEMBER_valid = false;
-	}
-	void move_invalid::operator =(move_invalid && origin)noexcept
-	{
-		if (this != std::addressof(origin))
-		{
-			this->MEMBER_valid = origin.MEMBER_valid;
-			origin.MEMBER_valid = false;
-		}
-	}
-
-	move_invalid::~move_invalid()noexcept
-	{
-	}
-
-	move_invalid & move_invalid::self()noexcept
-	{
-		return *this;
-	}
-	move_invalid const & move_invalid::self()const noexcept
-	{
-		return *this;
 	}
 
 	handler::handler()noexcept

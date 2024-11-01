@@ -1,71 +1,60 @@
-#include <stdexcept>
-#include <locale>
 
 #include ".\log.hpp"
 
 namespace OKps
 {
+	/*
+	c++标准中 std::exception 只有默认构造和复制构造
+	*/
 	log::log(std::string const & hint, std::source_location const & location)
-		:MEMBER_hint(hint)
+		noexcept(std::is_nothrow_default_constructible_v<std::exception>
+and std::is_nothrow_copy_constructible_v<std::string>
+and std::is_nothrow_copy_constructible_v<std::source_location>)
+	:std::exception()
+		, MEMBER_hint(hint)
 		, MEMBER_location(location)
-		, MEMBER_valid(true)
 	{
 	}
 	log::~log()
 		noexcept(std::is_nothrow_destructible_v<std::string>
-			and std::is_nothrow_destructible_v<std::source_location>)
+			and std::is_nothrow_destructible_v<std::source_location>
+			and std::is_nothrow_destructible_v<std::exception>)
 	{
 	}
-	std::string const & log::hint()const
+	char const * log::what() const
+		noexcept(noexcept(std::declval<std::string const>().c_str()))
 	{
-		if (not this->MEMBER_valid)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
+		return this->MEMBER_hint.c_str();
+	}
+	std::string const & log::hint()const noexcept
+	{
 		return this->MEMBER_hint;
 	}
-	std::source_location const & log::location()const
+	std::source_location const & log::location()const noexcept
 	{
-		if (not this->MEMBER_valid)
-		{
-			throw std::logic_error("此对象已失效，禁止访问");
-		}
 		return this->MEMBER_location;
 	}
 	log::log(log const & origin)
-		:MEMBER_hint(origin.MEMBER_hint)
+		noexcept(std::is_nothrow_copy_constructible_v<std::string>
+		and std::is_nothrow_copy_constructible_v<std::source_location>
+		and std::is_nothrow_copy_constructible_v<std::exception>)
+		:std::exception(origin)
+		, MEMBER_hint(origin.MEMBER_hint)
 		, MEMBER_location(origin.MEMBER_location)
-		, MEMBER_valid(origin.MEMBER_valid)
 	{
 	}
-	log::log(log && origin)
-		noexcept(std::is_nothrow_move_constructible_v<std::source_location>
-			and std::is_nothrow_move_constructible_v<std::string>)
-		:MEMBER_hint(std::move(origin.MEMBER_hint))
-		, MEMBER_location(std::move(origin.MEMBER_location))
-		, MEMBER_valid(origin.MEMBER_valid)
-	{
-		origin.MEMBER_valid = false;
-	}
+
 	void log::operator =(log const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::exception>
+and std::is_nothrow_copy_assignable_v<std::string>
+and std::is_nothrow_copy_assignable_v<std::source_location>)
 	{
-		if (this != (&origin))
+		if (this != std::addressof(origin))
 		{
+			(*static_cast<std::exception *>(this)) = origin;
 			this->MEMBER_hint = origin.MEMBER_hint;
 			this->MEMBER_location = origin.MEMBER_location;
-			this->MEMBER_valid = origin.MEMBER_valid;
 		}
 	}
-	void log::operator =(log && origin)
-		noexcept(std::is_nothrow_move_assignable_v<std::source_location>
-			and std::is_nothrow_move_assignable_v<std::string>)
-	{
-		if (this != (&origin))
-		{
-			this->MEMBER_hint = std::move(origin.MEMBER_hint);
-			this->MEMBER_location = std::move(origin.MEMBER_location);
-			this->MEMBER_valid = origin.MEMBER_valid;
-			origin.MEMBER_valid = false;
-		}
-	}
+
 }
