@@ -231,8 +231,6 @@ namespace OKps::AES
 
             ~cipher()noexcept;
 
-
-            // 作为加密器的线程函数
             void encrypt();
             void decrypt();
         private:

@@ -15,6 +15,8 @@ namespace OKps
     最简自旋锁
     用单个原子变量实现的自旋锁
     不做任何安全检查，使用者自行考虑死锁问题
+
+    此类满足c++标准的“可基本锁定”具名要求，即可以由std::lock_guard代理。
     */
     class simple_spin_lock final
     {
