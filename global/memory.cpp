@@ -46,9 +46,17 @@ namespace OKps::memory
             std::free(block);
         }
     }
-    recorder_type const & recorder_type::global_recorder()noexcept
+    recorder_type const & recorder_type::global_recorder()
+        noexcept(enable_global_recorder)
     {
-        return recorder_type::INNER_global_recorder();
+        if constexpr (enable_global_recorder)
+        {
+            return recorder_type::INNER_global_recorder();
+        }
+        else
+        {
+            throw std::logic_error("全局内存分配记录器功能没有启用");
+        }
     }
 
     recorder_type::recorder_type()
@@ -74,22 +82,22 @@ and (not enable_global_leak_check))
         }
     }
 
-    implement::lock_proxy<std::binary_semaphore>::lock_proxy()
+    recorder_type::lock_proxy<std::binary_semaphore>::lock_proxy()
         noexcept(noexcept(std::binary_semaphore(1)))
         :MEMBER_lock(1)
     {
     }
-    implement::lock_proxy<std::binary_semaphore>::~lock_proxy()
+    recorder_type::lock_proxy<std::binary_semaphore>::~lock_proxy()
         noexcept(std::is_nothrow_destructible_v<std::binary_semaphore>)
     {
     }
 
-    void implement::lock_proxy<std::binary_semaphore>::lock()
+    void recorder_type::lock_proxy<std::binary_semaphore>::lock()
         noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()))
     {
         this->MEMBER_lock.acquire();
     }
-    void implement::lock_proxy<std::binary_semaphore>::unlock()
+    void recorder_type::lock_proxy<std::binary_semaphore>::unlock()
         noexcept(noexcept(std::declval<std::binary_semaphore &>().release()))
     {
         this->MEMBER_lock.release();

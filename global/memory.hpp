@@ -1,11 +1,9 @@
 #pragma once
 
 #include <type_traits>
-#include <mutex>
 #include <map>
+#include <mutex>
 #include <semaphore>
-
-#include ".\lock.hpp"
 
 void * operator new(std::size_t const size);
 
@@ -31,99 +29,12 @@ namespace OKps::memory
     constexpr bool const enable_global_recorder = false;
 
     /*
-    标识内存分配记录器使用的锁的类型。
-
-    经测试，信号量略微比互斥锁耗时更短，而且信号量在各种情况下的耗时非常稳定，而互斥锁耗时不是很稳定。
-    自旋锁则在绝大多数情况下耗时都非常长。
-    推荐在所有情况下都使用信号量。
-    */
-    enum class lock_type
-    {
-        mutex,//互斥锁
-        spin,//自旋锁
-        semaphore//信号量
-    };
-    /*
-    此项决定全局内存分配记录器使用何种锁。
-    */
-    constexpr lock_type const global_recorder_lock_type = lock_type::semaphore;
-
-    /*
     此项决定是否在main函数结束后，全局内存分配记录器作为全局变量析构时，检测内存泄漏并抛出异常。
     */
     constexpr bool const enable_global_leak_check = enable_global_recorder;
 
     namespace implement
     {
-        template<typename>
-        class lock_proxy;
-
-        /*
-        信号量的代理类，使得信号量表现得如同满足“可基本锁定”的锁一样。
-
-        “可基本锁定”是c++标准的具名要求，在此类中用于 std::lock_guard。
-        */
-        template<>
-        class lock_proxy<std::binary_semaphore> final
-        {
-        private:
-            std::binary_semaphore MEMBER_lock;
-        public:
-            lock_proxy()
-                noexcept(noexcept(std::binary_semaphore(1)));
-            ~lock_proxy()
-                noexcept(std::is_nothrow_destructible_v<std::binary_semaphore>);
-            lock_proxy(lock_proxy const &) = delete;
-            lock_proxy(lock_proxy &&) = delete;
-            void operator = (lock_proxy const &) = delete;
-            void operator =(lock_proxy &&) = delete;
-            void lock()
-                noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()));
-            void unlock()
-                noexcept(noexcept(std::declval<std::binary_semaphore &>().release()));
-        };
-
-        template<lock_type TYPE_lock>
-        class get_lock_type;
-
-        template<>
-        class get_lock_type<lock_type::mutex>
-        {
-        public:
-            using type = std::mutex;
-            get_lock_type() = delete;
-            get_lock_type(get_lock_type const &) = delete;
-            get_lock_type(get_lock_type &&) = delete;
-            ~get_lock_type() = delete;
-            void operator =(get_lock_type const &) = delete;
-            void operator =(get_lock_type &&) = delete;
-        };
-
-        template<>
-        class get_lock_type<lock_type::spin>
-        {
-        public:
-            using type = simple_spin_lock;
-            get_lock_type() = delete;
-            get_lock_type(get_lock_type const &) = delete;
-            get_lock_type(get_lock_type &&) = delete;
-            ~get_lock_type() = delete;
-            void operator =(get_lock_type const &) = delete;
-            void operator =(get_lock_type &&) = delete;
-        };
-
-        template<>
-        class get_lock_type<lock_type::semaphore>
-        {
-        public:
-            using type = lock_proxy<std::binary_semaphore>;
-            get_lock_type() = delete;
-            get_lock_type(get_lock_type const &) = delete;
-            get_lock_type(get_lock_type &&) = delete;
-            ~get_lock_type() = delete;
-            void operator =(get_lock_type const &) = delete;
-            void operator =(get_lock_type &&) = delete;
-        };
 
         /*
         给内存分配记录器中的std::map专用的内存分配器
@@ -164,7 +75,6 @@ namespace OKps::memory
     */
     class recorder_type final
     {
-        friend class implement::get_lock_type<lock_type::semaphore>;
         friend void * ::operator new(std::size_t const);
         friend void ::operator delete(void * const) noexcept;
     #ifdef MACRO_OKps_enable_global_aligned_alloc
@@ -175,7 +85,36 @@ namespace OKps::memory
         using pool_type = std::map<void const *, std::size_t, std::less<void const *>, implement::allocator_type<std::pair<void const * const, std::size_t>>>;
         pool_type MEMBER_pool;
 
-        mutable implement::get_lock_type<global_recorder_lock_type>::type MEMBER_lock;
+        template<typename>
+        class lock_proxy;
+
+        /*
+        信号量的代理类，使得信号量表现得如同满足“可基本锁定”的锁一样。
+
+        “可基本锁定”是c++标准的具名要求，在此类中用于 std::lock_guard。
+        */
+        template<>
+        class lock_proxy<std::binary_semaphore> final
+        {
+        private:
+            std::binary_semaphore MEMBER_lock;
+        public:
+            lock_proxy()
+                noexcept(noexcept(std::binary_semaphore(1)));
+            ~lock_proxy()
+                noexcept(std::is_nothrow_destructible_v<std::binary_semaphore>);
+            lock_proxy(lock_proxy const &) = delete;
+            lock_proxy(lock_proxy &&) = delete;
+            void operator = (lock_proxy const &) = delete;
+            void operator =(lock_proxy &&) = delete;
+            void lock()
+                noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()));
+            void unlock()
+                noexcept(noexcept(std::declval<std::binary_semaphore &>().release()));
+        };
+
+
+        mutable lock_proxy<std::binary_semaphore> MEMBER_lock;
 
     protected:
         void add_record(void const * const, std::size_t const)
@@ -210,7 +149,8 @@ and std::is_nothrow_copy_constructible_v<pool_type>);
         /*
         获取全局内存分配记录器
         */
-        static recorder_type const & global_recorder()noexcept;
+        static recorder_type const & global_recorder()
+            noexcept(enable_global_recorder);
     };
 
 }

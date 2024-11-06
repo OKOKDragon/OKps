@@ -70,7 +70,7 @@ c++标准库中的异常，除了内存分配失败，就是防各种未定义�
 
 //#include ".\stl.hpp"
 
-#include ".\memory.hpp"
+//#include ".\memory.hpp"
 
 #include ".\blank.hpp"
 #include ".\base.hpp"
