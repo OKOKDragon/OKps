@@ -6,42 +6,6 @@
 
 namespace OKps
 {
-	order_matcher::parameter::parameter()noexcept
-	{
-	}
-	order_matcher::parameter::parameter(parameter const &)noexcept
-	{
-	}
-	order_matcher::parameter::parameter(parameter &&)noexcept
-	{
-	}
-	order_matcher::parameter::~parameter()noexcept
-	{
-	}
-	void order_matcher::parameter::operator =(parameter const &)noexcept
-	{
-	}
-	void order_matcher::parameter::operator =(parameter &&)noexcept
-	{
-	}
-	order_matcher::handler::handler()noexcept
-	{
-	}
-	order_matcher::handler::handler(handler const & origin)noexcept
-	{
-	}
-	void order_matcher::handler::operator =(handler const & origin)  noexcept
-	{
-	}
-	order_matcher::handler::handler(handler && origin)noexcept
-	{
-	}
-	void order_matcher::handler::operator =(handler && origin)  noexcept
-	{
-	}
-	order_matcher::handler::~handler()noexcept
-	{
-	}
 
 	order_matcher::order_matcher()
 		noexcept(std::is_nothrow_default_constructible_v<TYPE_pool>)
@@ -55,7 +19,7 @@ namespace OKps
 	void order_matcher::operator =(order_matcher && origin)
 		noexcept(std::is_nothrow_move_assignable_v<TYPE_pool>)
 	{
-		if (this != (&origin))
+		if (this != std::addressof(origin))
 		{
 			this->MEMBER_orders = std::move(origin.MEMBER_orders);
 		}
@@ -71,7 +35,7 @@ namespace OKps
 		noexcept(std::is_nothrow_destructible_v<TYPE_pool>)
 	{
 	}
-	void order_matcher::regist(std::string const & order, TYPE_work && work)
+	void order_matcher::regist(std::string const & order, handler_pointer && work)
 	{
 		if (not work)
 		{
@@ -97,12 +61,13 @@ namespace OKps
 		}
 	}
 	//执行命令
-	void order_matcher::execute(std::string const & order, handler::argument_type para)const
+	void order_matcher::execute(std::string const & order, base::blank & para)const
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref != this->MEMBER_orders.end())
 		{
-			(*(ref->second))(para);
+			auto & TEMP_handler = (*(ref->second));
+			TEMP_handler(para);
 		}
 		else
 		{
@@ -110,7 +75,7 @@ namespace OKps
 			throw std::invalid_argument(hint);
 		}
 	}
-	order_matcher::handler const & order_matcher::find(std::string const & order)const
+	base::handler const & order_matcher::find(std::string const & order)const
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())
@@ -119,7 +84,7 @@ namespace OKps
 		}
 		return *(ref->second);
 	}
-	order_matcher::handler & order_matcher::find(std::string const order)
+	base::handler & order_matcher::find(std::string const order)
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())

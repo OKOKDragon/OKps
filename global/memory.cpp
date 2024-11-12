@@ -59,20 +59,27 @@ namespace OKps::memory
         }
     }
 
-    recorder_type::recorder_type()
+    recorder_type::recorder_type(bool const check)
         noexcept(std::is_nothrow_default_constructible_v<decltype(recorder_type::MEMBER_lock)>
 and std::is_nothrow_default_constructible_v<pool_type>)
     :MEMBER_pool(pool_type::allocator_type())
         , MEMBER_lock()
+        , MEMBER_check(check)
     {
     }
-
+    bool recorder_type::check()const
+        noexcept(noexcept(std::lock_guard<decltype(recorder_type::MEMBER_lock)>(std::declval<decltype(recorder_type::MEMBER_lock) &>()))
+and noexcept(std::declval<pool_type const &>().empty()))
+    {
+        std::lock_guard<decltype(this->MEMBER_lock)> TEMP_lock(this->MEMBER_lock);
+        return not(this->MEMBER_pool.empty());
+    }
     recorder_type::~recorder_type()
         noexcept(std::is_nothrow_destructible_v<decltype(recorder_type::MEMBER_lock)>
 and std::is_nothrow_destructible_v<pool_type>
-and (not enable_global_leak_check))
+and false)
     {
-        if constexpr (enable_global_leak_check)
+        if (this->MEMBER_check)
         {
             std::lock_guard<decltype(this->MEMBER_lock)> TEMP_lock(this->MEMBER_lock);
             if (not this->MEMBER_pool.empty())
@@ -130,7 +137,7 @@ and noexcept(std::declval<pool_type &>().erase(std::declval<void const * const>(
     recorder_type & recorder_type::INNER_global_recorder()
         noexcept(std::is_nothrow_default_constructible_v<recorder_type>)
     {
-        static recorder_type INNER_recorder = recorder_type();
+        static recorder_type INNER_recorder = recorder_type(enable_global_leak_check);
         return INNER_recorder;
     }
 }
@@ -140,7 +147,15 @@ void * operator new(std::size_t const size)
     void * result = std::malloc(size);
     if (not result)
     {
-        throw std::bad_alloc();
+        auto TEMP_handler = std::get_new_handler();
+        if (not TEMP_handler)
+        {
+            throw std::bad_alloc();
+        }
+        else
+        {
+            TEMP_handler();
+        }
     }
     if constexpr (OKps::memory::enable_global_recorder)
     {

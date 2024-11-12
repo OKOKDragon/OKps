@@ -1,9 +1,8 @@
 #pragma once
 
-#include <type_traits>
-#include <string>
 #include <unordered_map>
-#include <memory>
+
+#include ".\base.hpp"
 
 namespace OKps
 {
@@ -11,46 +10,10 @@ namespace OKps
 	class order_matcher final
 	{
 	public:
-		class handler;
-		/*
-		参数基类
-		*/
-		class parameter
-		{
-			friend class order_matcher::handler;
-		protected:
-			parameter()noexcept;
-			parameter(parameter const &)noexcept;
-			parameter(parameter &&)noexcept;
-		public:
-			virtual ~parameter()noexcept;
-		protected:
-			void operator =(parameter const &)noexcept;
-			void operator =(parameter &&)noexcept;
 
-		};
-		/*
-		处理器基类
-		*/
-		class handler
-		{
-			friend class order_matcher;
-		protected:
-			handler()noexcept;
-			handler(handler const &)noexcept;
-			void operator =(handler const &)noexcept;
-			handler(handler &&)noexcept;
-			void operator =(handler &&)noexcept;
-		public:
-			virtual ~handler()noexcept;
-		protected:
-			using argument_type = std::unique_ptr<parameter> const &;
-			virtual void operator ()(argument_type) = 0;
-		};
-
+		using handler_pointer = std::unique_ptr<base::handler>;
 	private:
-		using TYPE_work = std::unique_ptr<handler>;
-		using TYPE_pool = std::unordered_map<std::string, TYPE_work>;
+		using TYPE_pool = std::unordered_map<std::string, handler_pointer>;
 
 		TYPE_pool MEMBER_orders;
 	public:
@@ -78,14 +41,14 @@ namespace OKps
 		推荐对命令字符串order使用与c++默认本地环境，即std::locale::classic()环境相同的编码，
 		否则可能导致此类抛出的异常信息不可读。
 		*/
-		void regist(std::string const & order, TYPE_work && work);
+		void regist(std::string const & order, handler_pointer && work);
 		//删除命令
 		void erase(std::string const & order);
 		//使用参数para执行命令order
-		void execute(std::string const & order, handler::argument_type para)const;
+		void execute(std::string const & order, base::blank & para)const;
 
-		handler const & find(std::string const & order)const;
-		handler & find(std::string const order);
+		base::handler const & find(std::string const & order)const;
+		base::handler & find(std::string const order);
 	};
 
 }

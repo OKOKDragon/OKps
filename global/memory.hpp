@@ -116,27 +116,33 @@ namespace OKps::memory
 
         mutable lock_proxy<std::binary_semaphore> MEMBER_lock;
 
-    protected:
+        bool const MEMBER_check;
+    public:
         void add_record(void const * const, std::size_t const)
             noexcept(noexcept(std::lock_guard<decltype(recorder_type::MEMBER_lock)>(std::declval<decltype(recorder_type::MEMBER_lock) &>()))
 and noexcept(std::declval<pool_type &>().insert(std::make_pair(std::declval<void const * const>(), std::declval<std::size_t const>()))));
         void erase_record(void const * const)
             noexcept(noexcept(std::lock_guard<decltype(recorder_type::MEMBER_lock)>(std::declval<decltype(recorder_type::MEMBER_lock) &>()))
 and noexcept(std::declval<pool_type &>().erase(std::declval<void const * const>())));
-    public:
+
         recorder_type(recorder_type const &) = delete;
         recorder_type(recorder_type &&) = delete;
         void operator =(recorder_type const &) = delete;
         void operator =(recorder_type &&) = delete;
 
-        recorder_type()
+        recorder_type(bool const check)
             noexcept(std::is_nothrow_default_constructible_v<decltype(recorder_type::MEMBER_lock)>
 and std::is_nothrow_default_constructible_v<pool_type>);
         ~recorder_type()
             noexcept(std::is_nothrow_destructible_v<decltype(recorder_type::MEMBER_lock)>
 and std::is_nothrow_destructible_v<pool_type>
-and (not enable_global_leak_check));
-
+and false);
+        /*
+        检查是否有尚未解分配的内存
+        */
+        bool check()const
+            noexcept(noexcept(std::lock_guard<decltype(recorder_type::MEMBER_lock)>(std::declval<decltype(recorder_type::MEMBER_lock) &>()))
+and noexcept(std::declval<pool_type const &>().empty()));
         pool_type track() const
             noexcept(noexcept(std::lock_guard<decltype(recorder_type::MEMBER_lock)>(std::declval<decltype(recorder_type::MEMBER_lock) &>()))
 and std::is_nothrow_copy_constructible_v<pool_type>);

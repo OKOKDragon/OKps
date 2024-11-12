@@ -6,6 +6,7 @@
 #include <string>
 #include <random>
 #include <memory>
+#include <semaphore>
 
 /*
 此文件在命名空间 OKps::base 定义多种通用的基类

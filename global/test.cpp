@@ -136,7 +136,7 @@ namespace OKps::test
             {
                 return this->MEMBER_input_arg;
             }
-};
+        };
         class func_type final : public base::handler
         {
         public:
@@ -390,10 +390,10 @@ namespace OKps::test
 
     void test_order_matcher()
     {
-        class para_type final : public order_matcher::parameter
+        class para_type final : public base::blank
         {
         private:
-            using base_type = order_matcher::parameter;
+            using base_type = base::blank;
 
             std::uintmax_t const MEMBER_id;
         public:
@@ -419,10 +419,10 @@ namespace OKps::test
                 return this->MEMBER_id;
             }
         };
-        class handler_type final :public order_matcher::handler
+        class handler_type final :public base::handler
         {
         private:
-            using base_type = order_matcher::handler;
+            using base_type = base::handler;
         public:
             handler_type()
                 :base_type()
@@ -444,18 +444,18 @@ namespace OKps::test
                 std::cout << "处理器对象析构\n";
             }
         private:
-            void operator ()(argument_type arg)override
+            void operator ()(base::blank & arg)override
             {
-                auto temp_arg = dynamic_cast<para_type *>(arg.get());
-                std::cout << "处理函数接收参数对象 " << temp_arg->get_id() << "\n";
+                auto & TEMP_arg = dynamic_cast<para_type &>(arg);
+                std::cout << "处理函数接收参数对象 " << TEMP_arg.get_id() << "\n";
             }
         };
-        auto arg1 = std::make_unique<para_type>(1);
+        auto arg1 = para_type(1);
         auto handler1 = std::make_unique<handler_type>();
         order_matcher matcher;
         matcher.regist("order1", std::move(handler1));
         matcher.find("order1");
-        matcher.execute("order1", std::move(arg1));
+        matcher.execute("order1", arg1);
         matcher.erase("order1");
     }
 

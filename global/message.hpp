@@ -24,7 +24,7 @@ namespace OKps
 			friend class message;
 		private:
 			std::exception_ptr MEMBER_exception_holder;
-		protected:
+		public:
 			handler()
 				noexcept(std::is_nothrow_default_constructible<std::exception_ptr>::value);
 			handler(handler const &)
@@ -35,9 +35,20 @@ namespace OKps
 				noexcept(std::is_nothrow_move_constructible<std::exception_ptr>::value);
 			void operator =(handler &&)
 				noexcept(std::is_nothrow_move_assignable<std::exception_ptr>::value);
-		public:
+
 			virtual ~handler()
 				noexcept(std::is_nothrow_destructible<std::exception_ptr>::value);
+
+			/*
+			比较两个对象的地址
+			用于标准库容器的排序。
+			*/
+			bool operator <(handler const &)noexcept;
+
+			virtual handler & self()noexcept;
+			virtual handler const & self()const noexcept;
+			virtual handler * operator &()noexcept;
+			virtual handler const * operator &()const noexcept;
 		protected:
 			/*
 			引发信号时，信号处理器会调用此函数
@@ -57,6 +68,7 @@ namespace OKps
 			故对于std::exception_ptr持有的异常对象的生命周期的管理，应该也如同std::shared_ptr
 			*/
 			void raise_exception(std::exception_ptr const &);
+		public:
 			/*
 			释放handler基类持有的异常，并抛出该异常
 			*/

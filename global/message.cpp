@@ -7,7 +7,26 @@
 
 namespace OKps
 {
-
+	message::handler & message::handler::self()noexcept
+	{
+		return *this;
+	}
+	message::handler const & message::handler::self()const noexcept
+	{
+		return *this;
+	}
+	message::handler * message::handler::operator &()noexcept
+	{
+		return this;
+	}
+	message::handler const * message::handler::operator &()const noexcept
+	{
+		return this;
+	}
+	bool message::handler::operator <(handler const & right)noexcept
+	{
+		return (&(*this)) < (&right);
+	}
 	message::handler::handler()
 		noexcept(std::is_nothrow_default_constructible<std::exception_ptr>::value)
 		:MEMBER_exception_holder()
