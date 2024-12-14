@@ -11,19 +11,20 @@ namespace OKps
     /*
     无限精度整数
 
-    虽然有很多成熟的数学库，但它们大多数是c语言的，或是几乎完全用c语言风格写的所谓“c with class” c++。
-    我希望能充分利用c++的运算符重载、类型别名、枚举类、异常和标准库，而不要像c语言一样手动创建和销毁上下文、使用复杂的宏定义和宏函数。
+    虽然有很多成熟的数学库，但它们大多数是c语言的，或是几乎完全用c语言风格写的所谓“C with class”而非真正的 C++。
+    我希望能充分利用C++的运算符重载、类型别名、枚举类、异常和标准库，而不要像c语言一样手动创建和销毁上下文、使用复杂的宏定义和宏函数。
     因此我从头实现了这个高精度整数类。
     */
     class integer final
     {
     public:
         /*
-        内置无符号整数类型，其大小是最大的无符号整数的一半。
+        内置无符号整数类型。
         用此类型的数组存储大整数。
         */
         using value_type = std::uint32_t;
     private:
+        //value_type 占的二进制位
         static std::size_t const half_length;
     public:
         /*
@@ -32,6 +33,7 @@ namespace OKps
         */
         using holder_type = std::uint64_t;
     private:
+        //holder_type 占的二进制位
         static std::size_t const full_length;
     public:
         using number_type = std::vector<value_type>;
@@ -46,7 +48,11 @@ namespace OKps
 
 
     private:
-        static holder_type const base;//value_type类型所能表示的不同无符号整数的数量，也就是我们的大整数数组使用的进制
+        /*
+        value_type类型所能表示的不同无符号整数的数量
+        也就是大整数数组使用的进制
+        */
+        static holder_type const base;
         static value_type const half_base;//base的一半
         sign_type MEMBER_sign;//符号位
         number_type MEMBER_number;//用2进制存储的整数，无符号

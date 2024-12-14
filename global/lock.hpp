@@ -2,10 +2,13 @@
 
 #include <atomic>
 #include <thread>
+#include <semaphore>
+#include <mutex>
+#include <type_traits>
 
 /*
 此文件原本准备实现一个运行期死锁检测机制
-但实现时才发现c++标准库有免死锁算法 std::lock 函数和 std::scoped_lock 包装器，不需要自己实现
+但实现时才发现c++标准库有免死锁算法，包括 std::lock 函数和 std::scoped_lock 包装器，不需要自己实现
 */
 
 namespace OKps
@@ -58,6 +61,31 @@ namespace OKps
         std::thread::id const & owner_thread() const noexcept;
     };
 
+    template<typename>
+    class lock_proxy;
 
+    /*
+    二元信号量的代理类
+    使得信号量表现得如同满足“可基本锁定”的锁一样，方便使用。
+    */
+    template<>
+    class lock_proxy<std::binary_semaphore> final
+    {
+    private:
+        std::binary_semaphore MEMBER_lock;
+    public:
+        lock_proxy()
+            noexcept(noexcept(std::binary_semaphore(1)));
+        ~lock_proxy()
+            noexcept(std::is_nothrow_destructible_v<std::binary_semaphore>);
+        lock_proxy(lock_proxy const &) = delete;
+        lock_proxy(lock_proxy &&) = delete;
+        void operator = (lock_proxy const &) = delete;
+        void operator =(lock_proxy &&) = delete;
+        void lock()
+            noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()));
+        void unlock()
+            noexcept(noexcept(std::declval<std::binary_semaphore &>().release()));
+    };
 
 }

@@ -100,17 +100,18 @@ namespace OKps
     string::requirement<string_type>::~requirement()noexcept
     {
     }
-
+    template<typename string_type>
+    void string::get_line(std::istream & input, string_type & result)
+    {
+        string TEMP_input_line;
+        TEMP_input_line.get_line(input);
+        result = TEMP_input_line.utf_8<string_type>();
+    }
     template<typename string_type>
     bool string::get_line(std::istream & input, string_type & result, string::requirement<string_type> & judge)
     {
         string_type TEMP_result;
-        {
-            string TEMP_input_line;
-            TEMP_input_line.get_line(input);
-            TEMP_result = TEMP_input_line.utf_8<string_type>();
-        }
-        
+        string::get_line<string_type>(input, TEMP_result);
         bool const TEMP_judge_result = judge(TEMP_result);
         if (TEMP_judge_result)
         {

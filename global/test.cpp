@@ -137,11 +137,11 @@ namespace OKps::test
                 return this->MEMBER_input_arg;
             }
         };
-        class func_type final : public base::handler
+        class func_type final : public base::handler<false>
         {
         public:
             func_type()noexcept
-                :base::handler()
+                :base::handler<false>()
             {
             }
             ~func_type()noexcept override
@@ -163,7 +163,7 @@ namespace OKps::test
     }
     void marked_reference()
     {
-        base::marked * m = new base::marked;
+        base::marked<> * m = new base::marked;
         base::reference ref(*m);
         if (ref.is_valid())
         {
@@ -419,10 +419,10 @@ namespace OKps::test
                 return this->MEMBER_id;
             }
         };
-        class handler_type final :public base::handler
+        class handler_type final :public base::handler<false>
         {
         private:
-            using base_type = base::handler;
+            using base_type = base::handler<false>;
         public:
             handler_type()
                 :base_type()
@@ -461,29 +461,88 @@ namespace OKps::test
 
     void test_message()
     {
-        class tester final :public message::handler
+        class arg_type final : public base::blank
+        {
+        private:
+            std::string MEMBER_name;
+        public:
+            arg_type(std::string const & name)
+                :base::blank()
+                , MEMBER_name(name)
+            {
+                std::cout << "参数 " << name << " 构造\n";
+            }
+            ~arg_type()noexcept override
+            {
+                std::cout << "参数 " << this->MEMBER_name << " 析构\n";
+            }
+            arg_type(arg_type const &) = delete;
+            arg_type & self() noexcept
+            {
+                return *this;
+            }
+            arg_type const & self()const noexcept
+            {
+                return *this;
+            }
+            arg_type * operator &() noexcept
+            {
+                return this;
+            }
+            arg_type const * operator &() const noexcept
+            {
+                return this;
+            }
+            std::string const & name()const noexcept
+            {
+                return this->MEMBER_name;
+            }
+        };
+        class tester final :public base::handler<true>
         {
         private:
             std::string MEMBER_name;
         public:
             tester(std::string const & name)
-                :message::handler()
+                :base::handler<true>()
                 , MEMBER_name(name)
             {
+                std::cout << "handler " << this->MEMBER_name << " 构造\n";
             }
             ~tester()noexcept override
             {
+                std::cout << "handler " << this->MEMBER_name << " 析构\n";
             }
-            void operator ()() noexcept override
+            tester(tester const &) = delete;
+            tester(tester &&) = delete;
+            void operator =(tester const &) = delete;
+            void operator =(tester &&) = delete;
+            void operator ()(base::blank & arg) noexcept override
             {
                 try
                 {
-                    std::cout << "handler " << this->MEMBER_name << " 被运行\n";
+                    std::cout << "handler " << this->MEMBER_name << " 被运行，参数为 " << dynamic_cast<arg_type &>(arg).name() << "\n";
                 }
                 catch (...)
                 {
-                    this->handler::raise_exception(std::current_exception());
+                    this->handler::raise_error(std::current_exception());
                 }
+            }
+            tester * operator &()noexcept override
+            {
+                return this;
+            }
+            tester const * operator &()const noexcept override
+            {
+                return this;
+            }
+            tester & self()noexcept override
+            {
+                return *this;
+            }
+            tester const & self()const noexcept override
+            {
+                return *this;
             }
         };
         try
@@ -495,9 +554,13 @@ namespace OKps::test
             std::cout << "测试信号引发系统\n";
             message m;
             auto t = std::make_shared<tester>("测试对象");
+            auto ag = std::make_shared<arg_type>("参数0");
+            std::cout << "注册信号\n";
             auto sig = m.regist(t);
-            //std::this_thread::sleep_for(std::chrono::seconds(1));
-            m.trigger(sig);
+            std::cout << "注册信号完毕\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            m.trigger(sig, ag);
+            std::cout << "引发信号指令\n";
 
         }
         catch (std::exception const & hinter)

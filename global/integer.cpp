@@ -1443,6 +1443,7 @@ namespace OKps
         //初始化已知素数数组
 
         std::locale::global(text_encoding::utf_8);
+
         std::ifstream prime_file;
         std::filesystem::path prime_file_route = u8".\\prime";
         prime_file.open(prime_file_route, std::ios::in | std::ios::binary);

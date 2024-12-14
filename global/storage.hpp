@@ -263,12 +263,25 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	但是与内存中的 std::vector 不同，此类的只读操作也是线程不安全的。
 	*/
 	template<>
-	class storage<field> final :public base::marked
+	class storage<field> final
+		:public base::marked
+		<std::is_nothrow_destructible_v<std::filesystem::path>
+		and std::is_nothrow_destructible_v<std::fstream>
+		and std::is_nothrow_destructible_v<std::streampos>
+		and noexcept(std::declval<std::fstream &>().close())
+		and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>()))>
 	{
 	private:
-		using base_type = base::marked;
+		using base_type = base::marked
+			<std::is_nothrow_destructible_v<std::filesystem::path>
+			and std::is_nothrow_destructible_v<std::fstream>
+			and std::is_nothrow_destructible_v<std::streampos>
+			and noexcept(std::declval<std::fstream &>().close())
+			and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>()))>;
 
 		static stream_position const MEMBER_block_size;
+
+		bool MEMBER_temporary_file;
 
 		/*
 		将一段2进制数据 data 从位置 pos 处插入文件，原来处于位置 pos 处开始直到文件末尾的数据向后移动。
@@ -340,16 +353,17 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 
 		内部存储一个文件流位置，根据该位置从文件读写数据，如同操作内存时根据指针的值寻找数据的地址。
 		*/
-		class reference final :public base::reference
+		class reference final
+			:public base::reference<std::is_nothrow_destructible_v<storage<field>::base_type>>
 		{
 			friend class storage;
 		private:
-			using base_type = base::reference;
+			using base_type = base::reference<std::is_nothrow_destructible_v<storage<field>::base_type>>;
 
 			std::size_t MEMBER_position;
 
 			reference(storage const & marker, std::size_t const position)
-				noexcept(noexcept(base_type(std::declval<base::marked const &>())));
+				noexcept(noexcept(base_type(std::declval<storage<field>::base_type const &>())));
 
 		public:
 			reference() = delete;
@@ -389,7 +403,8 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 			noexcept(noexcept(reference(std::declval<storage &>(), std::declval<std::size_t const>())));
 		field operator [](std::size_t const position)const;
 		/*
-		如果输入的路径是此前不存在的合法文件路径，此构造函数会创建文件，若创建失败则抛出异常。
+		如果输入的路径是此前不存在的合法文件路径，此构造函数会创建文件，若创建失败则抛出异常；并且在析构函数中会删除该文件，即将该文件当作临时文件。
+		如果输入的路径是此前存在的文件，则析构函数不会删除文件。
 		*/
 		storage(std::filesystem::path const & file_path);
 		storage(storage const &) = delete;
@@ -406,9 +421,11 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 			and std::is_nothrow_move_assignable_v<std::vector<field_info>>);
 		~storage()
 			noexcept(std::is_nothrow_destructible_v<std::filesystem::path>
-			and std::is_nothrow_destructible_v<std::fstream>
-			and std::is_nothrow_destructible_v<base_type>
-			and std::is_nothrow_destructible_v<std::vector<field_info>>)
+		and std::is_nothrow_destructible_v<std::fstream>
+		and std::is_nothrow_destructible_v<base_type>
+		and std::is_nothrow_destructible_v<std::vector<field_info>>
+		and noexcept(std::declval<std::fstream &>().close())
+		and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>())))
 			override;
 	private:
 		storage & self()noexcept override;

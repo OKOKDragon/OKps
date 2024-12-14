@@ -75,7 +75,7 @@ namespace OKps
 			throw std::invalid_argument(hint);
 		}
 	}
-	base::handler const & order_matcher::find(std::string const & order)const
+	base::handler<false> const & order_matcher::find(std::string const & order)const
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())
@@ -84,7 +84,7 @@ namespace OKps
 		}
 		return *(ref->second);
 	}
-	base::handler & order_matcher::find(std::string const order)
+	base::handler<false>& order_matcher::find(std::string const order)
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())

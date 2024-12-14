@@ -73,7 +73,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
             this->MEMBER_crypt_aes = std::move(origin.MEMBER_crypt_aes);
         }
     }
-    void cipher::encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count)const
+    void cipher::encrypt(path_type const & origin_route, path_type const & result_route, path_type const & temp_route, const std::size_t thread_count)const
     {
         namespace fs = std::filesystem;
         if (not fs::is_directory(temp_route))
@@ -95,7 +95,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         std::uniform_int_distribution<std::uintmax_t> distribution(std::numeric_limits<std::uintmax_t>::min(), std::numeric_limits<std::uintmax_t>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
 
 
-        TYPE_path TEMP_route = temp_route / std::to_string(distribution(random_engine));
+        path_type TEMP_route = temp_route / std::to_string(distribution(random_engine));
         while (fs::exists(TEMP_route))
         {
             TEMP_route = temp_route / std::to_string(distribution(random_engine));
@@ -103,7 +103,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         TEMP_cipher.encrypt(origin_route, TEMP_route, this->MEMBER_aes[0].key(), thread_count);
         for (std::size_t count_1 = 1;count_1 < this->MEMBER_aes.size() - 1;count_1++)
         {
-            TYPE_path TEMP_receiver = temp_route / std::to_string(distribution(random_engine));
+            path_type TEMP_receiver = temp_route / std::to_string(distribution(random_engine));
             while (fs::exists(TEMP_receiver))
             {
                 TEMP_receiver = temp_route / std::to_string(distribution(random_engine));
@@ -116,7 +116,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         fs::remove(TEMP_route);
 
     }
-    void cipher::decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, TYPE_path const & temp_route, const std::size_t thread_count)const
+    void cipher::decrypt(path_type const & origin_route, path_type const & result_route, path_type const & temp_route, const std::size_t thread_count)const
     {
         namespace fs = std::filesystem;
         if (not fs::is_directory(temp_route))
@@ -137,7 +137,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         std::mt19937 random_engine(random_seed());                      // 随机数生成器
         std::uniform_int_distribution<std::uintmax_t> distribution(std::numeric_limits<std::uintmax_t>::min(), std::numeric_limits<std::uintmax_t>::max()); // 指定随机数的分布为均匀分布，这里的范围参数是闭区间
 
-        TYPE_path TEMP_route = temp_route / std::to_string(distribution(random_engine));
+        path_type TEMP_route = temp_route / std::to_string(distribution(random_engine));
         while (fs::exists(TEMP_route))
         {
             TEMP_route = temp_route / std::to_string(distribution(random_engine));
@@ -145,7 +145,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         TEMP_cipher.decrypt(origin_route, TEMP_route, this->MEMBER_aes[this->MEMBER_aes.size() - 1].key(), thread_count);
         for (std::size_t count_1 = 1;count_1 < this->MEMBER_aes.size() - 1;count_1++)
         {
-            TYPE_path TEMP_receiver = temp_route / std::to_string(distribution(random_engine));
+            path_type TEMP_receiver = temp_route / std::to_string(distribution(random_engine));
             while (fs::exists(TEMP_receiver))
             {
                 TEMP_receiver = temp_route / std::to_string(distribution(random_engine));
@@ -158,7 +158,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         fs::remove(TEMP_route);
 
     }
-    cipher::cipher(TYPE_path const & route)
+    cipher::cipher(path_type const & route)
     {
         std::ifstream file;
         file.open(route, std::ios::in | std::ios::binary);
@@ -239,7 +239,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
     {
         return not(*this == right);
     }
-    void cipher::save(TYPE_path const & route)const
+    void cipher::save(path_type const & route)const
     {
         /*
         密钥文件的结构

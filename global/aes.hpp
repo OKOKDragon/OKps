@@ -110,8 +110,8 @@ namespace OKps::AES
         static key_type random_encrypt(byte_type & origin);
 
     private:
-        static const std::byte MEMBER_Sbox[256];
-        static const std::byte MEMBER_InvSbox[256];
+        static std::byte const MEMBER_Sbox[256];
+        static std::byte const MEMBER_InvSbox[256];
         std::byte MEMBER_widen_key[11][4][4];
 
         void KeyExpansion(std::byte const * key) noexcept;
@@ -148,8 +148,8 @@ namespace OKps::AES
     public:
         using key_type = byte_device::key_type;
 
+        using path_type = std::filesystem::path;
     private:
-        using TYPE_path = std::filesystem::path;
         using TYPE_reader = std::shared_ptr<std::ifstream>;
         using TYPE_writter = std::shared_ptr<std::ofstream>;
 
@@ -163,8 +163,8 @@ namespace OKps::AES
 
         std::exception_ptr MEMBER_error;
 
-        TYPE_path MEMBER_origin_route; // 被加密的文件路径
-        TYPE_path MEMBER_result_route; // 加密后生成的文件路径
+        path_type MEMBER_origin_route; // 被加密的文件路径
+        path_type MEMBER_result_route; // 加密后生成的文件路径
     public:
 
     private:
@@ -194,8 +194,8 @@ namespace OKps::AES
         注意，线程数不要过大，因为操作系统对一个进程能拥有的文件句柄的数量有限制，而本类会给每一个线程申请2个文件句柄，如果线程数太大，则有些线程无法访问文件。如果出现这种情况，则抛出异常。
         */
 
-        void encrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count = 0);
-        void decrypt(TYPE_path const & origin_route, TYPE_path const & result_route, const key_type & key, const std::size_t thread_count = 0);
+        void encrypt(path_type const & origin_route, path_type const & result_route, const key_type & key, const std::size_t thread_count = 0);
+        void decrypt(path_type const & origin_route, path_type const & result_route, const key_type & key, const std::size_t thread_count = 0);
 
     private:
         // aes对称加密，密钥必须是长度16的unsigned char字符串

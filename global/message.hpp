@@ -1,117 +1,94 @@
 #pragma once
 
 #include <cstddef>
-#include <type_traits>
 #include <exception>
 #include <queue>
-#include <atomic>
-#include <thread>
 #include <condition_variable>
 #include <unordered_map>
+
+#include ".\lock.hpp"
+#include ".\base.hpp"
 
 namespace OKps
 {
 	class message final
 	{
+
 	private:
 
-	public:
-		/*
-		信号处理器的基类
-		*/
-		class handler
-		{
-			friend class message;
-		private:
-			std::exception_ptr MEMBER_exception_holder;
-		public:
-			handler()
-				noexcept(std::is_nothrow_default_constructible<std::exception_ptr>::value);
-			handler(handler const &)
-				noexcept(std::is_nothrow_copy_constructible<std::exception_ptr>::value);
-			void operator =(handler const &)
-				noexcept(std::is_nothrow_copy_assignable<std::exception_ptr>::value);
-			handler(handler &&)
-				noexcept(std::is_nothrow_move_constructible<std::exception_ptr>::value);
-			void operator =(handler &&)
-				noexcept(std::is_nothrow_move_assignable<std::exception_ptr>::value);
-
-			virtual ~handler()
-				noexcept(std::is_nothrow_destructible<std::exception_ptr>::value);
-
-			/*
-			比较两个对象的地址
-			用于标准库容器的排序。
-			*/
-			bool operator <(handler const &)noexcept;
-
-			virtual handler & self()noexcept;
-			virtual handler const & self()const noexcept;
-			virtual handler * operator &()noexcept;
-			virtual handler const * operator &()const noexcept;
-		protected:
-			/*
-			引发信号时，信号处理器会调用此函数
-			此函数禁止直接抛出异常，如果需要使用异常，则使用handler基类提供的接口
-			*/
-			virtual void operator ()() noexcept = 0;
-		public:
-			/*
-			检查handler基类目前是否有异常
-			*/
-			std::exception_ptr const & have_exception()const noexcept;
-		protected:
-			/*
-			用新的异常替换掉handler基类目前保有的异常
-
-			c++标准没有规定std::exception_ptr的实现方式，但规定了它在RAII方面的行为如同std::shared_ptr
-			故对于std::exception_ptr持有的异常对象的生命周期的管理，应该也如同std::shared_ptr
-			*/
-			void raise_exception(std::exception_ptr const &);
-		public:
-			/*
-			释放handler基类持有的异常，并抛出该异常
-			*/
-			[[noreturn]]
-			void release_exception()noexcept(false);
-		};
-	private:
-
-		using TYPE_handler_pool = std::unordered_map<std::uintmax_t, std::shared_ptr<handler>>;
+		using TYPE_handler_pool = std::unordered_map<std::uintmax_t, std::shared_ptr<base::handler<true>>>;
 		TYPE_handler_pool MEMBER_handlers;
-		std::unique_lock<std::mutex> MEMBER_lock;
-		std::mutex MEMBER_mutex;
+		using TYPE_mutex = lock_proxy<std::binary_semaphore>;
+		std::unique_lock<TYPE_mutex> MEMBER_lock;
+		TYPE_mutex MEMBER_mutex;
 		std::atomic<bool> MEMBER_not_waiting;
-		std::condition_variable MEMBER_waiter;
+		std::condition_variable_any MEMBER_waiter;
 		std::thread MEMBER_peeker;
 		void peek()noexcept;
-		std::queue<std::uintmax_t> MEMBER_signals;
+
+		class signal_parameter final
+		{
+		private:
+			std::uintmax_t MEMBER_signal;
+			std::shared_ptr<base::blank> MEMBER_parameter;
+		public:
+			/*
+			默认parameter不是空指针
+			若违反，则会引发未定义行为。
+			*/
+			signal_parameter(std::uintmax_t const signal, std::shared_ptr<base::blank> const & parameter)
+				noexcept(std::is_nothrow_copy_constructible_v<std::shared_ptr<base::blank>>);
+			signal_parameter(signal_parameter const &)
+				noexcept(std::is_nothrow_copy_constructible_v<std::shared_ptr<base::blank>>);
+			void operator =(signal_parameter const &)
+				noexcept(std::is_nothrow_copy_assignable_v<std::shared_ptr<base::blank>>);
+			signal_parameter(signal_parameter &&)
+				noexcept(std::is_nothrow_move_constructible_v<std::shared_ptr<base::blank>>);
+			void operator =(signal_parameter &&)
+				noexcept(std::is_nothrow_move_assignable_v<std::shared_ptr<base::blank>>);
+			~signal_parameter()
+				noexcept(std::is_nothrow_destructible_v<std::shared_ptr<base::blank>>);
+			std::uintmax_t & signal()noexcept;
+			std::uintmax_t const & signal()const noexcept;
+			base::blank & parameter()noexcept;
+			base::blank const & parameter()const noexcept;
+		};
+
+		std::queue<signal_parameter> MEMBER_signals;
 		std::atomic<bool> MEMBER_done;
 	public:
 		/*
 		生成随机的信号值signal，并将handler注册为该信号的处理函数
 		返回生成的信号signal
 		*/
-		std::uintmax_t regist(std::shared_ptr<handler> const &);
+		std::uintmax_t regist(std::shared_ptr<base::handler<true>> const &);
 		/*
 		如果signal未注册，则将handler函数注册为信号signal的处理函数
 		如果signal已注册，则将其处理函数修改为handler
 		注意，regist函数和trigger函数不保证顺序，也就是说，
 		如果注册信号signal和引发信号signal在不同的线程，可能会抛出“信号signal未注册”的异常
 		*/
-		void regist(std::uintmax_t const signal, std::shared_ptr<handler> const &);
+		void regist(std::uintmax_t const signal, std::shared_ptr<base::handler<true>> const &);
 		/*
 		引发信号signal
 		信号signal的处理函数会在本类管理的一个线程执行，而不会在调用trigger函数的线程执行
 		处理函数执行的顺序是按照信号引发的顺序
+
+		parameter是执行本次处理函数所调用的参数，它不能为空指针。
 		*/
-		void trigger(std::uintmax_t const signal);
+		void trigger(std::uintmax_t const signal, std::shared_ptr<base::blank> const & parameter);
 		message();
 		/*
 		此类析构之前，会先处理完所有待处理的信号。
 		*/
 		~message()
-			noexcept(noexcept(std::declval<std::thread>().join()));
+			noexcept(noexcept(std::declval<std::thread>().join())
+			and std::is_nothrow_destructible_v<TYPE_handler_pool>
+			and std::is_nothrow_destructible_v<TYPE_mutex>
+			and std::is_nothrow_destructible_v<std::unique_lock<TYPE_mutex>>
+			and std::is_nothrow_destructible_v<std::thread>
+			and std::is_nothrow_destructible_v<std::condition_variable_any>
+			and std::is_nothrow_destructible_v<std::queue<std::uintmax_t>>);
 		message(message const &) = delete;
 		message(message &&) = delete;
 		void operator =(message const &) = delete;

@@ -616,7 +616,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	}
 
 	storage<field>::reference::reference(storage const & marker, std::size_t const position)
-		noexcept(noexcept(base_type(std::declval<base::marked const &>())))
+		noexcept(noexcept(base_type(std::declval<storage<field>::base_type const &>())))
 		:base_type(marker)
 		, MEMBER_position(position)
 	{
@@ -687,8 +687,24 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	storage<field>::storage(std::filesystem::path const & file_path)
 		:base_type()
 		, MEMBER_path()
-		, MEMBER_storage(file_path, std::ios::in | std::ios::out | std::ios::binary)
+		, MEMBER_storage()
 	{
+		if (not std::filesystem::exists(file_path))
+		{
+			this->MEMBER_temporary_file = true;
+			std::ofstream TEMP_file_creator(file_path, std::ios::out | std::ios::binary | std::ios::trunc);
+			if (not TEMP_file_creator.is_open())
+			{
+				std::string const hint = "创建文件 " + file_path.string() + " 失败";
+				throw std::runtime_error(hint);
+			}
+		}
+		else
+		{
+			this->MEMBER_temporary_file = false;
+		}
+
+		this->MEMBER_storage = std::fstream(file_path, std::ios::in | std::ios::out | std::ios::binary);
 		if (not this->MEMBER_storage.is_open())
 		{
 			std::string const hint = "打开文件 " + file_path.string() + " 失败";
@@ -753,8 +769,15 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 		noexcept(std::is_nothrow_destructible_v<std::filesystem::path>
 		and std::is_nothrow_destructible_v<std::fstream>
 		and std::is_nothrow_destructible_v<base_type>
-		and std::is_nothrow_destructible_v<std::vector<field_info>>)
+		and std::is_nothrow_destructible_v<std::vector<field_info>>
+		and noexcept(std::declval<std::fstream &>().close())
+		and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>())))
 	{
+		if (this->MEMBER_temporary_file)
+		{
+			this->MEMBER_storage.close();
+			std::filesystem::remove(this->MEMBER_path);
+		}
 	}
 	storage<field>::reference & storage<field>::reference::self()noexcept
 	{

@@ -5,7 +5,8 @@
 
 namespace OKps::base
 {
-	void marked::marker_type::change_owner(marked * o)noexcept
+	template<bool safe_destructible>
+	void marked<safe_destructible>::marker_type::change_owner(marked * const o)noexcept
 	{
 		this->MEMBER_owner = o;
 	}
@@ -18,27 +19,39 @@ namespace OKps::base
 		return this;
 	}
 
-	handler * handler::operator &()noexcept
+	handler<true> * handler<true>::operator &()noexcept
 	{
 		return this;
 	}
-	handler const * handler::operator &()const noexcept
+	handler<true> const * handler<true>::operator &()const noexcept
 	{
 		return this;
 	}
-	marked * marked::operator &()noexcept
+	handler<false> * handler<false>::operator &()noexcept
 	{
 		return this;
 	}
-	marked const * marked::operator &()const noexcept
+	handler<false> const * handler<false>::operator &()const noexcept
 	{
 		return this;
 	}
-	reference * reference::operator &()noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible> * marked<safe_destructible>::operator &()noexcept
 	{
 		return this;
 	}
-	reference const * reference::operator &()const noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible> const * marked<safe_destructible>::operator &()const noexcept
+	{
+		return this;
+	}
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible> * reference<object_safe_destructible, safe_destructible>::operator &()noexcept
+	{
+		return this;
+	}
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible> const * reference<object_safe_destructible, safe_destructible>::operator &()const noexcept
 	{
 		return this;
 	}
@@ -66,15 +79,21 @@ namespace OKps::base
 	{
 		return (&(*this)) < (&right);
 	}
-	bool reference::operator <(reference const & right)const noexcept
+	template<bool object_safe_destructible, bool safe_destructible>
+	bool reference<object_safe_destructible, safe_destructible>::operator <(reference const & right)const noexcept
 	{
 		return (&(*this)) < (&right);
 	}
-	bool marked::operator <(marked const & right)const noexcept
+	template<bool safe_destructible>
+	bool marked<safe_destructible>::operator <(marked const & right)const noexcept
 	{
 		return (&(*this)) < (&right);
 	}
-	bool handler::operator <(handler const & right)const noexcept
+	bool handler<false>::operator <(handler const & right)const noexcept
+	{
+		return (&(*this)) < (&right);
+	}
+	bool handler<true>::operator <(handler const & right)const noexcept
 	{
 		return (&(*this)) < (&right);
 	}
@@ -178,30 +197,38 @@ namespace OKps::base
 		std::rethrow_exception(ep);
 	}
 
-	handler::handler()noexcept
+	handler<false>::handler()noexcept
 	{
 	}
-	handler::handler(handler const & origin)noexcept
+	handler<false>::handler(handler const & origin)noexcept
 	{
 	}
-	handler::~handler()noexcept
+	handler<false>::~handler()noexcept
 	{
 	}
-	handler::handler(handler && origin)noexcept
+	handler<false>::handler(handler && origin)noexcept
 	{
 	}
-	void handler::operator =(handler && origin)noexcept
+	void handler<false>::operator =(handler && origin)noexcept
 	{
 	}
-	void handler::operator =(handler const & origin)noexcept
+	void handler<false>::operator =(handler const & origin)noexcept
 	{
 	}
 
-	handler & handler::self()noexcept
+	handler<false> & handler<false>::self()noexcept
 	{
 		return *this;
 	}
-	handler const & handler::self()const noexcept
+	handler<false> const & handler<false>::self()const noexcept
+	{
+		return *this;
+	}
+	handler<true> & handler<true>::self()noexcept
+	{
+		return *this;
+	}
+	handler<true> const & handler<true>::self()const noexcept
 	{
 		return *this;
 	}
@@ -231,48 +258,54 @@ namespace OKps::base
 	{
 		return *this;
 	}
-
-	marked::marker_type::marker_type(marked * m)noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible>::marker_type::marker_type(marked * m)noexcept
 		:MEMBER_owner(m)
 	{
 	}
-	marked::marker_type::~marker_type()noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible>::marker_type::~marker_type()noexcept
 	{
 	}
-
-	marked & marked::marker_type::owner()noexcept
-	{
-		return *(this->MEMBER_owner);
-	}
-	marked const & marked::marker_type::owner()const noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible> & marked<safe_destructible>::marker_type::owner()noexcept
 	{
 		return *(this->MEMBER_owner);
 	}
-
-	std::shared_ptr<marked::marker_type> const & marked::marker()const noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible> const & marked<safe_destructible>::marker_type::owner()const noexcept
+	{
+		return *(this->MEMBER_owner);
+	}
+	template<bool safe_destructible>
+	std::shared_ptr<typename marked<safe_destructible>::marker_type> const & marked<safe_destructible>::marker()const noexcept
 	{
 		return this->MEMBER_marker;
 	}
-
-	marked::marked()
+	template<bool safe_destructible>
+	marked<safe_destructible>::marked()
 		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
 			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
 		:MEMBER_marker()
 	{
 		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
-	marked::~marked()
-		noexcept(std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>)
+	template<bool safe_destructible>
+	marked<safe_destructible>::~marked()
+		noexcept(std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>
+			and safe_destructible)
 	{
 	}
-	marked::marked(marked const & origin)
+	template<bool safe_destructible>
+	marked<safe_destructible>::marked(marked const & origin)
 		noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
 			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
 		:MEMBER_marker()
 	{
 		this->MEMBER_marker = std::make_shared<marker_type>(this);
 	}
-	marked::marked(marked && origin)
+	template<bool safe_destructible>
+	marked<safe_destructible>::marked(marked && origin)
 		noexcept(std::is_nothrow_move_constructible_v<std::shared_ptr<marker_type>>
 			and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
 		: MEMBER_marker(std::move(origin.MEMBER_marker))
@@ -280,20 +313,22 @@ namespace OKps::base
 		this->MEMBER_marker->change_owner(this);
 		origin.MEMBER_marker = std::make_shared<marker_type>(std::addressof(origin));
 	}
-	marked & marked::self()noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible> & marked<safe_destructible>::self()noexcept
 	{
 		return *this;
 	}
-	marked const & marked::self()const noexcept
+	template<bool safe_destructible>
+	marked<safe_destructible> const & marked<safe_destructible>::self()const noexcept
 	{
 		return *this;
 	}
-
-	void marked::operator =(marked const & origin) noexcept
+	template<bool safe_destructible>
+	void marked<safe_destructible>::operator =(marked const & origin) noexcept
 	{
 	}
-
-	void marked::operator =(marked && origin)
+	template<bool safe_destructible>
+	void marked<safe_destructible>::operator =(marked && origin)
 		noexcept(std::is_nothrow_move_assignable_v<std::shared_ptr<marker_type>>
 		and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
 	{
@@ -304,56 +339,66 @@ namespace OKps::base
 			origin.MEMBER_marker = std::make_shared<marker_type>(std::addressof(origin));
 		}
 	}
-	reference::reference(marked const & m)
-		noexcept(noexcept(std::weak_ptr<marked::marker_type>(std::declval<std::shared_ptr<marked::marker_type> const &>())))
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible>::reference(marked<object_safe_destructible> const & m)
+		noexcept(noexcept(std::weak_ptr<typename marked<object_safe_destructible>::marker_type>(std::declval<std::shared_ptr<typename marked<object_safe_destructible>::marker_type> const &>())))
 		:MEMBER_marker(m.marker())
 	{
 	}
-	reference::~reference()
-		noexcept(std::is_nothrow_destructible_v<std::weak_ptr<marked::marker_type>>)
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible>::~reference()
+		noexcept(std::is_nothrow_destructible_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>
+			and safe_destructible)
 	{
 	}
-	reference::reference(reference const & origin)
-		noexcept(std::is_nothrow_copy_constructible_v<std::weak_ptr<marked::marker_type>>)
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible>::reference(reference const & origin)
+		noexcept(std::is_nothrow_copy_constructible_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>)
 		: MEMBER_marker(origin.MEMBER_marker)
 	{
 	}
-	void reference::operator =(reference const & origin)
-		noexcept(std::is_nothrow_copy_assignable_v<std::weak_ptr<marked::marker_type>>)
+	template<bool object_safe_destructible, bool safe_destructible>
+	void reference<object_safe_destructible, safe_destructible>::operator =(reference const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>)
 	{
 		if ((&(*this)) != (&origin))
 		{
 			this->MEMBER_marker = origin.MEMBER_marker;
 		}
 	}
-	reference::reference(reference && origin)
-		noexcept(std::is_nothrow_move_constructible_v<std::weak_ptr<marked::marker_type>>)
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible>::reference(reference && origin)
+		noexcept(std::is_nothrow_move_constructible_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>)
 		: MEMBER_marker(std::move(origin.MEMBER_marker))
 	{
 	}
-	void reference::operator =(reference && origin)
-		noexcept(std::is_nothrow_move_assignable_v<std::weak_ptr<marked::marker_type>>)
+	template<bool object_safe_destructible, bool safe_destructible>
+	void reference<object_safe_destructible, safe_destructible>::operator =(reference && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>)
 	{
 		if ((&(*this)) != (&origin))
 		{
 			this->MEMBER_marker = std::move(origin.MEMBER_marker);
 		}
 	}
-	reference & reference::self()noexcept
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible> & reference<object_safe_destructible, safe_destructible>::self()noexcept
 	{
 		return *this;
 	}
-	reference const & reference::self()const noexcept
+	template<bool object_safe_destructible, bool safe_destructible>
+	reference<object_safe_destructible, safe_destructible> const & reference<object_safe_destructible, safe_destructible>::self()const noexcept
 	{
 		return *this;
 	}
-
-	bool reference::is_valid()const
-		noexcept(noexcept(not std::declval<std::weak_ptr<marked::marker_type>>().expired()))
+	template<bool object_safe_destructible, bool safe_destructible>
+	bool reference<object_safe_destructible, safe_destructible>::is_valid()const
+		noexcept(noexcept(not std::declval<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>().expired()))
 	{
 		return (not this->MEMBER_marker.expired());
 	}
-	marked & reference::get()
+	template<bool object_safe_destructible, bool safe_destructible>
+	marked<object_safe_destructible> & reference<object_safe_destructible, safe_destructible>::get()
 	{
 		if (this->MEMBER_marker.expired())
 		{
@@ -361,7 +406,8 @@ namespace OKps::base
 		}
 		return this->MEMBER_marker.lock()->owner();
 	}
-	marked const & reference::get()const
+	template<bool object_safe_destructible, bool safe_destructible>
+	marked<object_safe_destructible> const & reference<object_safe_destructible, safe_destructible>::get()const
 	{
 		if (this->MEMBER_marker.expired())
 		{
@@ -386,5 +432,57 @@ namespace OKps::base
 		noexcept(noexcept(std::declval<std::thread>().get_id()))
 	{
 		return this->MEMBER_thread.get_id();
+	}
+
+	handler<true>::handler()
+		noexcept(std::is_nothrow_default_constructible<std::exception_ptr>::value)
+		:MEMBER_error_holder()
+	{
+	}
+	handler<true>::handler(handler && origin)
+		noexcept(std::is_nothrow_copy_constructible<std::exception_ptr>::value
+		and std::is_nothrow_default_constructible<std::exception_ptr>::value
+		and std::is_nothrow_copy_assignable<std::exception_ptr>::value)
+		:MEMBER_error_holder(origin.MEMBER_error_holder)
+	{
+		origin.MEMBER_error_holder = std::exception_ptr();
+	}
+	void handler<true>::operator =(handler && origin)
+		noexcept(std::is_nothrow_copy_assignable<std::exception_ptr>::value
+		and std::is_nothrow_default_constructible<std::exception_ptr>::value)
+	{
+		if ((&(*this)) != (&origin))
+		{
+			this->MEMBER_error_holder = origin.MEMBER_error_holder;
+			origin.MEMBER_error_holder = std::exception_ptr();
+		}
+	}
+
+	handler<true>::~handler()
+		noexcept(std::is_nothrow_destructible<std::exception_ptr>::value)
+	{
+	}
+	std::exception_ptr const & handler<true>::have_error()const noexcept
+	{
+		return this->MEMBER_error_holder;
+	}
+	void handler<true>::raise_error(std::exception_ptr const & error)
+	{
+		if (this->MEMBER_error_holder)
+		{
+			throw std::logic_error("已经存储了一个异常，尚未得到处理");
+		}
+		this->MEMBER_error_holder = error;
+	}
+
+	void handler<true>::release_error()noexcept(false)
+	{
+		if (not this->MEMBER_error_holder)
+		{
+			throw std::logic_error("没有存储异常");
+		}
+		auto const p = this->MEMBER_error_holder;
+		this->MEMBER_error_holder = std::exception_ptr();
+		std::rethrow_exception(p);
 	}
 }

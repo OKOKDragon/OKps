@@ -1,9 +1,8 @@
 #pragma once
 
-#include <type_traits>
 #include <map>
-#include <mutex>
-#include <semaphore>
+
+#include ".\lock.hpp"
 
 void * operator new(std::size_t const size);
 
@@ -84,35 +83,6 @@ namespace OKps::memory
     private:
         using pool_type = std::map<void const *, std::size_t, std::less<void const *>, implement::allocator_type<std::pair<void const * const, std::size_t>>>;
         pool_type MEMBER_pool;
-
-        template<typename>
-        class lock_proxy;
-
-        /*
-        信号量的代理类，使得信号量表现得如同满足“可基本锁定”的锁一样。
-
-        “可基本锁定”是c++标准的具名要求，在此类中用于 std::lock_guard。
-        */
-        template<>
-        class lock_proxy<std::binary_semaphore> final
-        {
-        private:
-            std::binary_semaphore MEMBER_lock;
-        public:
-            lock_proxy()
-                noexcept(noexcept(std::binary_semaphore(1)));
-            ~lock_proxy()
-                noexcept(std::is_nothrow_destructible_v<std::binary_semaphore>);
-            lock_proxy(lock_proxy const &) = delete;
-            lock_proxy(lock_proxy &&) = delete;
-            void operator = (lock_proxy const &) = delete;
-            void operator =(lock_proxy &&) = delete;
-            void lock()
-                noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()));
-            void unlock()
-                noexcept(noexcept(std::declval<std::binary_semaphore &>().release()));
-        };
-
 
         mutable lock_proxy<std::binary_semaphore> MEMBER_lock;
 

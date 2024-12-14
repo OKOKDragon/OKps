@@ -58,7 +58,6 @@ namespace OKps
         template<stl_string_type target_type, stl_string_type origin_type>
         constexpr bool const safe_convertible = std::is_nothrow_destructible_v<target_type>
             and noexcept(std::declval<target_type>().resize(std::declval<origin_type const &>().size()));
-
     }
 
     /*

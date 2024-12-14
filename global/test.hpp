@@ -42,7 +42,7 @@ namespace OKps::test
     {
     private:
         using base_type = base::worker;
-        virtual void work()noexcept override;
+        void work()noexcept override;
 
         std::string MEMBER_name;
     public:
@@ -50,7 +50,7 @@ namespace OKps::test
 
         worker_impl(worker_impl && origin)noexcept;
 
-        virtual ~worker_impl()noexcept override;
+        ~worker_impl()noexcept override;
 
         worker_impl & self()noexcept override;
 

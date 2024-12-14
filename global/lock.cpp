@@ -54,4 +54,24 @@ and noexcept(std::declval<std::atomic<bool>>() = std::declval<bool>()))
         return this->MEMBER_thread_id;
     }
 
+    lock_proxy<std::binary_semaphore>::lock_proxy()
+        noexcept(noexcept(std::binary_semaphore(1)))
+        :MEMBER_lock(1)
+    {
+    }
+    lock_proxy<std::binary_semaphore>::~lock_proxy()
+        noexcept(std::is_nothrow_destructible_v<std::binary_semaphore>)
+    {
+    }
+
+    void lock_proxy<std::binary_semaphore>::lock()
+        noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()))
+    {
+        this->MEMBER_lock.acquire();
+    }
+    void lock_proxy<std::binary_semaphore>::unlock()
+        noexcept(noexcept(std::declval<std::binary_semaphore &>().release()))
+    {
+        this->MEMBER_lock.release();
+    }
 }

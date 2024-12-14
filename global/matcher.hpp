@@ -11,7 +11,7 @@ namespace OKps
 	{
 	public:
 
-		using handler_pointer = std::unique_ptr<base::handler>;
+		using handler_pointer = std::unique_ptr<base::handler<false>>;
 	private:
 		using TYPE_pool = std::unordered_map<std::string, handler_pointer>;
 
@@ -37,9 +37,6 @@ namespace OKps
 		work参数是一个函数对象，它指定了使用execute函数执行命令order时调用的函数
 		如果order命令已经被注册，则覆盖其对应的函数对象
 		work函数对象需要自行解决其参数的运行时多态的类型安全问题
-
-		推荐对命令字符串order使用与c++默认本地环境，即std::locale::classic()环境相同的编码，
-		否则可能导致此类抛出的异常信息不可读。
 		*/
 		void regist(std::string const & order, handler_pointer && work);
 		//删除命令
@@ -47,8 +44,8 @@ namespace OKps
 		//使用参数para执行命令order
 		void execute(std::string const & order, base::blank & para)const;
 
-		base::handler const & find(std::string const & order)const;
-		base::handler & find(std::string const order);
+		base::handler<false> const & find(std::string const & order)const;
+		base::handler<false> & find(std::string const order);
 	};
 
 }

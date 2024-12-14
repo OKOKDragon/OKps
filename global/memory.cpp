@@ -89,27 +89,6 @@ and false)
         }
     }
 
-    recorder_type::lock_proxy<std::binary_semaphore>::lock_proxy()
-        noexcept(noexcept(std::binary_semaphore(1)))
-        :MEMBER_lock(1)
-    {
-    }
-    recorder_type::lock_proxy<std::binary_semaphore>::~lock_proxy()
-        noexcept(std::is_nothrow_destructible_v<std::binary_semaphore>)
-    {
-    }
-
-    void recorder_type::lock_proxy<std::binary_semaphore>::lock()
-        noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()))
-    {
-        this->MEMBER_lock.acquire();
-    }
-    void recorder_type::lock_proxy<std::binary_semaphore>::unlock()
-        noexcept(noexcept(std::declval<std::binary_semaphore &>().release()))
-    {
-        this->MEMBER_lock.release();
-    }
-
     recorder_type::pool_type recorder_type::track()const
         noexcept(noexcept(std::lock_guard<decltype(recorder_type::MEMBER_lock)>(std::declval<decltype(recorder_type::MEMBER_lock) &>()))
         and std::is_nothrow_copy_constructible_v<pool_type>)

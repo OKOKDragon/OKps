@@ -1,84 +1,68 @@
 
-#include <string>
 #include <random>
-#include <memory>
 
 #include ".\message.hpp"
 
 namespace OKps
 {
-	message::handler & message::handler::self()noexcept
-	{
-		return *this;
-	}
-	message::handler const & message::handler::self()const noexcept
-	{
-		return *this;
-	}
-	message::handler * message::handler::operator &()noexcept
-	{
-		return this;
-	}
-	message::handler const * message::handler::operator &()const noexcept
-	{
-		return this;
-	}
-	bool message::handler::operator <(handler const & right)noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	message::handler::handler()
-		noexcept(std::is_nothrow_default_constructible<std::exception_ptr>::value)
-		:MEMBER_exception_holder()
+	message::signal_parameter::signal_parameter(std::uintmax_t const signal, std::shared_ptr<base::blank> const & parameter)
+		noexcept(std::is_nothrow_copy_constructible_v<std::shared_ptr<base::blank>>)
+		:MEMBER_signal(signal)
+		, MEMBER_parameter(parameter)
 	{
 	}
-	message::handler::handler(handler const & origin)
-		noexcept(std::is_nothrow_copy_constructible<std::exception_ptr>::value)
-		:MEMBER_exception_holder(origin.MEMBER_exception_holder)
+	message::signal_parameter::signal_parameter(signal_parameter const & origin)
+		noexcept(std::is_nothrow_copy_constructible_v<std::shared_ptr<base::blank>>)
+		:MEMBER_signal(origin.MEMBER_signal)
+		, MEMBER_parameter(origin.MEMBER_parameter)
 	{
 	}
-	void message::handler::operator =(handler const & origin)
-		noexcept(std::is_nothrow_copy_assignable<std::exception_ptr>::value)
+	void message::signal_parameter::operator =(signal_parameter const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::shared_ptr<base::blank>>)
 	{
-		this->MEMBER_exception_holder = origin.MEMBER_exception_holder;
-	}
-	message::handler::handler(handler && origin)
-		noexcept(std::is_nothrow_move_constructible<std::exception_ptr>::value)
-		:MEMBER_exception_holder(std::move(origin.MEMBER_exception_holder))
-	{
-	}
-	void message::handler::operator =(handler && origin)
-		noexcept(std::is_nothrow_move_assignable<std::exception_ptr>::value)
-	{
-		this->MEMBER_exception_holder = std::move(origin.MEMBER_exception_holder);
-	}
-	message::handler::~handler()
-		noexcept(std::is_nothrow_destructible<std::exception_ptr>::value)
-	{
-	}
-	std::exception_ptr const & message::handler::have_exception()const noexcept
-	{
-		return this->MEMBER_exception_holder;
-	}
-	void message::handler::raise_exception(std::exception_ptr const & p)
-	{
-		if (this->MEMBER_exception_holder)
+		if (this != std::addressof(origin))
 		{
-			throw std::logic_error("已经存储了一个异常，尚未得到处理");
+			this->MEMBER_signal = origin.MEMBER_signal;
+			this->MEMBER_parameter = origin.MEMBER_parameter;
 		}
-		this->MEMBER_exception_holder = p;
 	}
-	void message::handler::release_exception()noexcept(false)
+	message::signal_parameter::signal_parameter(signal_parameter && origin)
+		noexcept(std::is_nothrow_move_constructible_v<std::shared_ptr<base::blank>>)
+		:MEMBER_signal(origin.MEMBER_signal)
+		, MEMBER_parameter(std::move(origin.MEMBER_parameter))
 	{
-		if (not this->MEMBER_exception_holder)
-		{
-			throw std::logic_error("没有存储异常");
-		}
-		auto const p = this->MEMBER_exception_holder;
-		this->MEMBER_exception_holder = nullptr;
-		std::rethrow_exception(p);
 	}
-	std::uintmax_t message::regist(std::shared_ptr<handler> const & h)
+	void message::signal_parameter::operator =(signal_parameter && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::shared_ptr<base::blank>>)
+	{
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_signal = origin.MEMBER_signal;
+			this->MEMBER_parameter = std::move(origin.MEMBER_parameter);
+		}
+	}
+	message::signal_parameter::~signal_parameter()
+		noexcept(std::is_nothrow_destructible_v<std::shared_ptr<base::blank>>)
+	{
+	}
+	std::uintmax_t & message::signal_parameter::signal()noexcept
+	{
+		return this->MEMBER_signal;
+	}
+	std::uintmax_t const & message::signal_parameter::signal()const noexcept
+	{
+		return this->MEMBER_signal;
+	}
+	base::blank & message::signal_parameter::parameter()noexcept
+	{
+		return *(this->MEMBER_parameter);
+	}
+	base::blank const & message::signal_parameter::parameter()const noexcept
+	{
+		return *(this->MEMBER_parameter);
+	}
+
+	std::uintmax_t message::regist(std::shared_ptr<base::handler<true>> const & h)
 	{
 		std::random_device seed;
 		std::mt19937_64 engine(seed());
@@ -101,7 +85,7 @@ namespace OKps
 
 		return number;
 	}
-	void message::regist(std::uintmax_t const signal, std::shared_ptr<handler> const & h)
+	void message::regist(std::uintmax_t const signal, std::shared_ptr<base::handler<true>> const & h)
 	{
 		this->MEMBER_mutex.lock();
 		auto finder = this->MEMBER_handlers.find(signal);
@@ -116,8 +100,12 @@ namespace OKps
 		this->MEMBER_mutex.unlock();
 	}
 
-	void message::trigger(std::uintmax_t const signal)
+	void message::trigger(std::uintmax_t const signal, std::shared_ptr<base::blank> const & parameter)
 	{
+		if (not parameter)
+		{
+			throw std::invalid_argument("禁止以空指针为参数");
+		}
 		if (this->MEMBER_done)
 		{
 			throw std::runtime_error("message对象正在析构，无法再引发新信号");
@@ -126,7 +114,7 @@ namespace OKps
 		auto finder = this->MEMBER_handlers.find(signal);
 		if (finder != this->MEMBER_handlers.end())
 		{
-			this->MEMBER_signals.push(signal);
+			this->MEMBER_signals.push(signal_parameter(signal, parameter));
 			this->MEMBER_not_waiting = true;
 			this->MEMBER_waiter.notify_one();
 			this->MEMBER_mutex.unlock();
@@ -154,7 +142,13 @@ namespace OKps
 		this->MEMBER_peeker = std::thread(&message::peek, this);
 	}
 	message::~message()
-		noexcept(noexcept(std::declval<std::thread>().join()))
+		noexcept(noexcept(std::declval<std::thread>().join())
+		and std::is_nothrow_destructible_v<TYPE_handler_pool>
+		and std::is_nothrow_destructible_v<TYPE_mutex>
+		and std::is_nothrow_destructible_v<std::unique_lock<TYPE_mutex>>
+		and std::is_nothrow_destructible_v<std::thread>
+		and std::is_nothrow_destructible_v<std::condition_variable_any>
+		and std::is_nothrow_destructible_v<std::queue<std::uintmax_t>>)
 	{
 
 		this->MEMBER_done = true;
@@ -172,10 +166,10 @@ namespace OKps
 			if (not this->MEMBER_signals.empty())
 			{
 				this->MEMBER_not_waiting = true;
-				auto finder = this->MEMBER_handlers.find(this->MEMBER_signals.front());
+				auto finder = this->MEMBER_handlers.find(this->MEMBER_signals.front().signal());
 				//如果信号不存在，则在引发信号（即调用trigger函数）时就会抛出异常，所以信号队列里不会有未注册的信号
-				handler & TEMP_signal_handler = *(finder->second);
-				TEMP_signal_handler();
+				auto & TEMP_signal_handler = *(finder->second);
+				TEMP_signal_handler(this->MEMBER_signals.front().parameter());
 				this->MEMBER_signals.pop();
 			}
 			else
@@ -223,10 +217,10 @@ namespace OKps
 		{
 			if (not this->MEMBER_signals.empty())
 			{
-				auto finder = this->MEMBER_handlers.find(this->MEMBER_signals.front());
+				auto finder = this->MEMBER_handlers.find(this->MEMBER_signals.front().signal());
 				//如果信号不存在，则在引发信号（即调用trigger函数）时就会抛出异常，所以信号队列里不会有未注册的信号
-				handler & TEMP_signal_handler = *(finder->second);
-				TEMP_signal_handler();
+				auto & TEMP_signal_handler = *(finder->second);
+				TEMP_signal_handler(this->MEMBER_signals.front().parameter());
 				this->MEMBER_signals.pop();
 			}
 			else

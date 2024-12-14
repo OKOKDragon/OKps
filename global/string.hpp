@@ -152,6 +152,11 @@ and std::is_nothrow_copy_assignable_v<std::locale>);
         */
         template<typename string_type>
         static bool get_line(std::istream & input, string_type & result, requirement<string_type> & judge);
+        /*
+        从输入流 input 输入一行字符串，转换到utf-8编码
+        */
+        template<typename string_type>
+        static void get_line(std::istream & input, string_type & result);
 
     };
     template
@@ -162,6 +167,10 @@ and std::is_nothrow_copy_assignable_v<std::locale>);
         bool string::get_line<std::string>(std::istream & input, std::string & result, requirement<std::string> & judge);
     template
         bool string::get_line<std::u8string>(std::istream & input, std::u8string & result, requirement<std::u8string> & judge);
+    template
+        void string::get_line<std::string>(std::istream &, std::string &);
+    template
+        void string::get_line<std::u8string>(std::istream &, std::u8string &);
 
    /*
    将字符串输出到标准输出流
