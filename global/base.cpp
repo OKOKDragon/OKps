@@ -160,9 +160,16 @@ namespace OKps::base
 		return *this;
 	}
 
-	std::exception_ptr const & worker::have_error()const noexcept
+	bool worker::have_error()const noexcept
 	{
-		return this->MEMBER_error;
+		if (this->MEMBER_error)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	void worker::raise_error(std::exception_ptr const & ep)
@@ -425,9 +432,16 @@ namespace OKps::base
 	handler<true>::~handler()noexcept(false)
 	{
 	}
-	std::exception_ptr const & handler<true>::have_error()const noexcept
+	bool handler<true>::have_error()const noexcept
 	{
-		return this->MEMBER_error_holder;
+		if (this->MEMBER_error_holder)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	void handler<true>::raise_error(std::exception_ptr const & error)
 	{

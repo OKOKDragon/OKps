@@ -17,6 +17,10 @@ namespace OKps
 		~blank()noexcept;
 		void operator =(blank const &)noexcept;
 		void operator =(blank &&)noexcept;
+		/*
+		比较两个对象的地址
+		用于标准库容器的排序
+		*/
 		bool operator <(blank const & right)const noexcept;
 
 	};

@@ -127,7 +127,7 @@ namespace OKps::base
 		/*
 		检查handler基类目前是否有异常
 		*/
-		std::exception_ptr const & have_error()const noexcept;
+		bool have_error()const noexcept;
 	protected:
 		/*
 		在此基类中存储一个新的异常 error
@@ -241,8 +241,7 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 
 	/*
 	此基类要求子类实现函数self_copy，其功能为复制子类对象自身，并包装到指向基类的智能指针中返回。
-	这种做法解决的问题是，
-	已知一个基类指针 p 指向子类对象 o，但在编译期不知道对象 o 的真正类型，如何正确复制对象 o。
+	这种做法解决的问题是，已知一个基类指针 p 指向子类对象 o，但在编译期不确定对象 o 的真正类型，如何正确复制对象 o。
 	*/
 	class self_copier
 	{
@@ -297,7 +296,7 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		virtual void work()noexcept = 0;
 
 	public:
-		std::exception_ptr const & have_error()const noexcept;
+		bool have_error()const noexcept;
 	protected:
 		/*
 		将异常以 std::exception_ptr 的形式存储于基类中
