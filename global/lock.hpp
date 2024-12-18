@@ -73,6 +73,8 @@ namespace OKps
     {
     private:
         std::binary_semaphore MEMBER_lock;
+        std::thread::id MEMBER_thread_id;
+        bool MEMBER_locked_flag;
     public:
         lock_proxy()
             noexcept(noexcept(std::binary_semaphore(1)));
@@ -83,9 +85,17 @@ namespace OKps
         void operator = (lock_proxy const &) = delete;
         void operator =(lock_proxy &&) = delete;
         void lock()
-            noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire()));
+            noexcept(noexcept(std::declval<std::binary_semaphore &>().acquire())
+            and noexcept(std::declval<std::thread::id &>() = std::this_thread::get_id()));
         void unlock()
-            noexcept(noexcept(std::declval<std::binary_semaphore &>().release()));
+            noexcept(noexcept(std::declval<std::binary_semaphore &>().release())
+and noexcept(std::declval<std::thread::id &>() = std::thread::id()));
+        /*
+        返回锁的所有者线程ID
+        如果没有上锁，则返回默认构造的std::thread::id
+        */
+        std::thread::id const & owner_thread() const noexcept;
+        bool const & is_locked()const noexcept;
     };
 
 }
