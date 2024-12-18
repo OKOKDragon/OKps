@@ -44,7 +44,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         and std::is_nothrow_copy_assignable_v<std::vector<AES::byte_device>>
         and std::is_nothrow_copy_assignable_v<std::vector<std::array<integer, AES::byte_device::key_length>>>)
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_rsa = origin.MEMBER_rsa;
             this->MEMBER_aes = origin.MEMBER_aes;
@@ -66,7 +66,7 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         and std::is_nothrow_move_assignable_v<std::vector<AES::byte_device>>
         and std::is_nothrow_move_assignable_v<std::vector<std::array<integer, AES::byte_device::key_length>>>)
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_rsa = std::move(origin.MEMBER_rsa);
             this->MEMBER_aes = std::move(origin.MEMBER_aes);

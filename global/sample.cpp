@@ -35,7 +35,7 @@ namespace OKps::sample
         timer.begin();
         for (std::size_t i = 0;i < block_count;++i)
         {
-            file.write(&(data[i * block_size]), block_size);
+            file.write(std::addressof(data[i * block_size]), block_size);
         }
         auto const times_1 = timer.end<std::chrono::nanoseconds>();
         file.close();
@@ -47,7 +47,7 @@ namespace OKps::sample
         timer.begin();
         for (std::size_t i = 0;i < total_length;++i)
         {
-            file.write(&(data[i]), 1);
+            file.write(std::addressof(data[i]), 1);
         }
         auto const times_2 = timer.end<std::chrono::nanoseconds>();
         file.close();

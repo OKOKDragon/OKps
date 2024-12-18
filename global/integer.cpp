@@ -156,13 +156,13 @@ namespace OKps
         // 若left数组长度短于right数组, 则交换两个数组
         if (left.size() < right.size())
         {
-            REF_long = &right;
-            REF_short = &left;
+            REF_long = std::addressof(right);
+            REF_short = std::addressof(left);
         }
         else
         {
-            REF_long = &left;
-            REF_short = &right;
+            REF_long = std::addressof(left);
+            REF_short = std::addressof(right);
         }
         auto xIndex = REF_long->size();
         auto yIndex = REF_short->size();
@@ -317,14 +317,14 @@ namespace OKps
         std::string result;
         for (std::size_t count_1 = 0;count_1 < sizeof(sign_type) / sizeof(char);count_1++)
         {
-            result.push_back((reinterpret_cast<char const *>(&this->MEMBER_sign))[count_1]);
+            result.push_back((reinterpret_cast<char const *>(std::addressof(this->MEMBER_sign)))[count_1]);
         }
         for (std::size_t count_1 = 0;count_1 < this->MEMBER_number.size();count_1++)
         {
             auto const temp_number = this->MEMBER_number[count_1];
             for (std::size_t count_2 = 0;count_2 < sizeof(decltype(temp_number)) / sizeof(char);count_2++)
             {
-                result.push_back((reinterpret_cast<char const *>(&temp_number))[count_2]);
+                result.push_back((reinterpret_cast<char const *>(std::addressof(temp_number)))[count_2]);
             }
         }
         return result;
@@ -341,7 +341,7 @@ namespace OKps
 
                 throw std::invalid_argument("输入的流格式错误");
             }
-            (reinterpret_cast<char *>(&this->MEMBER_sign))[count_1] = temp_input[position];
+            (reinterpret_cast<char *>(std::addressof(this->MEMBER_sign)))[count_1] = temp_input[position];
             position++;
         }
         while (true)
@@ -358,7 +358,7 @@ namespace OKps
 
                     throw std::invalid_argument("输入的流格式错误");
                 }
-                (reinterpret_cast<char *>(&temp_number))[count_2] = temp_input[position];
+                (reinterpret_cast<char *>(std::addressof(temp_number)))[count_2] = temp_input[position];
                 position++;
             }
             this->MEMBER_number.push_back(temp_number);
@@ -371,7 +371,7 @@ namespace OKps
     }
     void integer::operator =(integer const & origin)
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_number = origin.MEMBER_number;//std::vector的复制赋值操作符没有声明为noexcept，所以我们也无法声明noexcept
             this->MEMBER_sign = origin.MEMBER_sign;
@@ -441,7 +441,7 @@ namespace OKps
     }
     void  integer::operator =(integer && origin)noexcept
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_sign = origin.MEMBER_sign;
             this->MEMBER_number = std::move(origin.MEMBER_number);
@@ -542,13 +542,13 @@ namespace OKps
         number_type const * REF_short;
         if (left.size() < right.size())
         {
-            REF_short = &left;
-            REF_long = &right;
+            REF_short = std::addressof(left);
+            REF_long = std::addressof(right);
         }
         else
         {
-            REF_short = &right;
-            REF_long = &left;
+            REF_short = std::addressof(right);
+            REF_long = std::addressof(left);
         }
         number_type result;
         auto position = REF_short->size();

@@ -145,7 +145,7 @@ namespace OKps::RSA
     void byte_device::operator =(byte_device && origin)
         noexcept(std::is_nothrow_move_assignable_v<integer>)
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_key = std::move(origin.MEMBER_key);
             this->MEMBER_public_key = std::move(origin.MEMBER_public_key);
@@ -191,7 +191,7 @@ namespace OKps::RSA
     void  byte_device::operator =(byte_device const & origin)
         noexcept(std::is_nothrow_copy_assignable_v<integer>)
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_key = origin.MEMBER_key;
             this->MEMBER_public_key = origin.MEMBER_public_key;

@@ -1,3 +1,4 @@
+#include <memory>
 
 #include ".\blank.hpp"
 
@@ -23,6 +24,6 @@ namespace OKps
 	}
 	bool blank::operator <(blank const & right)const noexcept
 	{
-		return this < (&right);
+		return this < std::addressof(right);
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 
 #include ".\base.hpp"
 
@@ -13,7 +13,7 @@ namespace OKps
 
 		using handler_pointer = std::unique_ptr<base::handler<false>>;
 	private:
-		using TYPE_pool = std::unordered_map<std::string, handler_pointer>;
+		using TYPE_pool = std::map<std::string, handler_pointer>;
 
 		TYPE_pool MEMBER_orders;
 	public:

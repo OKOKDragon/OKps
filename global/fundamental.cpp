@@ -51,7 +51,7 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	void integer<value_type>::operator =(integer const & origin)noexcept
 	{
-		if (this != (&origin))
+		if (this != std::addressof(origin))
 		{
 			this->MEMBER_value = origin.MEMBER_value;
 		}

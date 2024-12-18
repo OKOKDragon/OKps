@@ -265,19 +265,9 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	template<>
 	class storage<field> final
 		:public base::marked
-		<std::is_nothrow_destructible_v<std::filesystem::path>
-		and std::is_nothrow_destructible_v<std::fstream>
-		and std::is_nothrow_destructible_v<std::streampos>
-		and noexcept(std::declval<std::fstream &>().close())
-		and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>()))>
 	{
 	private:
-		using base_type = base::marked
-			<std::is_nothrow_destructible_v<std::filesystem::path>
-			and std::is_nothrow_destructible_v<std::fstream>
-			and std::is_nothrow_destructible_v<std::streampos>
-			and noexcept(std::declval<std::fstream &>().close())
-			and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>()))>;
+		using base_type = base::marked;
 
 		static stream_position const MEMBER_block_size;
 
@@ -354,11 +344,11 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 		内部存储一个文件流位置，根据该位置从文件读写数据，如同操作内存时根据指针的值寻找数据的地址。
 		*/
 		class reference final
-			:public base::reference<std::is_nothrow_destructible_v<storage<field>::base_type>>
+			:public base::reference
 		{
 			friend class storage;
 		private:
-			using base_type = base::reference<std::is_nothrow_destructible_v<storage<field>::base_type>>;
+			using base_type = base::reference;
 
 			std::size_t MEMBER_position;
 
@@ -373,9 +363,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 			//写入数据
 			void operator =(field const &);
 
-			~reference()
-				noexcept(std::is_nothrow_destructible_v<base_type>)
-				override;
+			~reference()noexcept override;
 			reference(reference const &)
 				noexcept(std::is_nothrow_copy_constructible_v<base_type>);
 			//移动后，原对象 origin 无法再使用
@@ -422,7 +410,6 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 		~storage()
 			noexcept(std::is_nothrow_destructible_v<std::filesystem::path>
 		and std::is_nothrow_destructible_v<std::fstream>
-		and std::is_nothrow_destructible_v<base_type>
 		and std::is_nothrow_destructible_v<std::vector<field_info>>
 		and noexcept(std::declval<std::fstream &>().close())
 		and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>())))

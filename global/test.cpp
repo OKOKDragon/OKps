@@ -163,12 +163,12 @@ namespace OKps::test
     }
     void marked_reference()
     {
-        base::marked<> * m = new base::marked;
+        base::marked * m = new base::marked;
         base::reference ref(*m);
         if (ref.is_valid())
         {
             std::cout << "引用有效\n";
-            if ((&(ref.get())) == m)
+            if (std::addressof(ref.get()) == m)
             {
                 std::cout << "引用正确\n";
             }
@@ -185,7 +185,7 @@ namespace OKps::test
         if (ref.is_valid())
         {
             std::cout << "引用有效\n";
-            if ((&(ref.get())) == m)
+            if (std::addressof(ref.get()) == m)
             {
                 std::cout << "引用正确\n";
             }
@@ -204,7 +204,7 @@ namespace OKps::test
         if (ref.is_valid())
         {
             std::cout << "引用有效\n";
-            if ((&(ref.get())) == m)
+            if (std::addressof(ref.get()) == m)
             {
                 std::cout << "引用正确\n";
             }
@@ -221,7 +221,7 @@ namespace OKps::test
         if (ref.is_valid())
         {
             std::cout << "引用有效\n";
-            if ((&(ref.get())) == m)
+            if (std::addressof(ref.get()) == m)
             {
                 std::cout << "引用正确\n";
             }

@@ -380,7 +380,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	void field::operator =(field const & origin)
 		noexcept(std::is_nothrow_copy_assignable_v<std::string>)
 	{
-		if (this != (&origin))
+		if (this != std::addressof(origin))
 		{
 			this->MEMBER_raw_data = origin.MEMBER_raw_data;
 		}
@@ -389,7 +389,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	void field::operator =(field && origin)
 		noexcept(std::is_nothrow_move_assignable_v<std::string>)
 	{
-		if (this != (&origin))
+		if (this != std::addressof(origin))
 		{
 			this->MEMBER_raw_data = std::move(origin.MEMBER_raw_data);
 		}
@@ -633,8 +633,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 		dynamic_cast<storage<field> &>(this->get()).write(data, this->MEMBER_position);
 	}
 
-	storage<field>::reference::~reference()
-		noexcept(std::is_nothrow_destructible_v<base_type>)
+	storage<field>::reference::~reference()noexcept
 	{
 	}
 	storage<field>::reference::reference(reference const & origin)
@@ -767,11 +766,10 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	}
 	storage<field>::~storage()
 		noexcept(std::is_nothrow_destructible_v<std::filesystem::path>
-		and std::is_nothrow_destructible_v<std::fstream>
-		and std::is_nothrow_destructible_v<base_type>
-		and std::is_nothrow_destructible_v<std::vector<field_info>>
-		and noexcept(std::declval<std::fstream &>().close())
-		and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>())))
+	and std::is_nothrow_destructible_v<std::fstream>
+	and std::is_nothrow_destructible_v<std::vector<field_info>>
+	and noexcept(std::declval<std::fstream &>().close())
+	and noexcept(std::filesystem::remove(std::declval<std::filesystem::path &>())))
 	{
 		if (this->MEMBER_temporary_file)
 		{

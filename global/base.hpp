@@ -34,7 +34,11 @@ namespace OKps::base
 	public:
 		blank()noexcept;
 		blank(blank const &) noexcept;
-		virtual ~blank()noexcept;
+		/*
+		基类的析构函数本身不会抛出异常
+		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
+		*/
+		virtual ~blank()noexcept(false);
 		blank(blank &&) noexcept;
 		void operator =(blank &&) noexcept;
 		void operator =(blank const &) noexcept;
@@ -62,7 +66,11 @@ namespace OKps::base
 
 		handler()noexcept;
 		handler(handler const &) noexcept;
-		virtual ~handler()noexcept;
+		/*
+		基类的析构函数本身不会抛出异常
+		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
+		*/
+		virtual ~handler()noexcept(false);
 		handler(handler &&) noexcept;
 		void operator =(handler &&)noexcept;
 		void operator =(handler const &)noexcept;
@@ -98,9 +106,7 @@ namespace OKps::base
 		void operator =(handler &&)
 			noexcept(std::is_nothrow_copy_assignable<std::exception_ptr>::value
 			and std::is_nothrow_default_constructible<std::exception_ptr>::value);
-
-		virtual ~handler()
-			noexcept(std::is_nothrow_destructible<std::exception_ptr>::value);
+		virtual ~handler()noexcept(false);
 
 		/*
 		比较两个对象的地址
@@ -124,12 +130,13 @@ namespace OKps::base
 		std::exception_ptr const & have_error()const noexcept;
 	protected:
 		/*
-		用新的异常替换掉handler基类目前保有的异常
+		在此基类中存储一个新的异常 error
+		如果此基类中还存储着一个旧的异常未处理，则此函数什么都不做，并抛出一个异常（该异常只是报错，不是先前未处理的那个异常）
 
 		c++标准没有规定std::exception_ptr的实现方式，但规定了它在RAII方面的行为如同std::shared_ptr
 		故对于std::exception_ptr持有的异常对象的生命周期的管理，应该也如同std::shared_ptr
 		*/
-		void raise_error(std::exception_ptr const &);
+		void raise_error(std::exception_ptr const & error);
 
 	public:
 		/*
@@ -144,18 +151,14 @@ namespace OKps::base
 	此类的每个对象都是对一个 marked 对象的引用。
 	如果 marked 对象 m 被销毁，则引用 m 的所有此类对象自动无效化
 	*/
-	template<bool object_safe_destructible,/*被引用的marked是哪一类*/
-		bool safe_destructible = true>
 	class reference;
 
 	/*
 	拥有唯一标记的基类
 	*/
-	template<bool safe_destructible/*指定析构函数是否声明noexcept*/ = true>
 	class marked
 	{
-		friend class reference<safe_destructible, true>;
-		friend class reference<safe_destructible, false>;
+		friend class reference;
 	private:
 		/*
 		标记类
@@ -184,9 +187,7 @@ namespace OKps::base
 		marked()
 			noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
 				and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
-		virtual ~marked()
-			noexcept(std::is_nothrow_destructible_v<std::shared_ptr<marker_type>>
-			and safe_destructible);
+		virtual ~marked()noexcept(false);
 		marked(marked const &)
 			noexcept(std::is_nothrow_default_constructible_v<std::shared_ptr<marker_type>>
 				and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
@@ -205,52 +206,38 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		virtual marked const * operator &()const noexcept;
 		bool operator <(marked const &)const noexcept;
 	};
-	template
-		class marked<true>;
-	template
-		class marked<false>;
 
-	template<bool object_safe_destructible, bool safe_destructible>
 	class reference
 	{
 	private:
-		std::weak_ptr<typename marked<object_safe_destructible>::marker_type> MEMBER_marker;
+		std::weak_ptr<marked::marker_type> MEMBER_marker;
 	public:
 		reference() = delete;
-		reference(marked<object_safe_destructible> const &)
-			noexcept(noexcept(std::weak_ptr<typename marked<object_safe_destructible>::marker_type>(std::declval<std::shared_ptr<typename marked<object_safe_destructible>::marker_type> const &>())));
-		virtual ~reference()
-			noexcept(std::is_nothrow_destructible_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>
-			and safe_destructible);
+		reference(marked const &)
+			noexcept(noexcept(std::weak_ptr<marked::marker_type>(std::declval<std::shared_ptr<marked::marker_type> const &>())));
+		virtual ~reference()noexcept(false);
 		reference(reference const &)
-			noexcept(std::is_nothrow_copy_constructible_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>);
+			noexcept(std::is_nothrow_copy_constructible_v<std::weak_ptr<marked::marker_type>>);
 		void operator =(reference const &)
-			noexcept(std::is_nothrow_copy_assignable_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>);
+			noexcept(std::is_nothrow_copy_assignable_v<std::weak_ptr<marked::marker_type>>);
 		reference(reference &&)
-			noexcept(std::is_nothrow_move_constructible_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>);
+			noexcept(std::is_nothrow_move_constructible_v<std::weak_ptr<marked::marker_type>>);
 		void operator =(reference &&)
-			noexcept(std::is_nothrow_move_assignable_v<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>);
+			noexcept(std::is_nothrow_move_assignable_v<std::weak_ptr<marked::marker_type>>);
 		virtual reference & self()noexcept;
 		virtual reference const & self()const noexcept;
 		virtual reference * operator &()noexcept;
 		virtual reference const * operator &()const noexcept;
 
 		bool is_valid()const
-			noexcept(noexcept(not std::declval<std::weak_ptr<typename marked<object_safe_destructible>::marker_type>>().expired()));
+			noexcept(noexcept(not std::declval<std::weak_ptr<marked::marker_type>>().expired()));
 
-		marked<object_safe_destructible> & get();
-		marked<object_safe_destructible> const & get()const;
+		marked & get();
+		marked const & get()const;
 
 		bool operator <(reference const &)const noexcept;
 	};
-	template
-		class reference<true, true>;
-	template
-		class reference<false, true>;
-	template
-		class reference<true, false>;
-	template
-		class reference<false, false>;
+
 
 	/*
 	此基类要求子类实现函数self_copy，其功能为复制子类对象自身，并包装到指向基类的智能指针中返回。
@@ -263,7 +250,7 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		self_copier()noexcept;
 		self_copier(self_copier const &)noexcept;
 
-		virtual ~self_copier()noexcept;
+		virtual ~self_copier()noexcept(false);
 
 		self_copier(self_copier &&)noexcept;
 		void operator =(self_copier &&)noexcept;
@@ -301,9 +288,7 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		void operator =(worker &&)
 			noexcept(std::is_nothrow_move_assignable<std::thread>::value
 				and std::is_nothrow_copy_assignable<std::exception_ptr>::value);
-		virtual ~worker()
-			noexcept(std::is_nothrow_destructible<std::thread>::value
-				and std::is_nothrow_destructible<std::exception_ptr>::value);
+		virtual ~worker()noexcept(false);
 		virtual worker & self()noexcept;
 		virtual worker const & self()const noexcept;
 		virtual worker * operator &()noexcept;

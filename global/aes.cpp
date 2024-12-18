@@ -72,7 +72,7 @@ namespace OKps::AES
     }
     void byte_device::operator=(byte_device const & origin)noexcept
     {
-        if (this == &origin)
+        if (this == std::addressof(origin))
         {
             return;
         }
@@ -119,7 +119,7 @@ namespace OKps::AES
     }
     void byte_device::operator=(byte_device && origin) noexcept
     {
-        if (this == &origin)
+        if (this == std::addressof(origin))
         {
             return;
         }
@@ -1228,7 +1228,7 @@ namespace OKps::AES
         {
             auto info = static_cast<char>(end_info);
 
-            result[this->MEMBER_thread_number - 1]->write(&info, 1);
+            result[this->MEMBER_thread_number - 1]->write(std::addressof(info), 1);
 
         }
 

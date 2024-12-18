@@ -142,6 +142,11 @@ and std::is_nothrow_copy_assignable_v<std::locale>);
             virtual ~requirement()noexcept;
 
             virtual bool operator ()(string_type const &) = 0;
+
+            virtual requirement & self()noexcept;
+            virtual requirement const & self()const noexcept;
+            virtual requirement * operator &()noexcept;
+            virtual requirement const * operator &()const noexcept;
         };
 
         /*

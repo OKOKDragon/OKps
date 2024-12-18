@@ -1,5 +1,9 @@
 #pragma once
 
+#include <filesystem>
+#include <cstdint>
+#include <cstddef>
+
 namespace OKps::sample
 {
     /*

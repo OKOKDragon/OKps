@@ -101,6 +101,26 @@ namespace OKps
     {
     }
     template<typename string_type>
+    string::requirement<string_type> & string::requirement<string_type>::self()noexcept
+    {
+        return *this;
+    }
+    template<typename string_type>
+    string::requirement<string_type> const & string::requirement<string_type>::self()const noexcept
+    {
+        return *this;
+    }
+    template<typename string_type>
+    string::requirement<string_type> * string::requirement<string_type>::operator &()noexcept
+    {
+        return this;
+    }
+    template<typename string_type>
+    string::requirement<string_type> const * string::requirement<string_type>::operator &()const noexcept
+    {
+        return this;
+    }
+    template<typename string_type>
     void string::get_line(std::istream & input, string_type & result)
     {
         string TEMP_input_line;
@@ -410,7 +430,7 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
         noexcept(std::is_nothrow_copy_assignable_v<std::string>
         and std::is_nothrow_copy_assignable_v<std::vector<std::string>>)
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_command = origin.MEMBER_command;
             this->MEMBER_argument_list = origin.MEMBER_argument_list;
@@ -420,7 +440,7 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
         noexcept(std::is_nothrow_move_assignable_v<std::string>
         and std::is_nothrow_move_assignable_v<std::vector<std::string>>)
     {
-        if (this != (&origin))
+        if (this != std::addressof(origin))
         {
             this->MEMBER_command = std::move(origin.MEMBER_command);
             this->MEMBER_argument_list = std::move(origin.MEMBER_argument_list);
