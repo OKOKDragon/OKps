@@ -59,7 +59,8 @@ namespace OKps
 
 	/*
 	向标准输出流输出 log 对象的提示字符串
+	相当于执行{o << l.what();}
 	*/
-	std::ostream & operator <<(std::ostream &, log const &)
+	std::ostream & operator <<(std::ostream & o, log const & l)
 		noexcept(noexcept(std::declval<std::ostream &>() << std::declval<log const &>().what()));
 }
