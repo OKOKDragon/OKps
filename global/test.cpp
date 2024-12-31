@@ -240,7 +240,6 @@ namespace OKps::test
         {
             worker_impl t1("测试对象t1");
             worker_impl t2("测试对象t2");
-            t1 < t2;
         }
 
         worker_impl t("测试对象t");

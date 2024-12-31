@@ -8,11 +8,11 @@
 
 namespace OKps::AES
 {
-    bool byte_device::operator==(byte_device const & right)const noexcept
+    bool byte_device::operator ==(byte_device const & right)const noexcept
     {
         return this->MEMBER_key == right.MEMBER_key;
     }
-    bool byte_device::operator!=(byte_device const & right)const noexcept
+    bool byte_device::operator !=(byte_device const & right)const noexcept
     {
         return this->MEMBER_key != right.MEMBER_key;
     }
@@ -70,7 +70,7 @@ namespace OKps::AES
         }
         this->KeyExpansion(buffer);
     }
-    void byte_device::operator=(byte_device const & origin)noexcept
+    void byte_device::operator =(byte_device const & origin)noexcept
     {
         if (this == std::addressof(origin))
         {
@@ -117,7 +117,7 @@ namespace OKps::AES
         }
         this->KeyExpansion(buffer);
     }
-    void byte_device::operator=(byte_device && origin) noexcept
+    void byte_device::operator =(byte_device && origin) noexcept
     {
         if (this == std::addressof(origin))
         {
@@ -168,7 +168,9 @@ namespace OKps::AES
     {
         std::byte state[4][4];
 
-        // 算法中很多4×4的循环，展开写并不复杂，却能够大幅度提高运行速度
+        /*
+        msvc似乎不会默认展开此处的循环，故手动展开
+        */
 
         state[0][0] = input[0];
         state[0][1] = input[4];

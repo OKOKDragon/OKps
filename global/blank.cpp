@@ -26,4 +26,14 @@ namespace OKps
 	{
 		return this < std::addressof(right);
 	}
+
+	never::never()noexcept
+	{
+	}
+	never::~never()noexcept
+	{
+	}
+
+	never const never::object = never();
+
 }

@@ -218,7 +218,7 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
     }
 
     std::string & string::content(bool const set_locale)
-        noexcept(noexcept(std::locale::global(std::declval<std::locale>())))
+        noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())))
     {
         if (set_locale)
         {
@@ -227,7 +227,7 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
         return this->MEMBER_content;
     }
     std::string const & string::content(bool const set_locale)const
-        noexcept(noexcept(std::locale::global(std::declval<std::locale>())))
+        noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())))
     {
         if (set_locale)
         {

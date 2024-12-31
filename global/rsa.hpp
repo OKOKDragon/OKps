@@ -13,9 +13,9 @@ namespace OKps::RSA
 
     public:
         bool operator ==(byte_device const & right)const
-            noexcept(noexcept(std::declval<integer>() == std::declval<integer>()));
+            noexcept(noexcept(std::declval<integer const &>() == std::declval<integer const &>()));
         bool operator !=(byte_device const & right)const
-            noexcept(noexcept(std::declval<integer>() == std::declval<integer>()));
+            noexcept(noexcept(std::declval<integer const &>() == std::declval<integer const &>()));
 
         byte_device(integer const & key, integer const & public_key, integer const & private_key);
 

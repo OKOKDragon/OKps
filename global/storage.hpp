@@ -56,11 +56,10 @@ namespace OKps
 	此类是std::streampos的代理类，表示文件流中的绝对位置。
 
 	c++标准规定了std::streampos和std::streamoff足以表示操作系统支持的最大文件大小。
-	标准库文件流的无格式输入输出函数 read 和 write 接受 std::streamsize 类型参数，表示输入或输出的字符数，
-	但并未规定 std::streamsize 也足以表示最大文件大小。故从std::streamoff转换到std::streamsize可能溢出。
-	另一方面，std::filesystem 命名空间中的函数却以 std::uintmax_t 类型表示文件大小，但 std::uintmax_t 是无符号整数，
-	而std::streamoff规定是有符号整数，故它们必然是不同类型，转换时也可能发生溢出。
-	使用标准库的文件流操作文件，便存在上述多种理论上的溢出风险。
+	标准库文件流的无格式输入输出函数 read 和 write 接受 std::streamsize 类型参数，表示输入或输出的字符数，但并未规定 std::streamsize 也足以表示最大文件大小。
+	故从std::streamoff转换到std::streamsize可能溢出。
+	另一方面，std::filesystem 命名空间中的函数却以 std::uintmax_t 类型表示文件大小，但 std::uintmax_t 是无符号整数，而std::streamoff规定是有符号整数，故它们必然是不同类型，转换时也可能发生溢出。
+	使用标准库的文件流操作文件，便存在上述多种理论上的溢出风险。此类则在转换时进行检查，若有溢出则抛出异常。
 	*/
 	class stream_position final
 	{
@@ -180,6 +179,9 @@ namespace OKps
 		void seekg(std::streampos const &);
 		void seekp(std::streamoff const, std::ios_base::seekdir const &);
 		void seekg(std::streamoff const, std::ios_base::seekdir const &);
+		std::fstream & file_stream()noexcept;
+		std::fstream const & file_stream()const noexcept;
+		std::filesystem::path const & file_path()const noexcept;
 
 	};
 
@@ -210,7 +212,7 @@ namespace OKps
 			noexcept(std::is_nothrow_destructible_v<std::string>);
 		field(std::vector<std::byte> const & data)
 			noexcept(std::is_nothrow_default_constructible_v<std::string>
-			and noexcept(std::declval<std::string>().resize(std::declval<std::vector<std::byte> const &>().size())));
+			and noexcept(std::declval<std::string &>().resize(std::declval<std::vector<std::byte> const &>().size())));
 
 		//原始2进制数据
 		std::string const & raw_string()const noexcept;
@@ -218,14 +220,14 @@ namespace OKps
 		//field_stream格式2进制数据
 		std::string field_string()const
 			noexcept(std::is_nothrow_default_constructible_v<std::string>
-and noexcept(std::declval<std::string>().resize(std::declval<std::string>().size())));
+and noexcept(std::declval<std::string>().resize(std::declval<std::string const &>().size())));
 			//原始2进制数据
 		std::vector<std::byte> raw_data()const
-			noexcept(noexcept(value_cast<std::vector<std::byte>>(std::declval<std::string const>())));
+			noexcept(noexcept(value_cast<std::vector<std::byte>>(std::declval<std::string const &>())));
 			//field_stream格式2进制数据
 		std::vector<std::byte> field_data()const
 			noexcept(std::is_nothrow_default_constructible_v<std::vector<std::byte>>
-and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::string>().size())));
+and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::string const &>().size())));
 		/*
 		输入的数据是由多个字段连接而成的一串2进制有效数据
 		如果格式错误则抛出异常
@@ -245,6 +247,10 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 		void operator =(field && origin)
 			noexcept(std::is_nothrow_move_assignable_v<std::string>);
 
+		/*
+		parse函数的逆操作
+		将多个字段按顺序连接成一长串2进制字节流
+		*/
 		template<typename result_type>
 		static result_type connect(std::vector<field> const & data);
 	};

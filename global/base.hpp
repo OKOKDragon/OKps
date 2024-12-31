@@ -35,7 +35,7 @@ namespace OKps::base
 		blank()noexcept;
 		blank(blank const &) noexcept;
 		/*
-		基类的析构函数本身不会抛出异常
+		此析构函数本身不会抛出异常
 		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
 		*/
 		virtual ~blank()noexcept(false);
@@ -46,7 +46,6 @@ namespace OKps::base
 		virtual blank const & self()const noexcept;
 		virtual blank * operator &()noexcept;
 		virtual blank const * operator &()const noexcept;
-		bool operator <(blank const &)const noexcept;
 	};
 
 	template<bool error_holder>
@@ -67,7 +66,7 @@ namespace OKps::base
 		handler()noexcept;
 		handler(handler const &) noexcept;
 		/*
-		基类的析构函数本身不会抛出异常
+		此析构函数本身不会抛出异常
 		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
 		*/
 		virtual ~handler()noexcept(false);
@@ -82,7 +81,6 @@ namespace OKps::base
 		//仿函数
 		virtual void operator ()(blank &) = 0;
 
-		bool operator <(handler const &)const noexcept;
 	};
 
 	/*
@@ -107,12 +105,6 @@ namespace OKps::base
 			noexcept(std::is_nothrow_copy_assignable<std::exception_ptr>::value
 			and std::is_nothrow_default_constructible<std::exception_ptr>::value);
 		virtual ~handler()noexcept(false);
-
-		/*
-		比较两个对象的地址
-		用于标准库容器的排序。
-		*/
-		bool operator <(handler const &)const noexcept;
 
 		virtual handler & self()noexcept;
 		virtual handler const & self()const noexcept;
@@ -204,7 +196,6 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		virtual marked const & self()const noexcept;
 		virtual marked * operator &()noexcept;
 		virtual marked const * operator &()const noexcept;
-		bool operator <(marked const &)const noexcept;
 	};
 
 	class reference
@@ -230,12 +221,11 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		virtual reference const * operator &()const noexcept;
 
 		bool is_valid()const
-			noexcept(noexcept(not std::declval<std::weak_ptr<marked::marker_type>>().expired()));
+			noexcept(noexcept(not std::declval<std::weak_ptr<marked::marker_type> const &>().expired()));
 
 		marked & get();
 		marked const & get()const;
 
-		bool operator <(reference const &)const noexcept;
 	};
 
 
@@ -262,7 +252,6 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		因为必然有动态内存分配，所以允许抛出异常
 		*/
 		virtual std::unique_ptr<self_copier> self_copy() const = 0;
-		bool operator <(self_copier const &)const noexcept;
 	};
 	/*
 	工作线程基类
@@ -321,8 +310,7 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		获取底层线程的 id
 		*/
 		std::thread::id id()const
-			noexcept(noexcept(std::declval<std::thread>().get_id()));
-		bool operator <(worker const &)const noexcept;
+			noexcept(noexcept(std::declval<std::thread const &>().get_id()));
 	};
 
 }

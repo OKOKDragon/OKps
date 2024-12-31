@@ -142,7 +142,7 @@ namespace OKps
 		this->MEMBER_peeker = std::thread(&message::peek, this);
 	}
 	message::~message()
-		noexcept(noexcept(std::declval<std::thread>().join())
+		noexcept(noexcept(std::declval<std::thread &>().join())
 		and std::is_nothrow_destructible_v<TYPE_handler_pool>
 		and std::is_nothrow_destructible_v<TYPE_mutex>
 		and std::is_nothrow_destructible_v<std::unique_lock<TYPE_mutex>>
@@ -168,21 +168,21 @@ namespace OKps
 				this->MEMBER_not_waiting = true;
 				auto finder = this->MEMBER_handlers.find(this->MEMBER_signals.front().signal());
 				//如果信号不存在，则在引发信号（即调用trigger函数）时就会抛出异常，所以信号队列里不会有未注册的信号
-				auto & TEMP_signal_handler = *(finder->second);
+				auto & TEMP_signal_handler = (*(finder->second));
 				TEMP_signal_handler(this->MEMBER_signals.front().parameter());
 				this->MEMBER_signals.pop();
 			}
 			else
 			{
 				this->MEMBER_not_waiting = false;
-				using TYPE_waiting = std::atomic<bool> const &;
+				//using TYPE_waiting = std::atomic<bool> const &;
 				class judge_waiting_status final
 				{
 				private:
-					TYPE_waiting MEMBER_waiting_status;
+					std::atomic<bool> const * MEMBER_waiting_status;
 				public:
-					judge_waiting_status(TYPE_waiting waiting_status)noexcept
-						:MEMBER_waiting_status(waiting_status)
+					judge_waiting_status(std::atomic<bool> const & waiting_status)noexcept
+						:MEMBER_waiting_status(std::addressof(waiting_status))
 					{
 					}
 					~judge_waiting_status()noexcept
@@ -197,13 +197,13 @@ namespace OKps
 					{
 						if (this != std::addressof(origin))
 						{
-							(*this) = origin;
+							this->MEMBER_waiting_status = origin.MEMBER_waiting_status;
 						}
 					}
 					void operator =(judge_waiting_status &&) = delete;
-					TYPE_waiting operator ()()const noexcept
+					std::atomic<bool> const & operator ()()const noexcept
 					{
-						return this->MEMBER_waiting_status;
+						return *(this->MEMBER_waiting_status);
 					}
 				};
 				auto const is_waiting = judge_waiting_status(this->MEMBER_not_waiting);
@@ -219,7 +219,7 @@ namespace OKps
 			{
 				auto finder = this->MEMBER_handlers.find(this->MEMBER_signals.front().signal());
 				//如果信号不存在，则在引发信号（即调用trigger函数）时就会抛出异常，所以信号队列里不会有未注册的信号
-				auto & TEMP_signal_handler = *(finder->second);
+				auto & TEMP_signal_handler = (*(finder->second));
 				TEMP_signal_handler(this->MEMBER_signals.front().parameter());
 				this->MEMBER_signals.pop();
 			}

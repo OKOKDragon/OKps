@@ -4,9 +4,6 @@ namespace OKps
 {
 	/*
 	空类
-	它的赋值运算符什么都不做
-
-	此类可以用作占位符
 	*/
 	class blank final
 	{
@@ -25,5 +22,18 @@ namespace OKps
 
 	};
 
-
+	class never final
+	{
+	private:
+		never() noexcept;
+	public:
+		never(never const &) = delete;
+		never(never &&) = delete;
+		void operator =(never const &) = delete;
+		void operator =(never &&) = delete;
+	private:
+		~never() noexcept;
+	public:
+		static never const object;
+	};
 }

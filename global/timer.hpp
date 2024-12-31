@@ -5,18 +5,12 @@
 namespace OKps
 {
 
-    //std::chrono命名空间中定义的标准库时间单位，如std::chrono::nanoseconds
-    template <typename time_type>
-    concept stl_time_type = requires()
-    {
-        std::chrono::time_point_cast<time_type>(std::chrono::high_resolution_clock::now()).time_since_epoch().count();
-    };
     class time_monitor final
     {
     private:
         std::chrono::steady_clock::time_point MEMBER_begin_time;
 
-        template <stl_time_type time_type>
+        template <typename time_type>
         using end_result_type = decltype(std::chrono::time_point_cast<time_type>(std::chrono::high_resolution_clock::now()).time_since_epoch().count());
     public:
         time_monitor()noexcept;

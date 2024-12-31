@@ -82,7 +82,7 @@ namespace OKps
 		此类析构之前，会先处理完所有待处理的信号。
 		*/
 		~message()
-			noexcept(noexcept(std::declval<std::thread>().join())
+			noexcept(noexcept(std::declval<std::thread &>().join())
 			and std::is_nothrow_destructible_v<TYPE_handler_pool>
 			and std::is_nothrow_destructible_v<TYPE_mutex>
 			and std::is_nothrow_destructible_v<std::unique_lock<TYPE_mutex>>

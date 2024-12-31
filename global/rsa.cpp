@@ -126,7 +126,7 @@ namespace OKps::RSA
         }
     }
     bool byte_device::operator ==(byte_device const & right)const
-        noexcept(noexcept(std::declval<integer>() == std::declval<integer>()))
+        noexcept(noexcept(std::declval<integer const &>() == std::declval<integer const &>()))
     {
         if (this->MEMBER_key == right.MEMBER_key and this->MEMBER_public_key == right.MEMBER_public_key and this->MEMBER_private_key == right.MEMBER_private_key)
         {
@@ -138,9 +138,9 @@ namespace OKps::RSA
         }
     }
     bool byte_device::operator !=(byte_device const & right)const
-        noexcept(noexcept(std::declval<integer>() == std::declval<integer>()))
+        noexcept(noexcept(std::declval<integer const &>() == std::declval<integer const &>()))
     {
-        return not(*this == right);
+        return not((*this) == right);
     }
     void byte_device::operator =(byte_device && origin)
         noexcept(std::is_nothrow_move_assignable_v<integer>)

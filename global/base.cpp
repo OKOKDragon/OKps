@@ -67,34 +67,7 @@ namespace OKps::base
 	{
 		return this;
 	}
-	bool worker::operator <(worker const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	bool self_copier::operator <(self_copier const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	bool reference::operator <(reference const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	bool marked::operator <(marked const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	bool handler<false>::operator <(handler const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	bool handler<true>::operator <(handler const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
-	bool blank::operator <(blank const & right)const noexcept
-	{
-		return (&(*this)) < (&right);
-	}
+
 	blank::blank()noexcept
 	{
 	}
@@ -316,7 +289,7 @@ namespace OKps::base
 		noexcept(std::is_nothrow_move_assignable_v<std::shared_ptr<marker_type>>
 		and noexcept(std::make_shared<marker_type>(std::declval<marked *>())))
 	{
-		if (this != std::addressof(origin))
+		if ((&(*this)) != (&origin))
 		{
 			this->MEMBER_marker = std::move(origin.MEMBER_marker);
 			this->MEMBER_marker->change_owner(this);
@@ -366,7 +339,7 @@ namespace OKps::base
 		return *this;
 	}
 	bool reference::is_valid()const
-		noexcept(noexcept(not std::declval<std::weak_ptr<marked::marker_type>>().expired()))
+		noexcept(noexcept(not std::declval<std::weak_ptr<marked::marker_type> const &>().expired()))
 	{
 		return (not this->MEMBER_marker.expired());
 	}
@@ -400,7 +373,7 @@ namespace OKps::base
 		}
 	}
 	std::thread::id worker::id()const
-		noexcept(noexcept(std::declval<std::thread>().get_id()))
+		noexcept(noexcept(std::declval<std::thread const &>().get_id()))
 	{
 		return this->MEMBER_thread.get_id();
 	}

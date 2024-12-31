@@ -18,7 +18,7 @@ namespace OKps::AES
     {
 
     public:
-        //判断两个AES对象的密钥是否相等
+        //判断两个AES对象的密钥是否相同
         bool operator==(byte_device const & right)const noexcept;
         bool operator!=(byte_device const & right)const noexcept;
 

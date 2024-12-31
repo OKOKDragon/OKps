@@ -235,7 +235,7 @@ namespace OKps
 	}
 	field::field(std::vector<std::byte> const & data)
 		noexcept(std::is_nothrow_default_constructible_v<std::string>
-		and noexcept(std::declval<std::string>().resize(std::declval<std::vector<std::byte> const &>().size())))
+		and noexcept(std::declval<std::string &>().resize(std::declval<std::vector<std::byte> const &>().size())))
 		:MEMBER_raw_data()
 	{
 		this->MEMBER_raw_data.resize(data.size());
@@ -255,7 +255,7 @@ namespace OKps
 	}
 	std::string field::field_string()const
 		noexcept(std::is_nothrow_default_constructible_v<std::string>
-and noexcept(std::declval<std::string>().resize(std::declval<std::string>().size())))
+and noexcept(std::declval<std::string>().resize(std::declval<std::string const &>().size())))
 	{
 		std::string result;
 		result.resize(this->MEMBER_raw_data.size() + sizeof(std::size_t));
@@ -271,14 +271,14 @@ and noexcept(std::declval<std::string>().resize(std::declval<std::string>().size
 		return result;
 	}
 	std::vector<std::byte> field::raw_data()const
-		noexcept(noexcept(value_cast<std::vector<std::byte>>(std::declval<std::string const>())))
+		noexcept(noexcept(value_cast<std::vector<std::byte>>(std::declval<std::string const &>())))
 	{
 		return value_cast<std::vector<std::byte>>(this->MEMBER_raw_data);
 	}
 
 	std::vector<std::byte> field::field_data()const
 		noexcept(std::is_nothrow_default_constructible_v<std::vector<std::byte>>
-and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::string>().size())))
+and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::string const &>().size())))
 	{
 		std::vector<std::byte> result;
 		result.resize(this->MEMBER_raw_data.size() + sizeof(std::size_t));
@@ -407,6 +407,18 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	}
 	stream_proxy<std::fstream>::~stream_proxy()noexcept
 	{
+	}
+	std::fstream & stream_proxy<std::fstream>::file_stream()noexcept
+	{
+		return *(this->MEMBER_storage);
+	}
+	std::fstream const & stream_proxy<std::fstream>::file_stream()const noexcept
+	{
+		return *(this->MEMBER_storage);
+	}
+	std::filesystem::path const & stream_proxy<std::fstream>::file_path()const noexcept
+	{
+		return *(this->MEMBER_path);
 	}
 	stream_proxy<std::fstream>::stream_proxy(stream_proxy const & origin)noexcept
 		:MEMBER_path(origin.MEMBER_path)
@@ -651,7 +663,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	void storage<field>::reference::operator =(reference const & origin)
 		noexcept(std::is_nothrow_copy_assignable_v<base_type>)
 	{
-		if (this != std::addressof(origin))
+		if ((&(*this)) != (&origin))
 		{
 			this->base_type::self() = origin;
 			this->MEMBER_position = origin.MEMBER_position;
@@ -660,7 +672,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	void storage<field>::reference::operator =(reference && origin)
 		noexcept(std::is_nothrow_move_assignable_v<base_type>)
 	{
-		if (this != std::addressof(origin))
+		if ((&(*this)) != (&origin))
 		{
 			this->base_type::self() = std::move(origin);
 			this->MEMBER_position = origin.MEMBER_position;
@@ -756,7 +768,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 		and std::is_nothrow_move_assignable_v<base_type>
 		and std::is_nothrow_move_assignable_v<std::vector<field_info>>)
 	{
-		if (this != std::addressof(origin))
+		if ((&(*this)) != (&origin))
 		{
 			this->base_type::self() = std::move(origin);
 			this->MEMBER_path = std::move(origin.MEMBER_path);
@@ -841,8 +853,11 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	void storage<field>::field_info::operator =(field_info const & origin)
 		noexcept(std::is_nothrow_copy_assignable_v<std::streampos>)
 	{
-		this->MEMBER_begin = origin.MEMBER_begin;
-		this->MEMBER_length = origin.MEMBER_length;
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_begin = origin.MEMBER_begin;
+			this->MEMBER_length = origin.MEMBER_length;
+		}
 	}
 	field storage<field>::read(std::size_t const position)const
 	{

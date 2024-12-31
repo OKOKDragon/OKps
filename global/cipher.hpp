@@ -20,10 +20,10 @@ namespace OKps::crypt
     public:
         using path_type = std::filesystem::path;
         bool operator ==(cipher const & right)const
-            noexcept(noexcept(std::declval<RSA::byte_device const>() == std::declval<RSA::byte_device const>())
-and noexcept(std::declval<std::vector<AES::byte_device> const>() == std::declval<std::vector<AES::byte_device> const>()));
+            noexcept(noexcept(std::declval<RSA::byte_device const &>() == std::declval<RSA::byte_device const &>())
+and noexcept(std::declval<std::vector<AES::byte_device> const &>() == std::declval<std::vector<AES::byte_device> const &>()));
         bool operator !=(cipher const & right)const
-            noexcept(noexcept(std::declval<cipher const>() == std::declval<cipher const &>()));
+            noexcept(noexcept(std::declval<cipher const &>() == std::declval<cipher const &>()));
         cipher(RSA::byte_device && rsa = RSA::byte_device(), std::uintmax_t const aes_count = 2/*aes密钥的数量*/);
         ~cipher()
             noexcept(std::is_nothrow_destructible_v<RSA::byte_device>

@@ -50,13 +50,13 @@ namespace OKps
     class string;
 
     template<>
-    constexpr bool const safe_convertible<std::string, string> = noexcept(std::locale::global(std::declval<std::locale>()))
+    constexpr bool const safe_convertible<std::string, string> = noexcept(std::locale::global(std::declval<std::locale const &>()))
         and noexcept(value_cast<std::string>(std::declval<std::filesystem::path>().u8string()))
-        and noexcept(std::filesystem::path(std::declval<std::string const>()));
+        and noexcept(std::filesystem::path(std::declval<std::string const &>()));
     template<>
-    constexpr bool const safe_convertible<std::u8string, string> = noexcept(std::locale::global(std::declval<std::locale>()))
+    constexpr bool const safe_convertible<std::u8string, string> = noexcept(std::locale::global(std::declval<std::locale const &>()))
         and noexcept(std::declval<std::filesystem::path>().u8string())
-        and noexcept(std::filesystem::path(std::declval<std::string const>()));
+        and noexcept(std::filesystem::path(std::declval<std::string const &>()));
 
     /*
     带编码信息的字符串
@@ -95,9 +95,9 @@ and std::is_nothrow_copy_assignable_v<std::locale>);
         如果 set_locale 为 true，则返回之前，先将全局本地环境设为当前对象保存的本地环境。
         */
         std::string & content(bool const set_locale = false)
-            noexcept(noexcept(std::locale::global(std::declval<std::locale>())));
+            noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())));
         std::string const & content(bool const set_locale = false)const
-            noexcept(noexcept(std::locale::global(std::declval<std::locale>())));
+            noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())));
 
         std::locale & page()noexcept;
         std::locale const & page()const noexcept;

@@ -222,8 +222,8 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
 
     }
     bool cipher::operator ==(cipher const & right)const
-        noexcept(noexcept(std::declval<RSA::byte_device const>() == std::declval<RSA::byte_device const>())
-        and noexcept(std::declval<std::vector<AES::byte_device> const>() == std::declval<std::vector<AES::byte_device> const>()))
+        noexcept(noexcept(std::declval<RSA::byte_device const &>() == std::declval<RSA::byte_device const &>())
+        and noexcept(std::declval<std::vector<AES::byte_device> const &>() == std::declval<std::vector<AES::byte_device> const &>()))
     {
         if (this->MEMBER_rsa == right.MEMBER_rsa and this->MEMBER_aes == right.MEMBER_aes)
         {
@@ -235,9 +235,9 @@ and std::is_nothrow_copy_constructible_v<std::vector<std::array<integer, AES::by
         }
     }
     bool cipher::operator !=(cipher const & right)const
-        noexcept(noexcept(std::declval<cipher const>() == std::declval<cipher const &>()))
+        noexcept(noexcept(std::declval<cipher const &>() == std::declval<cipher const &>()))
     {
-        return not(*this == right);
+        return not((*this) == right);
     }
     void cipher::save(path_type const & route)const
     {
