@@ -28,7 +28,10 @@ namespace OKps
 	{
 		static_cast<std::exception &>(origin) = std::exception();
 	}
-
+	bool log::operator <(log const & right)const noexcept
+	{
+		return this < std::addressof(right);
+	}
 	/*
 	c++标准只规定了 std::exception 有默认构造函数和复制构造函数。
 	虽然 msvc 的标准库实现中添加了从 std::string 构造 std::exception 的构造函数，但这是标准之外的，故我决定不使用。

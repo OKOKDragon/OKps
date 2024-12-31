@@ -53,6 +53,8 @@ namespace OKps
 		std::source_location const & location()const noexcept;
 		//获取提示字符串
 		char const * what() const noexcept override;
+		//比较两个对象的地址，用于有序容器的排序
+		bool operator <(log const & right)const noexcept;
 	};
 
 	/*
