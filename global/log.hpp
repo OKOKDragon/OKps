@@ -19,7 +19,6 @@ namespace OKps
 	{
 	private:
 		std::source_location MEMBER_location;
-		//std::string MEMBER_hint;
 	public:
 		void operator =(log && origin)
 			noexcept(std::is_nothrow_copy_assignable_v<std::exception>
