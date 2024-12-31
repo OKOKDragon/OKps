@@ -11,7 +11,7 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	value_type const integer<value_type>::max = std::numeric_limits<value_type>::max();
 	template<arithmetic_integer value_type>
-	value_type const integer<value_type>::min = std::numeric_limits<value_type>::min();
+	value_type const integer<value_type>::min = std::numeric_limits<value_type>::lowest();
 	template<arithmetic_integer value_type>
 	std::size_t const integer<value_type>::size = sizeof(value_type);
 
@@ -117,7 +117,6 @@ namespace OKps::base
 			{
 				if (integer::min - right.MEMBER_value > this->MEMBER_value)
 				{
-
 					std::string const hint = std::string("类型 ")
 						+ typeid(value_type).name()
 						+ " 的加法 "
@@ -601,10 +600,8 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	void integer<value_type>::operator %=(integer const & right)
 	{
-
 		if (right.MEMBER_value == static_cast<value_type>(0))
 		{
-
 			throw std::logic_error("除数不能为0");
 		}
 		if constexpr (std::is_signed_v<value_type>)
@@ -623,17 +620,14 @@ namespace OKps::base
 			}
 		}
 		this->MEMBER_value %= right.MEMBER_value;
-
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator -()const
 	{
-
 		if constexpr (std::is_signed_v<value_type>)
 		{
 			if (this->MEMBER_value == integer::min)
 			{
-
 				std::string const hint = std::string("类型 ")
 					+ typeid(value_type).name()
 					+ " 的值 "
@@ -672,7 +666,6 @@ namespace OKps::base
 	void integer<value_type>::operator &=(integer const & right)noexcept
 	{
 		this->MEMBER_value &= right.MEMBER_value;
-
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator |(integer const & right)const noexcept
@@ -683,7 +676,6 @@ namespace OKps::base
 	void integer<value_type>::operator |=(integer const & right)noexcept
 	{
 		this->MEMBER_value |= right.MEMBER_value;
-
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator ^(integer const & right)const noexcept
@@ -694,12 +686,10 @@ namespace OKps::base
 	void integer<value_type>::operator ^=(integer const & right)noexcept
 	{
 		this->MEMBER_value ^= right.MEMBER_value;
-
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator <<(integer<std::size_t> const & shift)const
 	{
-
 		if (shift.value() >= integer::bit_length)
 		{
 
@@ -715,7 +705,6 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	void integer<value_type>::operator <<=(integer<std::size_t> const & shift)
 	{
-
 		if (shift.value() >= integer::bit_length)
 		{
 
@@ -727,12 +716,10 @@ namespace OKps::base
 			throw std::logic_error(hint);
 		}
 		this->MEMBER_value <<= shift.value();
-
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type> integer<value_type>::operator >>(integer<std::size_t> const & shift)const
 	{
-
 		if (shift.value() >= integer::bit_length)
 		{
 
@@ -748,7 +735,6 @@ namespace OKps::base
 	template<arithmetic_integer value_type>
 	void integer<value_type>::operator >>=(integer<std::size_t> const & shift)
 	{
-
 		if (shift.value() >= integer::bit_length)
 		{
 
@@ -760,7 +746,6 @@ namespace OKps::base
 			throw std::logic_error(hint);
 		}
 		this->MEMBER_value >>= shift.value();
-
 	}
 	template<arithmetic_integer value_type>
 	integer<value_type>::integer(std::bitset<integer<value_type>::bit_length> const & value)
@@ -777,14 +762,12 @@ namespace OKps::base
 				this->MEMBER_value &= (~(static_cast<value_type>(1) << i));
 			}
 		}
-
 	}
 	template<arithmetic_integer value_type>
 	template<different_arithmetic_integer<value_type> target_type>
 	integer<value_type>::operator integer<target_type>()const
 		noexcept(safe_convertible<value_type, target_type>)
 	{
-
 		if constexpr (std::is_signed_v<value_type> and std::is_signed_v<target_type>)
 			//当前类型和目标类型都有符号
 		{
@@ -798,7 +781,6 @@ namespace OKps::base
 			{
 				if (this->MEMBER_value > static_cast<value_type>(integer<target_type>::max))
 				{
-
 					std::string const hint = std::string("从类型 ")
 						+ typeid(value_type).name()
 						+ " 的值 "
@@ -810,7 +792,6 @@ namespace OKps::base
 				}
 				else if (this->MEMBER_value < static_cast<value_type>(integer<target_type>::min))
 				{
-
 					std::string const hint = std::string("从类型 ")
 						+ typeid(value_type).name()
 						+ " 的值 "
@@ -909,5 +890,4 @@ namespace OKps::base
 		}
 		return integer<target_type>(static_cast<target_type>(this->MEMBER_value));
 	}
-
 }
