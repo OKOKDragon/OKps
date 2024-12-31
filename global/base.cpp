@@ -74,7 +74,7 @@ namespace OKps::base
 	blank::blank(blank const &)noexcept
 	{
 	}
-	blank::~blank()noexcept(false)
+	blank::~blank()
 	{
 	}
 	blank::blank(blank &&)noexcept
@@ -175,7 +175,7 @@ namespace OKps::base
 	handler<false>::handler(handler const & origin)noexcept
 	{
 	}
-	handler<false>::~handler()noexcept(false)
+	handler<false>::~handler()
 	{
 	}
 	handler<false>::handler(handler && origin)noexcept
@@ -210,7 +210,7 @@ namespace OKps::base
 	self_copier::self_copier(self_copier const & origin)noexcept
 	{
 	}
-	self_copier::~self_copier()noexcept(false)
+	self_copier::~self_copier()
 	{
 	}
 	self_copier::self_copier(self_copier && origin)noexcept

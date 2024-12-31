@@ -36,7 +36,7 @@ namespace OKps::base
 		此析构函数本身不会抛出异常
 		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
 		*/
-		virtual ~blank()noexcept(false);
+		virtual ~blank();
 		blank(blank &&) noexcept;
 		void operator =(blank &&) noexcept;
 		void operator =(blank const &) noexcept;
@@ -63,7 +63,7 @@ namespace OKps::base
 		此析构函数本身不会抛出异常
 		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
 		*/
-		virtual ~handler()noexcept(false);
+		virtual ~handler();
 		handler(handler &&) noexcept;
 		void operator =(handler &&)noexcept;
 		void operator =(handler const &)noexcept;
@@ -232,8 +232,11 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 	public:
 		self_copier()noexcept;
 		self_copier(self_copier const &)noexcept;
-
-		virtual ~self_copier()noexcept(false);
+		/*
+		此析构函数本身不会抛出异常
+		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
+		*/
+		virtual ~self_copier();
 
 		self_copier(self_copier &&)noexcept;
 		void operator =(self_copier &&)noexcept;
