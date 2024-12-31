@@ -4,6 +4,7 @@
 #include <string>
 #include <exception>
 #include <iostream>
+#include <stdexcept>
 
 namespace OKps
 {

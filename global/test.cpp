@@ -1,116 +1,44 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <thread>
 #include <atomic>
 #include <sstream>
-
-#ifdef MACRO_OKps_enable_global_memory_record
-#include ".\memory.hpp"
-#endif
 
 #include ".\cipher.hpp"
 #include ".\timer.hpp"
 #include ".\message.hpp"
 #include ".\matcher.hpp"
+#include ".\storage.hpp"
 
 #include ".\test.hpp"
 
 namespace OKps::test
 {
-#ifdef MACRO_OKps_enable_global_memory_record
-    void real_time_memory_track(std::filesystem::path const & rec, std::chrono::seconds const & dur, bool const detail)
+
+    void storage_field()
     {
-        class tracker final
+        std::filesystem::path const path = "F:\\字段文件";
         {
-        private:
-            std::thread MEMBER_worker;
-            std::atomic<bool> MEMBER_running;
-            std::filesystem::path MEMBER_file_path;
-            std::chrono::seconds MEMBER_duration;
-            std::fstream MEMBER_file;
-            bool MEMBER_detail;
-        public:
+            storage<field> st(path);
+            integer const hd(100, integer::sign_type::positive);
+            integer const sn(69, integer::sign_type::negative);
+            st[2] = hd.field();
+            st[1] = sn.field();
 
-            void work()noexcept
+            integer const hd2(st[2]);
+            integer const sn2(st[1]);
+
+            if (hd2 == hd and sn2 == sn)
             {
-
-                while (this->MEMBER_running)
-                {
-                    auto now = std::chrono::utc_clock::to_sys(std::chrono::utc_clock::now());
-                    auto const recorder = memory::recorder_type::global_recorder().track();
-                    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-
-                    // 使用本地时间转换tm结构
-                    std::tm * now_tm = std::localtime(&now_time);
-                    std::stringstream TEMP_time_string;
-
-
-                                        // 输出格式化的时间
-                    TEMP_time_string << std::put_time(now_tm, "协调世界时%Y年%m月%d日│%H时%M分%S秒") << "\n";
-
-                    std::size_t total_size = 0;
-                    std::size_t total_block = 0;
-                    for (auto i = recorder.begin();i != recorder.end();++i)
-                    {
-                        ++total_block;
-                        total_size += i->second;
-                        if (this->MEMBER_detail)
-                        {
-                            TEMP_time_string << "内存地址[";
-                            TEMP_time_string.imbue(std::locale::classic());
-                            TEMP_time_string << std::hex << (i->first) << std::dec;
-                            TEMP_time_string.imbue(text_encoding::utf_8);
-                            TEMP_time_string << "]，长度";
-                            TEMP_time_string.imbue(std::locale::classic());
-                            TEMP_time_string << i->second;
-                            TEMP_time_string.imbue(text_encoding::utf_8);
-                            TEMP_time_string << "字节\n";
-                        }
-                    }
-                    TEMP_time_string << "共";
-                    TEMP_time_string.imbue(std::locale::classic());
-                    TEMP_time_string << total_block;
-                    TEMP_time_string.imbue(text_encoding::utf_8);
-                    TEMP_time_string << "块内存，占用";
-                    TEMP_time_string.imbue(std::locale::classic());
-                    TEMP_time_string << total_size;
-                    TEMP_time_string.imbue(text_encoding::utf_8);
-                    TEMP_time_string << "字节\n\n";
-                    auto const TEMP_output_string = TEMP_time_string.str();
-
-                    this->MEMBER_file.write(TEMP_output_string.c_str(), TEMP_output_string.size());
-                    std::this_thread::sleep_for(this->MEMBER_duration);
-                }
+                std::cout << "成功\n";
             }
-            tracker(std::filesystem::path const & rec, std::chrono::seconds const & dur, bool const detail)
-                :MEMBER_running(false)
-                , MEMBER_duration(dur)
-                , MEMBER_file_path(rec)
-                , MEMBER_detail(detail)
+            else
             {
-                this->MEMBER_file.open(rec, std::ios::out | std::ios::trunc | std::ios::binary);
-                if (not this->MEMBER_file.is_open())
-                {
-                    std::string const hint = "文件" + rec.string() + "无法打开\n";
-                    throw std::runtime_error(hint);
-                }
-                this->MEMBER_worker = std::thread(&tracker::work, this);
-                this->MEMBER_running = true;
+                std::cout << "失败\n";
             }
-
-            ~tracker()noexcept
-            {
-                this->MEMBER_running = false;
-                this->MEMBER_worker.join();
-
-            }
-        };
-
-        static tracker INNER_tracker(rec, dur, detail);
-
+        }
+        std::filesystem::remove(path);
     }
-#endif
     void test_handler()
     {
         class para_type final : public base::blank

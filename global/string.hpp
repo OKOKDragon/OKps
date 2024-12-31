@@ -102,8 +102,6 @@ and std::is_nothrow_copy_assignable_v<std::locale>);
         std::locale & page()noexcept;
         std::locale const & page()const noexcept;
 
-    public:
-
         /*
         将当前对象保存的字符串转换到utf-8编码
 

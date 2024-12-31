@@ -12,13 +12,10 @@
 */
 namespace OKps::test
 {
-#ifdef MACRO_OKps_enable_global_memory_record
     /*
-    每间隔一定时间 dur，向文件 rec中记录此刻程序的动态内存分配情况。
-    detail 参数控制是否详细记录，即记录每一个内存块的地址和大小，如果为 false 则只记录总内存块数量和总大小。
+    简单测试 OKps::storage<OKps::field>
     */
-    void real_time_memory_track(std::filesystem::path const & rec, std::chrono::seconds const & dur = std::chrono::seconds(1), bool const detail = false);
-#endif
+    void storage_field();
     /*
     此函数工作时，将working_path临时设为程序的工作目录，并在该目录下进行一切文件操作。
     working_path必须是此前不存在的目录，且在此函数结束时会删除它。
