@@ -250,6 +250,39 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 		*/
 		virtual std::unique_ptr<self_copier> self_copy() const = 0;
 	};
+
+	/*
+	此基类仅保存一个标记，指示当前对象是否有效。
+	当调用此类的移动构造函数或移动赋值操作符时，将被移动的对象设置为失效。
+	失效的对象不能被复制或移动，也不允许进行其他任何可能读取该失效对象所占内存的操作，否则抛出异常。
+	*/
+	class invalid_mover
+	{
+	private:
+		bool MEMBER_valid;
+	protected:
+		//检查当前对象是否有效
+		bool const & is_valid()const noexcept;
+		//如果当前对象失效则抛出异常，否则什么都不做
+		void check_valid()const noexcept(false);
+	public:
+		//默认构造的对象设为有效
+		invalid_mover()noexcept;
+		invalid_mover(invalid_mover const &);
+		void operator =(invalid_mover const &);
+		invalid_mover(invalid_mover &&);
+		void operator =(invalid_mover &&);
+		/*
+		此析构函数本身不会抛出异常
+		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
+		*/
+		virtual ~invalid_mover();
+		virtual invalid_mover & self()noexcept;
+		virtual invalid_mover const & self()const noexcept;
+		virtual invalid_mover * operator &()noexcept;
+		virtual invalid_mover const * operator &()const noexcept;
+	};
+
 	/*
 	工作线程基类
 
@@ -319,7 +352,8 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 	{
 	public:
 		std::unique_ptr<self_copier> self_copy()const
-			noexcept(noexcept(std::make_unique<lower_type>(std::declval<lower_type const &>())))
+			noexcept(noexcept(std::make_unique<lower_type>(std::declval<lower_type const &>()))
+		and noexcept(dynamic_cast<lower_type const *>(std::declval<enable_self_copy const *>())))
 			override
 		{
 			lower_type const * PTR_self = dynamic_cast<lower_type const *>(this);

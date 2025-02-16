@@ -398,4 +398,62 @@ namespace OKps::base
 		this->MEMBER_error_holder = std::exception_ptr();
 		std::rethrow_exception(p);
 	}
+
+	bool const & invalid_mover::is_valid()const noexcept
+	{
+		return this->MEMBER_valid;
+	}
+	void invalid_mover::check_valid()const noexcept(false)
+	{
+		if (not this->MEMBER_valid)
+		{
+			throw std::logic_error("此对象已失效，禁止访问");
+		}
+	}
+
+	invalid_mover::invalid_mover()noexcept
+		:MEMBER_valid(true)
+	{
+	}
+	invalid_mover::invalid_mover(invalid_mover const & origin)
+		:MEMBER_valid(origin.MEMBER_valid)
+	{
+		origin.check_valid();
+	}
+	void invalid_mover::operator =(invalid_mover const & origin)
+	{
+		this->MEMBER_valid = origin.MEMBER_valid;
+		origin.check_valid();
+	}
+	invalid_mover::invalid_mover(invalid_mover && origin)
+		:MEMBER_valid(origin.MEMBER_valid)
+	{
+		origin.check_valid();
+		origin.MEMBER_valid = false;
+	}
+	void invalid_mover::operator =(invalid_mover && origin)
+	{
+		this->MEMBER_valid = origin.MEMBER_valid;
+		origin.check_valid();
+		origin.MEMBER_valid = false;
+	}
+	invalid_mover::~invalid_mover()
+	{
+	}
+	invalid_mover & invalid_mover::self()noexcept
+	{
+		return *this;
+	}
+	invalid_mover const & invalid_mover::self()const noexcept
+	{
+		return *this;
+	}
+	invalid_mover * invalid_mover::operator &()noexcept
+	{
+		return this;
+	}
+	invalid_mover const * invalid_mover::operator &()const noexcept
+	{
+		return this;
+	}
 }
