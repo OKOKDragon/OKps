@@ -435,28 +435,63 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 		}
 	}
 
+	void stream_proxy<std::fstream>::INNER_check()
+	{
+		if (not this->MEMBER_storage->is_open())
+		{
+
+			throw std::invalid_argument("文件没有打开");
+		}
+		if (this->MEMBER_storage->fail())
+		{
+
+			throw std::invalid_argument("文件对象中存在异常状态");
+		}
+		if (this->MEMBER_storage->bad())
+		{
+
+			throw std::invalid_argument("文件对象中存在不可恢复的严重错误");
+		}
+	}
+	std::string stream_proxy<std::fstream>::read(std::streamsize const length)
+	{
+		std::string buffer;
+		{
+			stream_position TEMP_length = stream_position(length);
+			buffer.resize(static_cast<std::size_t>(TEMP_length));
+		}
+		this->read(buffer.data(), length);
+		return buffer;
+	}
+	void stream_proxy<std::fstream>::write(std::string const & buffer, std::streamsize const length)
+	{
+		this->write(buffer.c_str(), length);
+	}
 	void stream_proxy<std::fstream>::read(char * const buffer, std::streamsize const length)
 	{
+		this->INNER_check();
 		if (not this->MEMBER_storage->read(buffer, length))
 		{
 			this->MEMBER_storage->clear();
 			this->MEMBER_storage->seekg(0, std::ios::beg);
-			std::string const hint = "读取文件" + this->MEMBER_path->string() + "失败";
+			std::string const hint = "读取文件 " + this->MEMBER_path->string() + " 失败";
 			throw std::runtime_error(hint);
 		}
 	}
 	void stream_proxy<std::fstream>::write(char const * const  buffer, std::streamsize const length)
 	{
+		this->INNER_check();
 		if (not this->MEMBER_storage->write(buffer, length))
 		{
 			this->MEMBER_storage->clear();
 			this->MEMBER_storage->seekp(0, std::ios::beg);
-			std::string const hint = "写入文件" + this->MEMBER_path->string() + "失败";
+			std::string const hint = "写入文件 " + this->MEMBER_path->string() + " 失败";
 			throw std::runtime_error(hint);
 		}
 	}
 	void stream_proxy<std::fstream>::seekp(std::streampos const & position)
 	{
+		this->INNER_check();
 		if (not this->MEMBER_storage->seekp(position))
 		{
 			this->MEMBER_storage->clear();
@@ -467,6 +502,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	}
 	void stream_proxy<std::fstream>::seekg(std::streampos const & position)
 	{
+		this->INNER_check();
 		if (not this->MEMBER_storage->seekg(position))
 		{
 			this->MEMBER_storage->clear();
@@ -477,6 +513,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	}
 	void stream_proxy<std::fstream>::seekp(std::streamoff const offset, std::ios_base::seekdir const & way)
 	{
+		this->INNER_check();
 		if (not this->MEMBER_storage->seekp(offset, way))
 		{
 			this->MEMBER_storage->clear();
@@ -487,6 +524,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	}
 	void stream_proxy<std::fstream>::seekg(std::streamoff const offset, std::ios_base::seekdir const & way)
 	{
+		this->INNER_check();
 		if (not this->MEMBER_storage->seekg(offset, way))
 		{
 			this->MEMBER_storage->clear();

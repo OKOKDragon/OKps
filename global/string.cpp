@@ -579,11 +579,8 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
         auto const origin_locale = std::locale::global(text_encoding::utf_8);
         for (int counter = 0; counter < argc; counter++)
         {
-            std::cout << "命令行参数" << counter << " ││ ";
-            std::locale::global(std::locale::classic());
-            std::cout << argv[counter];
-            std::locale::global(text_encoding::utf_8);
-            std::cout << "\n";
+            string TEMP(argv[counter], std::locale::classic());
+            std::cout << "命令行参数" << counter << " ││ " << TEMP.utf_8<std::string>() << "\n";
         }
         std::locale::global(origin_locale);
     }
@@ -604,87 +601,6 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
             {
                 throw std::runtime_error("std::cin输入流发生错误");
             }
-        }
-    }
-
-    std::string read(std::fstream & file, std::uintmax_t const length)
-    {
-        if (not file.is_open())
-        {
-
-            throw std::invalid_argument("文件对象并没有打开文件");
-        }
-        if (file.fail())
-        {
-
-            throw std::invalid_argument("文件对象中有异常状态");
-        }
-        if (file.bad())
-        {
-
-            throw std::invalid_argument("文件对象中有不可恢复的严重异常状态");
-        }
-        char * buffer = new char[length];
-        if (not file.read(buffer, length))
-        {
-
-            throw std::runtime_error("读取文件失败");
-        }
-        std::string result;
-        result.resize(length);
-        for (std::uintmax_t i = 0;i < length;i++)
-        {
-            result[i] = buffer[i];
-        }
-        delete[] buffer;
-        return result;
-    }
-
-    void write(std::ofstream & file, std::string const & data)
-    {
-        if (not file.is_open())
-        {
-
-            throw std::invalid_argument("文件对象并没有打开文件");
-        }
-        if (file.fail())
-        {
-
-            throw std::invalid_argument("文件对象中有异常状态");
-        }
-        if (file.bad())
-        {
-
-            throw std::invalid_argument("文件对象中有不可恢复的严重异常状态");
-        }
-        if (not file.write(data.c_str(), data.size()))
-        {
-
-            throw std::runtime_error("写入文件失败");
-        }
-    }
-
-    void write(std::fstream & file, std::string const & data)
-    {
-        if (not file.is_open())
-        {
-
-            throw std::invalid_argument("文件对象并没有打开文件");
-        }
-        if (file.fail())
-        {
-
-            throw std::invalid_argument("文件对象中有异常状态");
-        }
-        if (file.bad())
-        {
-
-            throw std::invalid_argument("文件对象中有不可恢复的严重异常状态");
-        }
-        if (not file.write(data.c_str(), data.size()))
-        {
-
-            throw std::runtime_error("写入文件失败");
         }
     }
 

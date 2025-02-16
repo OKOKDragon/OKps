@@ -156,6 +156,7 @@ namespace OKps
 
 	/*
 	std::fstream的代理类
+	此类仅保存std::fstream的引用，若引用的原对象失效，此类不负责检查。
 
 	调用 std::fstream 的 read，write，seekp，seekg函数，如果失败则抛出异常
 	*/
@@ -165,6 +166,9 @@ namespace OKps
 	private:
 		std::fstream * MEMBER_storage;
 		std::filesystem::path const * MEMBER_path;
+
+		//检查文件流的可用性
+		void INNER_check();
 	public:
 		stream_proxy(std::fstream &, std::filesystem::path const &)noexcept;
 		~stream_proxy()noexcept;
@@ -175,6 +179,8 @@ namespace OKps
 
 		void read(char * const, std::streamsize const);
 		void write(char const * const, std::streamsize const);
+		std::string read(std::streamsize const);
+		void write(std::string const &, std::streamsize const);
 		void seekp(std::streampos const &);
 		void seekg(std::streampos const &);
 		void seekp(std::streamoff const, std::ios_base::seekdir const &);

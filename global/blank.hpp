@@ -22,18 +22,4 @@ namespace OKps
 
 	};
 
-	class never final
-	{
-	private:
-		never() noexcept;
-	public:
-		never(never const &) = delete;
-		never(never &&) = delete;
-		void operator =(never const &) = delete;
-		void operator =(never &&) = delete;
-	private:
-		~never() noexcept;
-	public:
-		static never const object;
-	};
 }
