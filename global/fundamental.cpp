@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <typeinfo>
 #include <string>
-#include <locale>
 
 #include ".\fundamental.hpp"
 

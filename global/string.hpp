@@ -13,6 +13,11 @@
 
 namespace OKps
 {
+    char operator ""_utf_8(char8_t const content)noexcept;
+    std::string operator ""_utf_8(char8_t const * const content, std::size_t const size)
+        noexcept(std::is_nothrow_default_constructible_v<std::string>
+        and noexcept(std::declval<std::string>().resize(std::declval<std::size_t const>())));
+
     class text_encoding final
     {
     public:
@@ -57,159 +62,6 @@ namespace OKps
     c++标准规定，整数类型的内建算术运算符的操作数至少是int类型，char、short会被隐式转换到int再参与整数运算，故此函数返回int类型。
     */
     unsigned int from_char(char const number, number_system const number_base = number_system::dec);
-
-
-
-    class string;
-
-    template<>
-    constexpr bool const safe_convertible<std::string, string> = noexcept(std::locale::global(std::declval<std::locale const &>()))
-        and noexcept(value_cast<std::string>(std::declval<std::filesystem::path>().u8string()))
-        and noexcept(std::filesystem::path(std::declval<std::string const &>()));
-    template<>
-    constexpr bool const safe_convertible<std::u8string, string> = noexcept(std::locale::global(std::declval<std::locale const &>()))
-        and noexcept(std::declval<std::filesystem::path>().u8string())
-        and noexcept(std::filesystem::path(std::declval<std::string const &>()))
-        and noexcept(value_cast<std::u8string>(std::declval<std::string const &>()));
-
-    /*
-    带编码信息的字符串
-    */
-    class string final
-    {
-    private:
-        std::string MEMBER_content;
-        std::locale MEMBER_page;
-    public:
-        /*
-        默认编码为 utf-8
-        */
-        string(std::string const & content = "", std::locale const & page = text_encoding::utf_8)
-            noexcept(std::is_nothrow_copy_constructible_v<std::string>
-            and std::is_nothrow_copy_constructible_v<std::locale>);
-        string(string const &)
-            noexcept(std::is_nothrow_copy_constructible_v<std::string>
-            and std::is_nothrow_copy_constructible_v<std::locale>);
-        void operator =(string const &)
-            noexcept(std::is_nothrow_copy_assignable_v<std::string>
-            and std::is_nothrow_copy_assignable_v<std::locale>);
-        string(string &&)
-            noexcept(std::is_nothrow_move_constructible_v<std::string>
-            and std::is_nothrow_copy_constructible_v<std::locale>
-            and std::is_nothrow_copy_assignable_v<std::locale>);
-        void operator =(string &&)
-            noexcept(std::is_nothrow_move_assignable_v<std::string>
-            and std::is_nothrow_copy_assignable_v<std::locale>);
-        ~string()
-            noexcept(std::is_nothrow_destructible_v<std::string>
-            and std::is_nothrow_destructible_v<std::locale>);
-
-        /*
-        返回当前对象保存的字符串。
-        如果 set_locale 为 true，则返回之前，先将全局本地环境设为当前对象保存的本地环境。
-        */
-        std::string & content(bool const set_locale = false)
-            noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())));
-        std::string const & content(bool const set_locale = false)const
-            noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())));
-
-        std::locale & page()noexcept;
-        std::locale const & page()const noexcept;
-
-        /*
-        将当前对象保存的字符串转换到utf-8编码
-
-        此函数执行过程中会改变全局本地环境，但最终会恢复原样。
-        */
-        template<typename target_type>
-        target_type utf_8()const
-            noexcept(safe_convertible<target_type, string>);
-
-        template<>
-        std::string utf_8<std::string>()const
-            noexcept(safe_convertible<std::string, string>);
-        template<>
-        std::u8string utf_8<std::u8string>()const
-            noexcept(safe_convertible<std::u8string, string>);
-
-        /*
-        通过std::getline函数以 std::locale::classic() 格式从标准输入流 input 输入一行字符串，覆盖当前对象。
-        使用此函数后，当前对象的编码将改成 std::locale::classic()
-
-        此函数执行过程中会改变全局本地环境，但最终会恢复原样。
-        */
-        void get_line(std::istream &)
-            noexcept(noexcept(std::getline(std::declval<std::istream &>(), std::declval<std::string &>()))
-            and noexcept(std::declval<std::locale &>() = std::locale::classic()));
-
-        template<typename string_type>
-        class requirement
-        {
-        public:
-            requirement()noexcept;
-            requirement(requirement const &)noexcept;
-            requirement(requirement &&)noexcept;
-            void operator =(requirement const &)noexcept;
-            void operator =(requirement &&)noexcept;
-            virtual ~requirement()noexcept;
-
-            virtual bool operator ()(string_type const &) = 0;
-
-            virtual requirement & self()noexcept;
-            virtual requirement const & self()const noexcept;
-            virtual requirement * operator &()noexcept;
-            virtual requirement const * operator &()const noexcept;
-        };
-
-        /*
-        参数 judge 是判断函数，对于字符串 str，符合要求返回 true，不符合要求返回 false
-        从标准输入流输入 input ，调用 std::getline，输入一行字符串，然后调用 judge 判断该行字符串是否符合要求。
-        如果符合要求，则将字符串转换到utf-8编码写入 result；否则抛弃这一行输入，且不更改 result。
-        此函数的返回值是 judge 函数的判断结果。
-        */
-        template<typename string_type>
-        static bool get_line(std::istream & input, string_type & result, requirement<string_type> & judge);
-        /*
-        从输入流 input 输入一行字符串，转换到utf-8编码
-        */
-        template<typename string_type>
-        static void get_line(std::istream & input, string_type & result);
-
-    private:
-        //static std::string INNER_wide_to_narrow(std::wstring const &);
-        //static std::wstring INNER_narrow_wo_wide(std::string const &);
-
-    };
-    template
-        class string::requirement<std::string>;
-    template
-        class string::requirement<std::u8string>;
-    template
-        bool string::get_line<std::string>(std::istream & input, std::string & result, requirement<std::string> & judge);
-    template
-        bool string::get_line<std::u8string>(std::istream & input, std::u8string & result, requirement<std::u8string> & judge);
-    template
-        void string::get_line<std::string>(std::istream &, std::string &);
-    template
-        void string::get_line<std::u8string>(std::istream &, std::u8string &);
-
-   /*
-   将字符串输出到标准输出流
-
-   此函数执行过程中会改变全局本地环境，但最终会恢复原样。
-   */
-    std::ostream & operator <<(std::ostream &, string const &)
-        noexcept(noexcept(std::declval<std::ostream &>() << std::declval<string const &>().utf_8<std::string>()));
-    /*
-    从标准输入流以 std::locale::classic() 格式输入字符串，
-    即使用此函数后，object 的编码将无条件改成 std::locale::classic()，其内容则被标准输入流输入的字符串覆盖。
-
-    此函数执行过程中会改变全局本地环境，但最终会恢复原样。
-    */
-    std::istream & operator >>(std::istream &, string & object)
-        noexcept(noexcept(std::declval<std::istream &>() >> std::declval<std::string &>())
-        and noexcept(std::declval<std::locale &>() = std::locale::classic()));
-
 
     /*
     命令语句分离器

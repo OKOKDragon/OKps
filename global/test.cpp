@@ -279,11 +279,7 @@ namespace OKps::test
 
         std::string origin_route;
         std::cout << "输入要加密的文件 ││ ";
-        {
-            string TEMP_input_str;
-            TEMP_input_str.get_line(std::cin);
-            origin_route = TEMP_input_str.utf_8<std::string>();
-        }
+        std::getline(std::cin, origin_route);
 
         {
             time_monitor timer;
@@ -532,56 +528,6 @@ namespace OKps::test
         }
     }
 
-    void string_requirement(std::string const & expected)
-    {
 
-        for (std::size_t i = 0;i < expected.size();++i)
-        {
-            if (expected[i] == '\n')
-            {
-                throw std::invalid_argument("要求的输入中不能有换行符，因为此测试不能读取多行输入");
-            }
-        }
-
-        class judgement :public string::requirement<std::string>
-        {
-        private:
-            using base_type = string::requirement<std::string>;
-            std::string const & MEMBER_expected;
-        public:
-            judgement(std::string const & expected)noexcept
-                :base_type()
-                , MEMBER_expected(expected)
-            {
-            }
-            ~judgement()noexcept override
-            {
-            }
-            judgement(judgement const &) = delete;
-            void operator =(judgement const &) = delete;
-            judgement(judgement &&) = delete;
-            void operator =(judgement &&) = delete;
-
-            bool operator()(std::string const & value)override
-            {
-                return value == this->MEMBER_expected;
-            }
-        };
-
-        judgement judge(expected);
-
-        std::cout << "原封不动地输入以下字符串 ││ " << expected << "\n"
-            "输入 ││ ";
-        std::string input;
-
-        if (string::get_line<std::string>(std::cin, input, judge))
-        {
-            std::cout << "输入正确\n";
-        }
-        else
-        {
-            std::cout << "输入错误，这一行输入已被抛弃\n";
-        }
-    }
 
 }

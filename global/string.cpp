@@ -6,7 +6,7 @@
 #include <memory>
 
 #include ".\string.hpp"
-
+#include ".\code_page.hpp"
 
 /*
 禁用C4996警告
@@ -74,6 +74,23 @@ std::string string::UTF8_to_String(const std::string &s)
 
 namespace OKps
 {
+    char operator ""_utf_8(char8_t const content)noexcept
+    {
+        return static_cast<char>(content);
+    }
+    std::string operator ""_utf_8(char8_t const * const content, std::size_t const size)
+        noexcept(std::is_nothrow_default_constructible_v<std::string>
+and noexcept(std::declval<std::string>().resize(std::declval<std::size_t const>())))
+    {
+        std::string result;
+        result.resize(size);
+        for (std::size_t i = 0;i < size;++i)
+        {
+            result[i] = static_cast<char>(content[i]);
+        }
+        return result;
+    }
+
     std::locale const text_encoding::utf_8 = text_encoding::INNER_init();
 
     std::locale text_encoding::INNER_init()
@@ -117,209 +134,7 @@ namespace OKps
         return result;
     }
 */
-    template<typename string_type>
-    string::requirement<string_type>::requirement()noexcept
-    {
-    }
-    template<typename string_type>
-    string::requirement<string_type>::requirement(requirement const &)noexcept
-    {
-    }
-    template<typename string_type>
-    string::requirement<string_type>::requirement(requirement &&)noexcept
-    {
-    }
-    template<typename string_type>
-    void string::requirement<string_type>::operator =(requirement const &)noexcept
-    {
-    }
-    template<typename string_type>
-    void string::requirement<string_type>::operator =(requirement &&)noexcept
-    {
-    }
-    template<typename string_type>
-    string::requirement<string_type>::~requirement()noexcept
-    {
-    }
-    template<typename string_type>
-    string::requirement<string_type> & string::requirement<string_type>::self()noexcept
-    {
-        return *this;
-    }
-    template<typename string_type>
-    string::requirement<string_type> const & string::requirement<string_type>::self()const noexcept
-    {
-        return *this;
-    }
-    template<typename string_type>
-    string::requirement<string_type> * string::requirement<string_type>::operator &()noexcept
-    {
-        return this;
-    }
-    template<typename string_type>
-    string::requirement<string_type> const * string::requirement<string_type>::operator &()const noexcept
-    {
-        return this;
-    }
-    template<typename string_type>
-    void string::get_line(std::istream & input, string_type & result)
-    {
-        string TEMP_input_line;
-        TEMP_input_line.get_line(input);
-        result = TEMP_input_line.utf_8<string_type>();
-    }
-    template<typename string_type>
-    bool string::get_line(std::istream & input, string_type & result, string::requirement<string_type> & judge)
-    {
-        string_type TEMP_result;
-        string::get_line<string_type>(input, TEMP_result);
-        bool const TEMP_judge_result = judge(TEMP_result);
-        if (TEMP_judge_result)
-        {
-            result = std::move(TEMP_result);
-        }
-        return TEMP_judge_result;
-    }
 
-    void string::get_line(std::istream & input)
-        noexcept(noexcept(std::getline(std::declval<std::istream &>(), std::declval<std::string &>()))
-        and noexcept(std::declval<std::locale &>() = std::locale::classic()))
-    {
-        this->MEMBER_page = std::locale::classic();
-        auto const origin_locale = std::locale::global(std::locale::classic());
-        std::getline(input, this->MEMBER_content);
-        std::locale::global(origin_locale);
-    }
-    std::ostream & operator <<(std::ostream & output, string const & object)
-        noexcept(noexcept(std::declval<std::ostream &>() << std::declval<string const &>().utf_8<std::string>()))
-    {
-        auto const origin_locale = std::locale::global(text_encoding::utf_8);
-        auto & result = output << object.utf_8<std::string>();
-        std::locale::global(origin_locale);
-        return result;
-    }
-    std::istream & operator >>(std::istream & input, string & object)
-        noexcept(noexcept(std::declval<std::istream &>() >> std::declval<std::string &>())
-        and noexcept(std::declval<std::locale &>() = std::locale::classic()))
-    {
-        auto const origin_locale = std::locale::global(std::locale::classic());
-        object.page() = std::locale::classic();
-        auto & result = input >> object.content();
-        std::locale::global(origin_locale);
-        return result;
-    }
-    string::string(std::string const & content, std::locale const & page)
-        noexcept(std::is_nothrow_copy_constructible_v<std::string>
-        and std::is_nothrow_copy_constructible_v<std::locale>)
-        :MEMBER_content(content)
-        , MEMBER_page(page)
-    {
-    }
-    string::string(string const & origin)
-        noexcept(std::is_nothrow_copy_constructible_v<std::string>
-and std::is_nothrow_copy_constructible_v<std::locale>)
-    :MEMBER_content(origin.MEMBER_content)
-        , MEMBER_page(origin.MEMBER_page)
-    {
-    }
-    void string::operator =(string const & origin)
-        noexcept(std::is_nothrow_copy_assignable_v<std::string>
-and std::is_nothrow_copy_assignable_v<std::locale>)
-    {
-        if (this != std::addressof(origin))
-        {
-            this->MEMBER_content = origin.MEMBER_content;
-            this->MEMBER_page = origin.MEMBER_page;
-        }
-    }
-    string::string(string && origin)
-        noexcept(std::is_nothrow_move_constructible_v<std::string>
-        and std::is_nothrow_copy_constructible_v<std::locale>
-        and std::is_nothrow_copy_assignable_v<std::locale>)
-        :MEMBER_content(std::move(origin.MEMBER_content))
-        , MEMBER_page(origin.MEMBER_page)
-    {
-        origin.MEMBER_page = text_encoding::utf_8;
-    }
-    void string::operator =(string && origin)
-        noexcept(std::is_nothrow_move_assignable_v<std::string>
-and std::is_nothrow_copy_assignable_v<std::locale>)
-    {
-        if (this != std::addressof(origin))
-        {
-            this->MEMBER_content = std::move(origin.MEMBER_content);
-            this->MEMBER_page = origin.MEMBER_page;
-            origin.MEMBER_page = text_encoding::utf_8;
-        }
-    }
-    string::~string()
-        noexcept(std::is_nothrow_destructible_v<std::string>
-        and std::is_nothrow_destructible_v<std::locale>)
-    {
-    }
-
-    std::string & string::content(bool const set_locale)
-        noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())))
-    {
-        if (set_locale)
-        {
-            std::locale::global(this->MEMBER_page);
-        }
-        return this->MEMBER_content;
-    }
-    std::string const & string::content(bool const set_locale)const
-        noexcept(noexcept(std::locale::global(std::declval<std::locale const &>())))
-    {
-        if (set_locale)
-        {
-            std::locale::global(this->MEMBER_page);
-        }
-        return this->MEMBER_content;
-    }
-
-    std::locale & string::page()noexcept
-    {
-        return this->MEMBER_page;
-    }
-    std::locale const & string::page()const noexcept
-    {
-        return this->MEMBER_page;
-    }
-    template<>
-    std::string string::utf_8<std::string>()const
-        noexcept(safe_convertible<std::string, string>)
-    {
-        //std::wstring TEMP_result = string::INNER_narrow_wo_wide(this->MEMBER_content);
-        //std::locale::global(text_encoding::utf_8);
-        //std::string result = string::INNER_wide_to_narrow(TEMP_result);
-        if (this->MEMBER_page == text_encoding::utf_8)
-        {
-            return this->MEMBER_content;
-        }
-        else
-        {
-            return value_cast<std::string>(this->utf_8<std::u8string>());
-        }
-    }
-    template<>
-    std::u8string string::utf_8<std::u8string>()const
-        noexcept(safe_convertible<std::u8string, string>)
-    {
-
-        auto const origin_page = std::locale::global(this->MEMBER_page);
-        std::u8string result;
-        if (this->MEMBER_page == text_encoding::utf_8)
-        {
-            result = value_cast<std::u8string>(this->MEMBER_content);
-        }
-        else
-        {
-            auto temp = std::filesystem::path(this->MEMBER_content);
-            result = temp.u8string();
-        }
-        std::locale::global(origin_page);
-        return result;
-    }
     char to_char(unsigned int const number, number_system const number_base)
     {
         char result;
@@ -576,13 +391,10 @@ and std::is_nothrow_copy_assignable_v<std::locale>)
     }
     void echo_command_line(int const argc, char const * const * const argv)
     {
-        auto const origin_locale = std::locale::global(text_encoding::utf_8);
         for (int counter = 0; counter < argc; counter++)
         {
-            string TEMP(argv[counter], std::locale::classic());
-            std::cout << "命令行参数" << counter << " ││ " << TEMP.utf_8<std::string>() << "\n";
+            std::cout << "命令行参数" << counter << " ││ " << code_page::default_input_convert(argv[counter]) << "\n";
         }
-        std::locale::global(origin_locale);
     }
     void wait_input(std::string const & hint, char const signal)
     {

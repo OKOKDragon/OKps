@@ -13,17 +13,183 @@
 
 namespace OKps
 {
-    /*
-    若允许 value_cast 函数将 origin_type 类型转换到 target_type 类型，则此常量表达式为true。
-    */
-    template<typename target_type, typename origin_type>
-    constexpr bool const is_convertible;
+    //标准库的字符串类型
+    template<typename string_type>
+    concept stl_string_type = std::is_same_v<string_type, std::string>
+        or std::is_same_v<string_type, std::wstring>
+        or std::is_same_v<string_type, std::u8string>
+        or std::is_same_v<string_type, std::u16string>
+        or std::is_same_v<string_type, std::u32string>;
 
-    /*
-    若从 origin_type 类型转换到 target_type 类型不会抛异常，则此常量表达式为 true。
-    */
-    template<typename target_type, typename origin_type>
-    constexpr bool const safe_convertible;
+    //确定两个类型能否被转换函数value_cast转换
+    class is_convertible final
+    {
+    public:
+        is_convertible() = delete;
+        ~is_convertible() = delete;
+        is_convertible(is_convertible const &) = delete;
+        is_convertible(is_convertible &&) = delete;
+        void operator =(is_convertible const &) = delete;
+        void operator =(is_convertible &&) = delete;
+    private:
+        template<typename target_type, typename origin_type>
+        static inline constexpr bool INNER_value()noexcept
+        {
+            if constexpr (std::is_same_v<target_type, origin_type>)
+            {
+                return false;
+            }
+            if constexpr (std::is_same_v<target_type, std::byte>)
+            {
+                return (
+                std::is_same_v<origin_type, std::bitset<bit_per_byte>>
+                or std::is_same_v<origin_type, unsigned long long>
+                or std::is_same_v<origin_type, long long>
+                or std::is_same_v<origin_type, int>
+                or std::is_same_v<origin_type, unsigned int>
+                or std::is_same_v<origin_type, char>);
+            }
+            else if constexpr (std::is_same_v<origin_type, std::byte>)
+            {
+                return (
+                std::is_same_v<target_type, std::bitset<bit_per_byte>>
+                or std::is_same_v<target_type, int>
+                or std::is_same_v<target_type, unsigned int>
+                or std::is_same_v<target_type, char>);
+            }
+            else if constexpr (
+                (std::is_same_v<origin_type, std::string> and std::is_same_v<target_type, std::vector<std::byte>>)
+                or (std::is_same_v<origin_type, std::vector<std::byte>> and std::is_same_v<target_type, std::string>))
+            {
+                return true;
+            }
+            else if constexpr (stl_string_type<origin_type> and stl_string_type<target_type>)
+            {
+                return (sizeof(typename origin_type::value_type) == sizeof(typename target_type::value_type));
+            }
+            else
+            {
+                return false;
+            }
+        }
+    public:
+        /*
+        若允许 value_cast 函数将 origin_type 类型转换到 target_type 类型，则此常量表达式为true，否则为false。
+        */
+        template<typename target_type, typename origin_type>
+        static inline constexpr bool const value = is_convertible::INNER_value<target_type, origin_type>();
+    };
+
+    class stream_position;
+
+    class safe_convertible final
+    {
+    public:
+        safe_convertible() = delete;
+        ~safe_convertible() = delete;
+        safe_convertible(safe_convertible const &) = delete;
+        safe_convertible(safe_convertible &&) = delete;
+        void operator =(safe_convertible const &) = delete;
+        void operator =(safe_convertible &&) = delete;
+    private:
+        template<typename target_type, typename origin_type>
+        static inline constexpr bool INNER_value()noexcept
+        {
+            static_assert(not std::is_same_v<target_type, origin_type>, "不允许目标类型与原类型相同");
+            if constexpr (
+                (std::is_same_v<origin_type, std::string> and std::is_same_v<target_type, std::vector<std::byte>>)
+                or (std::is_same_v<origin_type, std::vector<std::byte>> and std::is_same_v<target_type, std::string>)
+                or (stl_string_type<target_type> and stl_string_type<origin_type>))
+            {
+                return (
+                    std::is_nothrow_default_constructible_v<target_type>
+                    and noexcept(std::declval<target_type>().resize(std::declval<origin_type const &>().size())));
+            }
+            else if constexpr (std::is_same_v<target_type, std::byte>)
+            {
+                if constexpr (std::is_same_v<origin_type, int>
+                    or std::is_same_v<origin_type, unsigned int>
+                    or std::is_same_v<origin_type, unsigned long long>
+                    or std::is_same_v<origin_type, long long>)
+                {
+                    return noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<origin_type> const &>()));
+                }
+                else if constexpr (std::is_same_v<origin_type, char>
+                or std::is_same_v<origin_type, std::bitset<bit_per_byte>>)
+                {
+                    return true;
+                }
+                else
+                {
+                    static_assert(false, "不允许这两个类型之间的转换");
+                }
+            }
+            else if constexpr (std::is_same_v<origin_type, std::byte>)
+            {
+                if constexpr (std::is_same_v<target_type, int>
+                                or std::is_same_v<target_type, unsigned int>)
+                {
+                    return noexcept(static_cast<base::integer<target_type>>(std::declval<base::integer<std::underlying_type_t<std::byte>> const &>()));
+                }
+                else if constexpr (std::is_same_v<target_type, char>)
+                {
+                    return true;
+                }
+                else if constexpr (std::is_same_v<target_type, std::bitset<bit_per_byte>>)
+                {
+                    return (std::is_nothrow_default_constructible_v<std::bitset<bit_per_byte>>
+                    and noexcept(std::declval<std::bitset<bit_per_byte>>()[std::declval<std::size_t>()] = std::declval<bool>()));
+                }
+                else
+                {
+                    static_assert(false, "不允许这两个类型之间的转换");
+                }
+            }
+            else if constexpr (std::is_same_v<target_type, stream_position>)
+            {
+                if constexpr (std::is_same_v<origin_type, int>
+                or std::is_same_v<origin_type, unsigned int>
+                or std::is_same_v<origin_type, long>
+                or std::is_same_v<origin_type, unsigned long>
+                or std::is_same_v<origin_type, long long>
+                or std::is_same_v<origin_type, unsigned long long>)
+                {
+                    return noexcept(std::streampos(static_cast<base::integer<std::streamoff>>(base::integer<origin_type>(std::declval<origin_type const &>())).value()));
+                }
+                else
+                {
+                    static_assert(false, "不允许这两个类型之间的转换");
+                }
+            }
+            else if constexpr (std::is_same_v<origin_type, stream_position>)
+            {
+                if constexpr (std::is_same_v<target_type, int>
+                or std::is_same_v<target_type, unsigned int>
+                or std::is_same_v<target_type, long>
+                or std::is_same_v<target_type, unsigned long>
+                or std::is_same_v<target_type, long long>
+                or std::is_same_v<target_type, unsigned long long>)
+                {
+                    return noexcept(static_cast<base::integer<target_type>>(base::integer<std::streamoff>(std::declval<std::streampos const &>())));
+                }
+                else
+                {
+                    static_assert(false, "不允许这两个类型之间的转换");
+                }
+            }
+            else
+            {
+                static_assert(false, "不允许这两个类型之间的转换");
+            }
+
+        }
+    public:
+        /*
+        若从 origin_type 类型转换到 target_type 类型不会抛异常，则此常量表达式为 true。
+        */
+        template<typename target_type, typename origin_type>
+        static inline constexpr bool const value = safe_convertible::INNER_value<target_type, origin_type>();
+    };
 
     /*
     复制传递的参数类型
@@ -37,106 +203,19 @@ namespace OKps
     concept reference_passing = std::is_class_v<origin_type> or std::is_union_v<origin_type>;
 
     /*
-    不要使用此命名空间下的任何代码。
-    这些代码仅用于辅助实现此库的内部逻辑。
-    */
-    namespace implement
-    {
-        /*
-        标准库定义的字符串类型
-        */
-        template<typename string_type>
-        concept stl_string_type = std::is_same_v<string_type, std::string>
-            or std::is_same_v<string_type, std::wstring>
-            or std::is_same_v<string_type, std::u8string>
-            or std::is_same_v<string_type, std::u16string>
-            or std::is_same_v<string_type, std::u32string>;
-
-        template<stl_string_type target_type, stl_string_type origin_type>
-        constexpr bool const is_convertible = sizeof(typename origin_type::value_type) == sizeof(typename target_type::value_type);
-
-        template<stl_string_type target_type, stl_string_type origin_type>
-        constexpr bool const safe_convertible = std::is_nothrow_destructible_v<target_type>
-            and noexcept(std::declval<target_type>().resize(std::declval<origin_type const &>().size()));
-    }
-
-    /*
     从 origin_type 类型转换到 target_type 类型
     保证转换前后值不变
     */
     template<typename target_type, copy_passing origin_type>
-    typename std::enable_if_t<is_convertible<target_type, origin_type>, target_type> value_cast(origin_type const value)
-        noexcept(safe_convertible<target_type, origin_type>);
+    typename std::enable_if_t<is_convertible::value<target_type, origin_type>, target_type> value_cast(origin_type const value)
+        noexcept(safe_convertible::value<target_type, origin_type>);
     /*
     从 origin_type 类型转换到 target_type 类型
     保证转换前后值不变
     */
     template<typename target_type, reference_passing origin_type>
-    typename std::enable_if_t<is_convertible<target_type, origin_type>, target_type> value_cast(origin_type const & value)
-        noexcept(safe_convertible<target_type, origin_type>);
-
-    template<>
-    constexpr bool const is_convertible<std::byte, std::bitset<bit_per_byte>> = true;
-    template<>
-    constexpr bool const is_convertible<std::string, std::vector<std::byte>> = true;
-    template<>
-    constexpr bool const is_convertible<std::vector<std::byte>, std::string> = true;
-
-    template<>
-    constexpr bool const is_convertible<int, std::byte> = true;
-
-    template<>
-    constexpr bool const is_convertible<std::byte, unsigned long long> = true;
-    template<>
-    constexpr bool const is_convertible<std::byte, long long> = true;
-
-    template<>
-    constexpr bool const is_convertible<unsigned int, std::byte> = true;
-
-    template<>
-    constexpr bool const is_convertible<std::byte, int> = true;
-
-    template<>
-    constexpr bool const is_convertible<std::byte, unsigned int> = true;
-
-    template<>
-    constexpr bool const is_convertible<char, std::byte> = true;
-
-    template<>
-    constexpr bool const is_convertible<std::byte, char> = true;
-
-    template<>
-    constexpr bool const is_convertible<std::bitset<bit_per_byte>, std::byte> = true;
-
-    template<>
-    constexpr bool const safe_convertible<int, std::byte> = noexcept(static_cast<base::integer<int>>(std::declval<base::integer<std::underlying_type_t<std::byte>> const &>()));
-
-    template<>
-    constexpr bool const safe_convertible<unsigned int, std::byte> = noexcept(static_cast<base::integer<unsigned int>>(std::declval<base::integer<std::underlying_type_t<std::byte>> const &>()));
-
-    template<>
-    constexpr bool const safe_convertible<std::byte, int> = noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<int> const &>()));
-
-    template<>
-    constexpr bool const safe_convertible<std::byte, unsigned int> = noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<unsigned int> const &>()));
-
-    template<>
-    constexpr bool const safe_convertible<std::byte, unsigned long long> = noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<unsigned long long> const &>()));
-    template<>
-    constexpr bool const safe_convertible<std::byte, long long> = noexcept(static_cast<base::integer<std::underlying_type_t<std::byte>>>(std::declval<base::integer<long long> const &>()));
-
-    template<>
-    constexpr bool const safe_convertible<char, std::byte> = true;
-
-    template<>
-    constexpr bool const safe_convertible<std::byte, char> = true;
-
-    template<>
-    constexpr bool const safe_convertible<std::bitset<bit_per_byte>, std::byte> = std::is_nothrow_default_constructible_v<std::bitset<bit_per_byte>>
-        and noexcept(std::declval<std::bitset<bit_per_byte>>()[std::declval<std::size_t>()] = std::declval<bool>());
-
-    template<>
-    constexpr bool const safe_convertible<std::byte, std::bitset<bit_per_byte>> = true;
+    typename std::enable_if_t<is_convertible::value<target_type, origin_type>, target_type> value_cast(origin_type const & value)
+        noexcept(safe_convertible::value<target_type, origin_type>);
 
 /*
 虽然标准库引入了类型安全的，语义更明确的std::byte来替代char和unsigned char存储单字节2进制数据，
@@ -145,104 +224,42 @@ namespace OKps
 
     template
         std::byte value_cast<std::byte, unsigned long long>(unsigned long long const value)
-        noexcept(safe_convertible<std::byte, unsigned long long>);
+        noexcept(safe_convertible::value<std::byte, unsigned long long>);
     template
         std::byte value_cast<std::byte, long long>(long long const value)
-        noexcept(safe_convertible<std::byte, long long>);
+        noexcept(safe_convertible::value<std::byte, long long>);
     template
         std::byte value_cast<std::byte, char>(char const value)
-        noexcept(safe_convertible<std::byte, char>);
+        noexcept(safe_convertible::value<std::byte, char>);
     template
         std::byte value_cast<std::byte, std::bitset<bit_per_byte>>(std::bitset<bit_per_byte> const & value)
-        noexcept(safe_convertible<std::byte, std::bitset<bit_per_byte>>);
+        noexcept(safe_convertible::value<std::byte, std::bitset<bit_per_byte>>);
     template
         std::byte value_cast<std::byte, int>(int const value)
-        noexcept(safe_convertible<std::byte, int>);
+        noexcept(safe_convertible::value<std::byte, int>);
     template
         std::byte value_cast<std::byte, unsigned int>(unsigned int const value)
-        noexcept(safe_convertible<std::byte, unsigned int>);
+        noexcept(safe_convertible::value<std::byte, unsigned int>);
 
     template
         char value_cast<char, std::byte>(std::byte const value)
-        noexcept(safe_convertible<char, std::byte>);
+        noexcept(safe_convertible::value<char, std::byte>);
     template
         std::bitset<bit_per_byte> value_cast<std::bitset<bit_per_byte>, std::byte>(std::byte const value)
-        noexcept(safe_convertible<std::bitset<bit_per_byte>, std::byte>);
+        noexcept(safe_convertible::value<std::bitset<bit_per_byte>, std::byte>);
     template
         int value_cast<int, std::byte>(std::byte const value)
-        noexcept(safe_convertible<int, std::byte>);
+        noexcept(safe_convertible::value<int, std::byte>);
     template
         unsigned int value_cast<unsigned int, std::byte>(std::byte const value)
-        noexcept(safe_convertible<unsigned int, std::byte>);
-
-    template<>
-    constexpr bool const is_convertible<std::string, std::wstring> = implement::is_convertible<std::string, std::wstring>;
-    template<>
-    constexpr bool const is_convertible<std::wstring, std::string> = implement::is_convertible<std::wstring, std::string>;
-
-    template<>
-    constexpr bool const is_convertible<std::string, std::u8string> = implement::is_convertible<std::string, std::u8string>;
-    template<>
-    constexpr bool const is_convertible<std::u8string, std::string> = implement::is_convertible<std::u8string, std::string>;
-    template<>
-    constexpr bool const is_convertible<std::string, std::u16string> = implement::is_convertible<std::string, std::u16string>;
-    template<>
-    constexpr bool const is_convertible<std::u16string, std::string> = implement::is_convertible<std::u16string, std::string>;
-    template<>
-    constexpr bool const is_convertible<std::string, std::u32string> = implement::is_convertible<std::string, std::u32string>;
-    template<>
-    constexpr bool const is_convertible<std::u32string, std::string> = implement::is_convertible<std::u32string, std::string>;
-
-    template<>
-    constexpr bool const is_convertible<std::wstring, std::u8string> = implement::is_convertible<std::wstring, std::u8string>;
-    template<>
-    constexpr bool const is_convertible<std::u8string, std::wstring> = implement::is_convertible<std::u8string, std::wstring>;
-    template<>
-    constexpr bool const is_convertible<std::wstring, std::u16string> = implement::is_convertible<std::wstring, std::u16string>;
-    template<>
-    constexpr bool const is_convertible<std::u16string, std::wstring> = implement::is_convertible<std::u16string, std::wstring>;
-    template<>
-    constexpr bool const is_convertible<std::wstring, std::u32string> = implement::is_convertible<std::wstring, std::u32string>;
-    template<>
-    constexpr bool const is_convertible<std::u32string, std::wstring> = implement::is_convertible<std::u32string, std::wstring>;
-
-    template<>
-    constexpr bool const safe_convertible<std::string, std::wstring> = implement::safe_convertible<std::string, std::wstring>;
-    template<>
-    constexpr bool const safe_convertible<std::wstring, std::string> = implement::safe_convertible<std::wstring, std::string>;
-
-    template<>
-    constexpr bool const safe_convertible<std::string, std::u8string> = implement::safe_convertible<std::string, std::u8string>;
-    template<>
-    constexpr bool const safe_convertible<std::u8string, std::string> = implement::safe_convertible<std::u8string, std::string>;
-    template<>
-    constexpr bool const safe_convertible<std::string, std::u16string> = implement::safe_convertible<std::string, std::u16string>;
-    template<>
-    constexpr bool const safe_convertible<std::u16string, std::string> = implement::safe_convertible<std::u16string, std::string>;
-    template<>
-    constexpr bool const safe_convertible<std::string, std::u32string> = implement::safe_convertible<std::string, std::u32string>;
-    template<>
-    constexpr bool const safe_convertible<std::u32string, std::string> = implement::safe_convertible<std::u32string, std::string>;
-
-    template<>
-    constexpr bool const safe_convertible<std::wstring, std::u8string> = implement::safe_convertible<std::wstring, std::u8string>;
-    template<>
-    constexpr bool const safe_convertible<std::u8string, std::wstring> = implement::safe_convertible<std::u8string, std::wstring>;
-    template<>
-    constexpr bool const safe_convertible<std::wstring, std::u16string> = implement::safe_convertible<std::wstring, std::u16string>;
-    template<>
-    constexpr bool const safe_convertible<std::u16string, std::wstring> = implement::safe_convertible<std::u16string, std::wstring>;
-    template<>
-    constexpr bool const safe_convertible<std::wstring, std::u32string> = implement::safe_convertible<std::wstring, std::u32string>;
-    template<>
-    constexpr bool const safe_convertible<std::u32string, std::wstring> = implement::safe_convertible<std::u32string, std::wstring>;
+        noexcept(safe_convertible::value<unsigned int, std::byte>);
 
     template
         std::string value_cast<std::string, std::wstring>(std::wstring const &)
-        noexcept(safe_convertible<std::string, std::wstring>);
+        noexcept(safe_convertible::value<std::string, std::wstring>);
     template
         std::wstring value_cast<std::wstring, std::string>(std::string const &)
-        noexcept(safe_convertible<std::wstring, std::string>);
+        noexcept(safe_convertible::value<std::wstring, std::string>);
     /*
     c++20标准要求，char8_t与unsigned char具有相同的符号性、大小和对齐，
     又要求一个值从char转换到unsigned char再转换回char，值不变，
@@ -250,7 +267,7 @@ namespace OKps
     */
     template
         std::string value_cast<std::string, std::u8string>(std::u8string const &)
-        noexcept(safe_convertible<std::string, std::u8string>);
+        noexcept(safe_convertible::value<std::string, std::u8string>);
     /*
     c++20标准要求，char8_t与unsigned char具有相同的符号性、大小和对齐，
     又要求一个值从char转换到unsigned char再转换回char，值不变，
@@ -258,50 +275,43 @@ namespace OKps
     */
     template
         std::u8string value_cast<std::u8string, std::string>(std::string const &)
-        noexcept(safe_convertible<std::u8string, std::string>);
+        noexcept(safe_convertible::value<std::u8string, std::string>);
     template
         std::string value_cast<std::string, std::u16string>(std::u16string const &)
-        noexcept(safe_convertible<std::string, std::u16string>);
+        noexcept(safe_convertible::value<std::string, std::u16string>);
     template
         std::u16string value_cast<std::u16string, std::string>(std::string const &)
-        noexcept(safe_convertible<std::u16string, std::string>);
+        noexcept(safe_convertible::value<std::u16string, std::string>);
     template
         std::string value_cast<std::string, std::u32string>(std::u32string const &)
-        noexcept(safe_convertible<std::string, std::u32string>);
+        noexcept(safe_convertible::value<std::string, std::u32string>);
     template
         std::u32string value_cast<std::u32string, std::string>(std::string const &)
-        noexcept(safe_convertible<std::u32string, std::string>);
+        noexcept(safe_convertible::value<std::u32string, std::string>);
 
     template
         std::wstring value_cast<std::wstring, std::u8string>(std::u8string const &)
-        noexcept(safe_convertible<std::wstring, std::u8string>);
+        noexcept(safe_convertible::value<std::wstring, std::u8string>);
     template
         std::u8string value_cast<std::u8string, std::wstring>(std::wstring const &)
-        noexcept(safe_convertible<std::u8string, std::wstring>);
+        noexcept(safe_convertible::value<std::u8string, std::wstring>);
     template
         std::wstring value_cast<std::wstring, std::u16string>(std::u16string const &)
-        noexcept(safe_convertible<std::wstring, std::u16string>);
+        noexcept(safe_convertible::value<std::wstring, std::u16string>);
     template
         std::u16string value_cast<std::u16string, std::wstring>(std::wstring const &)
-        noexcept(safe_convertible<std::u16string, std::wstring>);
+        noexcept(safe_convertible::value<std::u16string, std::wstring>);
     template
         std::wstring value_cast<std::wstring, std::u32string>(std::u32string const &)
-        noexcept(safe_convertible<std::wstring, std::u32string>);
+        noexcept(safe_convertible::value<std::wstring, std::u32string>);
     template
         std::u32string value_cast<std::u32string, std::wstring>(std::wstring const &)
-        noexcept(safe_convertible<std::u32string, std::wstring>);
-
-    template<>
-    constexpr bool const safe_convertible<std::string, std::vector<std::byte>> = std::is_nothrow_default_constructible_v<std::string>
-        and noexcept(std::declval<std::string>().resize(std::declval<std::vector<std::byte> const &>().size()));
-    template<>
-    constexpr bool const safe_convertible<std::vector<std::byte>, std::string> = std::is_nothrow_default_constructible_v<std::vector<std::byte>>
-        and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::string const &>().size()));
+        noexcept(safe_convertible::value<std::u32string, std::wstring>);
 
     template
         std::string value_cast<std::string, std::vector<std::byte>>(std::vector<std::byte> const & data)
-        noexcept(safe_convertible<std::string, std::vector<std::byte>>);
+        noexcept(safe_convertible::value<std::string, std::vector<std::byte>>);
     template
         std::vector<std::byte> value_cast<std::vector<std::byte>, std::string>(std::string const & data)
-        noexcept(safe_convertible<std::vector<std::byte>, std::string>);
+        noexcept(safe_convertible::value<std::vector<std::byte>, std::string>);
 }

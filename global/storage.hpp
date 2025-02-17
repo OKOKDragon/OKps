@@ -24,34 +24,6 @@ namespace OKps
 	*/
 	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, std::set<std::filesystem::file_type> const & result_types = std::set<std::filesystem::file_type>());
 
-	class stream_position;
-
-	template<>
-	constexpr bool const safe_convertible<long long, stream_position> = noexcept(static_cast<base::integer<long long>>(base::integer<std::streamoff>(std::declval<std::streampos const &>())));
-	template<>
-	constexpr bool const safe_convertible<unsigned long long, stream_position> = noexcept(static_cast<base::integer<unsigned long long>>(base::integer<std::streamoff>(std::declval<std::streampos const &>())));
-	template<>
-	constexpr bool const safe_convertible<long, stream_position> = noexcept(static_cast<base::integer<long>>(base::integer<std::streamoff>(std::declval<std::streampos const &>())));
-	template<>
-	constexpr bool const safe_convertible<unsigned long, stream_position> = noexcept(static_cast<base::integer<unsigned long>>(base::integer<std::streamoff>(std::declval<std::streampos const &>())));
-	template<>
-	constexpr bool const safe_convertible<int, stream_position> = noexcept(static_cast<base::integer<int>>(base::integer<std::streamoff>(std::declval<std::streampos const &>())));
-	template<>
-	constexpr bool const safe_convertible<unsigned int, stream_position> = noexcept(static_cast<base::integer<unsigned int>>(base::integer<std::streamoff>(std::declval<std::streampos const &>())));
-
-	template<>
-	constexpr bool const safe_convertible<stream_position, long long> = noexcept(std::streampos(static_cast<base::integer<std::streamoff>>(base::integer<long long>(std::declval<long long const &>())).value()));
-	template<>
-	constexpr bool const safe_convertible<stream_position, unsigned long long> = noexcept(std::streampos(static_cast<base::integer<std::streamoff>>(base::integer<unsigned long long>(std::declval<unsigned long long const &>())).value()));
-	template<>
-	constexpr bool const safe_convertible<stream_position, long> = noexcept(std::streampos(static_cast<base::integer<std::streamoff>>(base::integer<long>(std::declval<long const &>())).value()));
-	template<>
-	constexpr bool const safe_convertible<stream_position, unsigned long> = noexcept(std::streampos(static_cast<base::integer<std::streamoff>>(base::integer<unsigned long>(std::declval<unsigned long const &>())).value()));
-	template<>
-	constexpr bool const safe_convertible<stream_position, int> = noexcept(std::streampos(static_cast<base::integer<std::streamoff>>(base::integer<int>(std::declval<int const &>())).value()));
-	template<>
-	constexpr bool const safe_convertible<stream_position, unsigned int> = noexcept(std::streampos(static_cast<base::integer<std::streamoff>>(base::integer<unsigned int>(std::declval<unsigned int const &>())).value()));
-
 	/*
 	此类是std::streampos的代理类，表示文件流中的绝对位置。
 
@@ -71,11 +43,11 @@ namespace OKps
 
 		template<typename value_type>
 		stream_position(value_type const)
-			noexcept(safe_convertible<stream_position, value_type>);
+			noexcept(safe_convertible::value<stream_position, value_type>);
 
 		template<typename value_type>
 		operator value_type()const
-			noexcept(safe_convertible<value_type, stream_position>);
+			noexcept(safe_convertible::value<value_type, stream_position>);
 
 		stream_position(stream_position const &)
 			noexcept(std::is_nothrow_copy_constructible_v<std::streampos>);
@@ -115,41 +87,41 @@ namespace OKps
 
 	template
 		stream_position::stream_position(long long const)
-		noexcept(safe_convertible<stream_position, long long>);
+		noexcept(safe_convertible::value<stream_position, long long>);
 	template
 		stream_position::stream_position(unsigned long long const)
-		noexcept(safe_convertible<stream_position, unsigned long long>);
+		noexcept(safe_convertible::value<stream_position, unsigned long long>);
 	template
 		stream_position::stream_position(long const)
-		noexcept(safe_convertible<stream_position, long>);
+		noexcept(safe_convertible::value<stream_position, long>);
 	template
 		stream_position::stream_position(unsigned long const)
-		noexcept(safe_convertible<stream_position, unsigned long>);
+		noexcept(safe_convertible::value<stream_position, unsigned long>);
 	template
 		stream_position::stream_position(unsigned int const)
-		noexcept(safe_convertible<stream_position, unsigned int>);
+		noexcept(safe_convertible::value<stream_position, unsigned int>);
 	template
 		stream_position::stream_position(int const)
-		noexcept(safe_convertible<stream_position, int>);
+		noexcept(safe_convertible::value<stream_position, int>);
 
 	template
 		stream_position::operator long long()const
-		noexcept(safe_convertible<long long, stream_position>);
+		noexcept(safe_convertible::value<long long, stream_position>);
 	template
 		stream_position::operator unsigned long long()const
-		noexcept(safe_convertible<unsigned long long, stream_position>);
+		noexcept(safe_convertible::value<unsigned long long, stream_position>);
 	template
 		stream_position::operator long()const
-		noexcept(safe_convertible<long, stream_position>);
+		noexcept(safe_convertible::value<long, stream_position>);
 	template
 		stream_position::operator unsigned long()const
-		noexcept(safe_convertible<unsigned long, stream_position>);
+		noexcept(safe_convertible::value<unsigned long, stream_position>);
 	template
 		stream_position::operator int()const
-		noexcept(safe_convertible<int, stream_position>);
+		noexcept(safe_convertible::value<int, stream_position>);
 	template
 		stream_position::operator unsigned int()const
-		noexcept(safe_convertible<unsigned int, stream_position>);
+		noexcept(safe_convertible::value<unsigned int, stream_position>);
 
 	template<typename stream_type>
 	class stream_proxy;

@@ -1500,9 +1500,6 @@ namespace OKps
         result.resize(length);
 
         //初始化已知素数数组
-
-        auto const former_locale = std::locale::global(text_encoding::utf_8);
-
         std::ifstream prime_file;
         std::filesystem::path prime_file_route = u8".\\prime";
         prime_file.open(prime_file_route, std::ios::in | std::ios::binary);
@@ -1512,7 +1509,7 @@ namespace OKps
                 + std::filesystem::absolute(prime_file_route).string();
             std::cout << hint << "\n";
             OKps::wait_input("");
-            std::locale::global(former_locale);
+
             throw std::runtime_error(hint);
         }
         std::uintmax_t prime_value;
@@ -1524,14 +1521,12 @@ namespace OKps
                     + std::filesystem::absolute(prime_file_route).string();
                 std::cout << hint << "\n";
                 OKps::wait_input("");
-                std::locale::global(former_locale);
                 throw std::runtime_error(hint);
             }
             result[i] = prime_value;
         }
 
         //已知素数数组完成初始化
-        std::locale::global(former_locale);
         return result;
     }
 

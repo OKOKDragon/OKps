@@ -918,14 +918,14 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 	}
 	template<typename value_type>
 	stream_position::stream_position(value_type const position)
-		noexcept(safe_convertible<stream_position, value_type>)
+		noexcept(safe_convertible::value<stream_position, value_type>)
 		:MEMBER_position(static_cast<base::integer<std::streamoff>>(base::integer<value_type>(position)).value())
 	{
 	}
 
 	template<typename value_type>
 	stream_position::operator value_type()const
-		noexcept(safe_convertible<value_type, stream_position>)
+		noexcept(safe_convertible::value<value_type, stream_position>)
 	{
 		return static_cast<base::integer<value_type>>(base::integer<std::streamoff>(this->MEMBER_position)).value();
 	}

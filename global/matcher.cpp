@@ -1,6 +1,5 @@
 
 #include <stdexcept>
-#include <locale>
 
 #include ".\matcher.hpp"
 
@@ -84,7 +83,7 @@ namespace OKps
 		}
 		return *(ref->second);
 	}
-	base::handler<false>& order_matcher::find(std::string const order)
+	base::handler<false> & order_matcher::find(std::string const order)
 	{
 		auto ref = this->MEMBER_orders.find(order);
 		if (ref == this->MEMBER_orders.end())

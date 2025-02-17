@@ -4,8 +4,8 @@
 namespace OKps
 {
     template<typename target_type, copy_passing origin_type>
-    typename std::enable_if_t<is_convertible<target_type, origin_type>, target_type> value_cast(origin_type const value)
-        noexcept(safe_convertible<target_type, origin_type>)
+    typename std::enable_if_t<is_convertible::value<target_type, origin_type>, target_type> value_cast(origin_type const value)
+        noexcept(safe_convertible::value<target_type, origin_type>)
     {
         static_assert(not std::is_same_v<origin_type, target_type>);
         using middle_type = std::underlying_type<std::byte>::type;
@@ -65,8 +65,8 @@ namespace OKps
     }
 
     template<typename target_type, reference_passing origin_type>
-    typename std::enable_if_t<is_convertible<target_type, origin_type>, target_type> value_cast(origin_type const & value)
-        noexcept(safe_convertible<target_type, origin_type>)
+    typename std::enable_if_t<is_convertible::value<target_type, origin_type>, target_type> value_cast(origin_type const & value)
+        noexcept(safe_convertible::value<target_type, origin_type>)
     {
         static_assert(not std::is_same_v<origin_type, target_type>);
         if constexpr (std::is_same_v<std::byte, target_type> and std::is_same_v<origin_type, std::bitset<bit_per_byte>>)
@@ -98,7 +98,7 @@ namespace OKps
             }
             return result;
         }
-        else if constexpr (implement::stl_string_type<target_type> and implement::stl_string_type<origin_type>)
+        else if constexpr (stl_string_type<target_type> and stl_string_type<origin_type>)
         {
             target_type result;
             result.resize(value.size());

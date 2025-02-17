@@ -66,12 +66,4 @@ namespace OKps::test
     //测试 OKps::base::handler
     void test_handler();
 
-    /*
-    测试 OKps::string::requirement
-
-    要求用户从 std::cin 原封不动地输入字符串 expected，并使用 OKps::string::get_line 函数接收输入，
-    使用 OKps::string::requirement 函数对象检查输入是否正确。
-    */
-    void string_requirement(std::string const & expected = "噫吁嚱，危乎高哉！蜀道之难，难于上青天！");
-
 }
