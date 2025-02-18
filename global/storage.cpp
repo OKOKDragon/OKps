@@ -63,7 +63,11 @@ namespace OKps
 			{
 				work_threads = length / least_buffer_length;
 			}
-			std::uintmax_t const buffer_length = length / work_threads;
+			std::uintmax_t buffer_length = 0;
+			if (work_threads != 0)
+			{
+				buffer_length = length / work_threads;
+			}
 			std::uintmax_t const last_buffer_length = length - buffer_length * work_threads;
 			class compare_worker final
 			{
@@ -194,9 +198,8 @@ namespace OKps
 				}
 			}
 			result = temp_result;
-
-			return result;
 		}
+		return result;
 	}
 	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, std::set<std::filesystem::file_type> const & result_types)
 	{
