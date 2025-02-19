@@ -18,11 +18,6 @@ namespace OKps
 	thread 参数表示建议使用的线程数
 	*/
 	bool compare(std::filesystem::path const & left, std::filesystem::path const & right, std::uintmax_t const thread = 0);
-	/*
-	深度遍历目录 directory，递归地获取此目录下所有文件、子目录、子目录下的文件和子目录
-	result_types 参数决定此函数返回的结果中排除哪些类型的文件
-	*/
-	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, std::set<std::filesystem::file_type> const & result_types = std::set<std::filesystem::file_type>());
 
 	/*
 	此类是std::streampos的代理类，表示文件流中的绝对位置。
@@ -161,6 +156,138 @@ namespace OKps
 		std::fstream const & file_stream()const noexcept;
 		std::filesystem::path const & file_path()const noexcept;
 
+	};
+
+	/*
+	目录结构树
+	*/
+	class directory_tree final
+	{
+	private:
+		using path_type = std::filesystem::path;
+	public:
+		class path_judgement
+		{
+		public:
+			path_judgement()noexcept;
+			/*
+			此析构函数本身不会抛出异常
+			但是为了允许派生类的析构函数抛出异常，故没有声明noexcept
+			*/
+			virtual ~path_judgement();
+			path_judgement(path_judgement const &) = delete;
+			path_judgement(path_judgement &&) = delete;
+			void operator =(path_judgement const &) = delete;
+			void operator =(path_judgement &&) = delete;
+			//返回对自身的引用
+			virtual path_judgement & self()noexcept;
+			//返回对自身的引用
+			virtual path_judgement const & self()const noexcept;
+			//返回this指针
+			virtual path_judgement * operator &()noexcept;
+			//返回this指针
+			virtual path_judgement const * operator&()const noexcept;
+			//判断一个路径是否满足一定条件
+			virtual bool judge(path_type const &) = 0;
+		};
+		/*
+		目录结构树的节点
+		每个节点都对应文件系统中的一个路径
+		如果该路径是一个目录，则该节点还包含此目录下的所有子目录和文件对应的节点，但不包括子目录中的内容。
+		*/
+		class node final
+		{
+			friend class directory_tree;
+		private:
+			path_type MEMBER_path;
+			std::vector<std::size_t> MEMBER_content;
+			directory_tree const * MEMBER_owner;
+			node(path_type const & path, directory_tree const * const owner)
+				noexcept(std::is_nothrow_copy_constructible_v<path_type>
+				and std::is_nothrow_default_constructible_v<std::vector<std::size_t>>);
+			node(path_type && path, directory_tree const * const owner)
+				noexcept(std::is_nothrow_move_constructible_v<path_type>
+				and std::is_nothrow_default_constructible_v<std::vector<std::size_t>>);
+			void add_content(std::size_t const content)
+				noexcept(noexcept(std::declval<std::vector<std::size_t> &>().push_back(std::declval<std::size_t const >())));
+		public:
+			//返回此节点对应的路径
+			path_type const & path()const noexcept;
+			operator path_type const & ()const noexcept;
+			//如果此节点是一个目录，返回该目录下的所有条目；否则，返回一个空列表。
+			std::vector<node const *> content()const;
+			//如果此节点是一个目录，返回该目录下符合judgement判断函数的所有条目；否则，返回一个空列表。
+			std::vector<node const *> content(path_judgement & judgement)const;
+			~node()
+				noexcept(std::is_nothrow_destructible_v<path_type>
+				and std::is_nothrow_destructible_v<std::vector<std::size_t>>);
+			node(node &&)
+				noexcept(std::is_nothrow_move_constructible_v<path_type>
+				and std::is_nothrow_move_constructible_v<std::vector<std::size_t>>);
+			void operator =(node &&)
+				noexcept(std::is_nothrow_move_assignable_v<path_type>
+				and std::is_nothrow_move_assignable_v<std::vector<std::size_t>>);
+			node(node const &)
+				noexcept(std::is_nothrow_copy_constructible_v<path_type>
+				and std::is_nothrow_copy_constructible_v<std::vector<std::size_t>>);
+			void operator =(node const &)
+				noexcept(std::is_nothrow_copy_assignable_v<path_type>
+				and std::is_nothrow_copy_assignable_v<std::vector<std::size_t>>);
+		};
+	private:
+		std::vector<node> MEMBER_storage;
+		std::vector<node> & storage()noexcept;
+		std::vector<node> const & storage()const noexcept;
+	public:
+		//返回根节点
+		node const * root()const;
+		//路径root是一个既存目录，此类以它为根节点，建立目录结构树
+		directory_tree(path_type const & root);
+		//路径root是一个既存目录，此类以它为根节点，建立目录结构树
+		directory_tree(path_type && root);
+		~directory_tree()
+			noexcept(std::is_nothrow_destructible_v<std::vector<node>>);
+		directory_tree(directory_tree const &)
+			noexcept(std::is_nothrow_copy_constructible_v<std::vector<node>>);
+		void operator =(directory_tree const &)
+			noexcept(std::is_nothrow_copy_assignable_v<std::vector<node>>);
+		directory_tree(directory_tree &&)
+			noexcept(std::is_nothrow_move_constructible_v<std::vector<node>>);
+		void operator =(directory_tree &&)
+			noexcept(std::is_nothrow_move_assignable_v<std::vector<node>>);
+		/*
+		刷新
+		相当于使用 (*this)=directory_tree(this->root_path())
+		如果根节点所映射的目录已经不存在，则清空当前对象，并抛出异常。
+		*/
+		void refresh();
+	private:
+		//构造空树
+		directory_tree()
+			noexcept(std::is_nothrow_default_constructible_v<std::vector<node>>);
+		//FLAG_refresh控制抛出的异常类型
+		directory_tree(path_type && root, bool const FLAG_refresh);
+		//FLAG_refresh控制抛出的异常类型
+		directory_tree(path_type const & root, bool const FLAG_refresh);
+
+		class refresh_failure final
+		{
+		private:
+			std::runtime_error MEMBER_error;
+		public:
+			refresh_failure(std::string const &)
+				noexcept(noexcept(std::runtime_error(std::declval<std::string const &>())));
+			~refresh_failure()
+				noexcept(std::is_nothrow_destructible_v<std::runtime_error>);
+			refresh_failure(refresh_failure const &)
+				noexcept(std::is_nothrow_copy_constructible_v<std::runtime_error>);
+			void operator =(refresh_failure const &)
+				noexcept(std::is_nothrow_copy_assignable_v<std::runtime_error>);
+			std::runtime_error release()const
+				noexcept(std::is_nothrow_copy_constructible_v<std::runtime_error>);
+			refresh_failure(refresh_failure &&) = delete;
+			void operator =(refresh_failure &&) = delete;
+		};
 	};
 
 	/*

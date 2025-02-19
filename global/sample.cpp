@@ -10,6 +10,141 @@
 
 namespace OKps::sample
 {
+    void erase_duplicate_files(std::filesystem::path const & dir)
+    {
+        directory_tree file_tree(dir);
+        class list_type final
+        {
+        public:
+            using group_type = std::set<std::filesystem::path const *>;
+            using storage_type = std::vector<group_type>;
+        private:
+            storage_type MEMBER_storage;
+            //std::set<group_type *> MEMBER_list;
+        public:
+            list_type()
+            {
+            }
+            ~list_type()noexcept
+            {
+            }
+            list_type(list_type const &) = delete;
+            void operator =(list_type const &) = delete;
+            list_type(list_type && origin)noexcept
+                :MEMBER_storage(std::move(origin.MEMBER_storage))
+            {
+            }
+            void operator =(list_type && origin)noexcept
+            {
+                this->MEMBER_storage = std::move(origin.MEMBER_storage);
+            }
+            group_type const * find_group(std::filesystem::path const & value)const
+            {
+                group_type const * result = nullptr;
+                for (std::size_t i = 0;i < this->MEMBER_storage.size();++i)
+                {
+                    if (this->MEMBER_storage[i].find(&value) != this->MEMBER_storage[i].end())
+                    {
+                        result = (&(this->MEMBER_storage[i]));
+                        break;
+                    }
+                }
+                return result;
+            }
+            group_type * find_group(std::filesystem::path const & value)
+            {
+                group_type * result = nullptr;
+                for (std::size_t i = 0;i < this->MEMBER_storage.size();++i)
+                {
+                    if (this->MEMBER_storage[i].find(&value) != this->MEMBER_storage[i].end())
+                    {
+                        result = (&(this->MEMBER_storage[i]));
+                        break;
+                    }
+                }
+                return result;
+            }
+            void insert(std::filesystem::path const & file_path_1, std::filesystem::path const & file_path_2)
+            {
+                group_type TEMP_new_group;
+                TEMP_new_group.insert(&file_path_1);
+                TEMP_new_group.insert(&file_path_2);
+                this->MEMBER_storage.push_back(std::move(TEMP_new_group));
+            }
+            std::size_t size()const
+            {
+                return this->MEMBER_storage.size();
+            }
+            group_type const & operator [](std::size_t const position)const
+            {
+                return this->MEMBER_storage[position];
+            }
+            group_type & operator [](std::size_t const position)
+            {
+                return this->MEMBER_storage[position];
+            }
+        };
+        class regular_file_judgement final : public OKps::directory_tree::path_judgement
+        {
+        private:
+            using base_type = OKps::directory_tree::path_judgement;
+        public:
+            regular_file_judgement()noexcept
+                : base_type()
+            {
+            }
+            ~regular_file_judgement() noexcept override
+            {
+            }
+            bool judge(std::filesystem::path const & file)noexcept override
+            {
+                return std::filesystem::is_regular_file(file);
+            }
+            regular_file_judgement(regular_file_judgement const &) = delete;
+            regular_file_judgement(regular_file_judgement &&) = delete;
+            void operator =(regular_file_judgement const &) = delete;
+            void operator =(regular_file_judgement &&) = delete;
+        };
+        regular_file_judgement regular_judge;
+        list_type same_list;
+        auto const file_list = file_tree.root()->content(regular_judge);
+        for (std::size_t i = 0;i < file_list.size();++i)
+        {
+            for (std::size_t j = 0;j < file_list.size();++j)
+            {
+                if (i != j)
+                {
+                    auto * const i_group = same_list.find_group(file_list[i]->path());
+                    auto * const j_group = same_list.find_group(file_list[j]->path());
+                    if ((not(i_group and j_group)) and compare(file_list[i]->path(), file_list[j]->path()))
+                    {
+                        if (i_group and (not j_group))
+                        {
+                            i_group->insert(&(file_list[j]->path()));
+                        }
+                        else if ((not i_group) and j_group)
+                        {
+                            j_group->insert(&(file_list[i]->path()));
+                        }
+                        else
+                        {
+                            same_list.insert(file_list[i]->path(), file_list[j]->path());
+                        }
+                    }
+                }
+            }
+        }
+        //OKps::wait_input();
+        for (std::size_t i = 0;i < same_list.size();++i)
+        {
+            while (same_list[i].size() > 1)
+            {
+                auto const iterator = same_list[i].begin();
+                std::filesystem::remove(*(*iterator));
+                same_list[i].erase(iterator);
+            }
+        }
+    }
     void test_file_output_speed(std::filesystem::path const & file_path, std::size_t const block_count, std::size_t const block_size)
     {
         if (std::filesystem::exists(file_path))

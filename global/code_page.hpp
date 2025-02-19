@@ -16,8 +16,7 @@ namespace OKps
     {
     private:
         /*
-        因不想在此文件中包含系统头文件Windows.h，以免引发名字冲突，
-        故此类采用声明与实现分离的方式。
+        此类采用实现分离的方式，以避免在定义类成员时引入Windows.h中的宏。
         */
         class implement;
         static std::unique_ptr<implement> const MEMBER_implement;

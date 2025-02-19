@@ -6,7 +6,13 @@
 
 namespace OKps::sample
 {
-
+    /*
+    dir是一个目录，此函数比较并清除dir目录下的重复文件
+    此函数只比较直接属于dir目录的文件，不比较dir目录下的子目录中的文件
+    此函数只比较被std::filesystem判定为regular_file的文件
+    重复指的是两个文件按字节比较完全相同，不考虑其文件名、修改时间等
+    */
+    void erase_duplicate_files(std::filesystem::path const & dir);
     /*
     在目录 holder_dir 下生成 file_count 个以随机非负整数作文件名的OKps::crypt::cipher密钥文件。
     */

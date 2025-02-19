@@ -2,6 +2,7 @@
 #include <fstream>
 #include <thread>
 #include <atomic>
+#include <queue>
 
 #include ".\value_cast.hpp"
 
@@ -201,26 +202,243 @@ namespace OKps
 		}
 		return result;
 	}
-	std::vector<std::filesystem::path> totally_traverse_directory(std::filesystem::path const & directory, std::set<std::filesystem::file_type> const & result_types)
+	directory_tree::path_judgement::path_judgement()noexcept
 	{
-		namespace fs = std::filesystem;
-
-		if (not fs::is_directory(directory))
+	}
+	directory_tree::path_judgement::~path_judgement()
+	{
+	}
+	directory_tree::path_judgement & directory_tree::path_judgement::self()noexcept
+	{
+		return *this;
+	}
+	directory_tree::path_judgement const & directory_tree::path_judgement::self()const noexcept
+	{
+		return *this;
+	}
+	directory_tree::path_judgement * directory_tree::path_judgement::operator &()noexcept
+	{
+		return this;
+	}
+	directory_tree::path_judgement const * directory_tree::path_judgement::operator&()const noexcept
+	{
+		return this;
+	}
+	directory_tree::path_type const & directory_tree::node::path()const noexcept
+	{
+		return this->MEMBER_path;
+	}
+	directory_tree::node::operator directory_tree::path_type const & ()const noexcept
+	{
+		return this->MEMBER_path;
+	}
+	directory_tree::directory_tree(path_type const & root)
+		:directory_tree(path_type(root))
+	{
+	}
+	directory_tree::directory_tree(directory_tree const & origin)
+		noexcept(std::is_nothrow_copy_constructible_v<std::vector<node>>)
+		:MEMBER_storage(origin.MEMBER_storage)
+	{
+	}
+	void directory_tree::operator =(directory_tree const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::vector<node>>)
+	{
+		this->MEMBER_storage = origin.MEMBER_storage;
+	}
+	directory_tree::directory_tree(directory_tree && origin)
+		noexcept(std::is_nothrow_move_constructible_v<std::vector<node>>)
+		:MEMBER_storage(std::move(origin.MEMBER_storage))
+	{
+	}
+	void directory_tree::operator =(directory_tree && origin)
+		noexcept(std::is_nothrow_move_assignable_v<std::vector<node>>)
+	{
+		this->MEMBER_storage = std::move(origin.MEMBER_storage);
+	}
+	directory_tree::node::node(node && origin)
+		noexcept(std::is_nothrow_move_constructible_v<path_type>
+		and std::is_nothrow_move_constructible_v<std::vector<std::size_t>>)
+		:MEMBER_path(std::move(origin.MEMBER_path))
+		, MEMBER_content(std::move(origin.MEMBER_content))
+		, MEMBER_owner(origin.MEMBER_owner)
+	{
+		origin.MEMBER_owner = nullptr;
+	}
+	void directory_tree::node::operator =(node && origin)
+		noexcept(std::is_nothrow_move_assignable_v<path_type>
+		and std::is_nothrow_move_assignable_v<std::vector<std::size_t>>)
+	{
+		this->MEMBER_path = std::move(origin.MEMBER_path);
+		this->MEMBER_content = std::move(origin.MEMBER_content);
+		this->MEMBER_owner = origin.MEMBER_owner;
+		origin.MEMBER_owner = nullptr;
+	}
+	directory_tree::node::node(node const & origin)
+		noexcept(std::is_nothrow_copy_constructible_v<path_type>
+		and std::is_nothrow_copy_constructible_v<std::vector<std::size_t>>)
+		:MEMBER_path(origin.MEMBER_path)
+		, MEMBER_content(origin.MEMBER_content)
+		, MEMBER_owner(origin.MEMBER_owner)
+	{
+	}
+	void directory_tree::node::operator =(node const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<path_type>
+		and std::is_nothrow_copy_assignable_v<std::vector<std::size_t>>)
+	{
+		this->MEMBER_path = origin.MEMBER_path;
+		this->MEMBER_content = origin.MEMBER_content;
+		this->MEMBER_owner = origin.MEMBER_owner;
+	}
+	directory_tree::directory_tree()
+		noexcept(std::is_nothrow_default_constructible_v<std::vector<node>>)
+	{
+	}
+	void directory_tree::refresh()
+	{
+		directory_tree fresh_tree;
+		try
 		{
-
-			std::string const hint = "路径 " + directory.string() + " 不是既存目录";
-			throw std::invalid_argument(hint);
+			fresh_tree = directory_tree(this->MEMBER_storage[0].path(), true);
 		}
-
-		std::vector<std::filesystem::path> result;
-		for (auto entry = fs::recursive_directory_iterator(directory, fs::directory_options::skip_permission_denied); entry != fs::end(entry); ++entry)
+		catch (refresh_failure const & error)
 		{
-			if (result_types.find(entry->symlink_status().type()) == result_types.end())
+			this->MEMBER_storage = std::vector<node>();
+			throw error.release();
+		}
+		this->MEMBER_storage = std::move(fresh_tree.MEMBER_storage);
+	}
+	std::vector<directory_tree::node> & directory_tree::storage()noexcept
+	{
+		return this->MEMBER_storage;
+	}
+	std::vector<directory_tree::node> const & directory_tree::storage()const noexcept
+	{
+		return this->MEMBER_storage;
+	}
+	std::vector<directory_tree::node const *> directory_tree::node::content()const
+	{
+		std::vector<node const *> result;
+		result.resize(this->MEMBER_content.size());
+		for (std::size_t i = 0;i < this->MEMBER_content.size();++i)
+		{
+			result[i] = &(this->MEMBER_owner->storage()[this->MEMBER_content[i]]);
+		}
+		return result;
+	}
+	std::vector<directory_tree::node const *> directory_tree::node::content(path_judgement & judgement)const
+	{
+		std::vector<node const *> result;
+		for (std::size_t i = 0;i < this->MEMBER_content.size();++i)
+		{
+			auto const & REF_node = this->MEMBER_owner->storage()[this->MEMBER_content[i]];
+			if (judgement.judge(REF_node.path()))
 			{
-				result.push_back(entry->path());
+				result.push_back(&REF_node);
 			}
 		}
 		return result;
+	}
+	directory_tree::node const * directory_tree::root()const
+	{
+		if (this->MEMBER_storage.empty())
+		{
+			throw std::logic_error("此对象已失效，禁止访问");
+		}
+		return &(this->MEMBER_storage[0]);
+	}
+	directory_tree::directory_tree(path_type && root)
+		:directory_tree(std::move(root), false)
+	{
+	}
+	directory_tree::directory_tree(path_type const & root, bool const FLAG_refresh)
+		:directory_tree(path_type(root), FLAG_refresh)
+	{
+	}
+	directory_tree::refresh_failure::refresh_failure(std::string const & hint)
+		noexcept(noexcept(std::runtime_error(std::declval<std::string const &>())))
+		:MEMBER_error(hint)
+	{
+	}
+	directory_tree::refresh_failure::~refresh_failure()
+		noexcept(std::is_nothrow_destructible_v<std::runtime_error>)
+	{
+	}
+	directory_tree::refresh_failure::refresh_failure(refresh_failure const & origin)
+		noexcept(std::is_nothrow_copy_constructible_v<std::runtime_error>)
+		:MEMBER_error(origin.MEMBER_error)
+	{
+	}
+	void directory_tree::refresh_failure::operator =(refresh_failure const & origin)
+		noexcept(std::is_nothrow_copy_assignable_v<std::runtime_error>)
+	{
+		this->MEMBER_error = origin.MEMBER_error;
+	}
+	std::runtime_error directory_tree::refresh_failure::release()const
+		noexcept(std::is_nothrow_copy_constructible_v<std::runtime_error>)
+	{
+		return this->MEMBER_error;
+	}
+	directory_tree::directory_tree(path_type && root, bool const FLAG_refresh)
+	{
+		namespace fs = std::filesystem;
+		if (not fs::is_directory(root))
+		{
+			if (FLAG_refresh)
+			{
+				std::string const hint = "目录 " + root.string() + " 不复存在";
+				throw refresh_failure(hint);
+			}
+			else
+			{
+				std::string const hint = "路径 " + root.string() + " 不是既存目录";
+				throw std::invalid_argument(hint);
+			}
+		}
+		this->MEMBER_storage.push_back(node(std::move(root), this));
+		std::queue<std::size_t> TEMP_queue;
+		TEMP_queue.push(0);
+		while (not TEMP_queue.empty())
+		{
+			for (auto entry = fs::directory_iterator(this->MEMBER_storage[TEMP_queue.front()].path(), fs::directory_options::skip_permission_denied); entry != fs::end(entry); ++entry)
+			{
+				this->MEMBER_storage.push_back(node(entry->path(), this));
+				this->MEMBER_storage[TEMP_queue.front()].add_content(this->MEMBER_storage.size() - 1);
+				if (entry->is_directory())
+				{
+					TEMP_queue.push(this->MEMBER_storage.size() - 1);
+				}
+			}
+			TEMP_queue.pop();
+		}
+	}
+	directory_tree::node::~node()
+		noexcept(std::is_nothrow_destructible_v<path_type>
+		and std::is_nothrow_destructible_v<std::vector<std::size_t>>)
+	{
+	}
+	directory_tree::~directory_tree()
+		noexcept(std::is_nothrow_destructible_v<std::vector<node>>)
+	{
+	}
+	void directory_tree::node::add_content(std::size_t const content)
+		noexcept(noexcept(std::declval<std::vector<std::size_t> &>().push_back(std::declval<std::size_t const >())))
+	{
+		this->MEMBER_content.push_back(content);
+	}
+	directory_tree::node::node(path_type const & path, directory_tree const * const owner)
+		noexcept(std::is_nothrow_copy_constructible_v<path_type>
+		and std::is_nothrow_default_constructible_v<std::vector<std::size_t>>)
+		:MEMBER_path(path)
+		, MEMBER_owner(owner)
+	{
+	}
+	directory_tree::node::node(path_type && path, directory_tree const * const owner)
+		noexcept(std::is_nothrow_move_constructible_v<path_type>
+		and std::is_nothrow_default_constructible_v<std::vector<std::size_t>>)
+		:MEMBER_path(std::move(path))
+		, MEMBER_owner(owner)
+	{
 	}
 	field::field(std::string const & data)
 		noexcept(std::is_nothrow_copy_constructible_v<std::string>)
