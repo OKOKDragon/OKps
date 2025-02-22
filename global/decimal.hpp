@@ -25,5 +25,15 @@ namespace OKps
         void operator =(decimal const & origin);
         decimal(decimal && origin)noexcept;
         void operator =(decimal && origin)noexcept;
+
+        decimal operator +(decimal const &)const;
+        decimal operator -(decimal const &)const;
+        decimal operator *(decimal const &)const;
+        decimal operator /(decimal const &)const;
+        decimal operator +=(decimal const &);
+        decimal operator -=(decimal const &);
+        decimal operator *=(decimal const &);
+        decimal operator /=(decimal const &);
+
     };
 }

@@ -107,7 +107,7 @@ namespace OKps::sample
         };
         regular_file_judgement regular_judge;
         list_type same_list;
-        auto const file_list = file_tree.root()->content(regular_judge);
+        auto const file_list = file_tree.root().content(regular_judge);
         for (std::size_t i = 0;i < file_list.size();++i)
         {
             for (std::size_t j = 0;j < file_list.size();++j)

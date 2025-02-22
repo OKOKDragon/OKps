@@ -456,4 +456,49 @@ namespace OKps::base
 	{
 		return this;
 	}
+
+	basic_lock::basic_lock()
+		noexcept(std::is_nothrow_default_constructible_v<std::thread::id>)
+		:MEMBER_locked_flag(false)
+	{
+	}
+	basic_lock::~basic_lock()
+	{
+	}
+	void basic_lock::lock()
+	{
+		this->lock_implement();
+		this->MEMBER_thread_id = std::this_thread::get_id();
+		this->MEMBER_locked_flag = true;
+	}
+	void basic_lock::unlock()
+	{
+		this->MEMBER_thread_id = std::thread::id();
+		this->MEMBER_locked_flag = false;
+		this->unlock_implement();
+	}
+	std::thread::id const & basic_lock::owner_thread() const noexcept
+	{
+		return this->MEMBER_thread_id;
+	}
+	bool const & basic_lock::is_locked()const noexcept
+	{
+		return this->MEMBER_locked_flag;
+	}
+	basic_lock & basic_lock::self()noexcept
+	{
+		return *this;
+	}
+	basic_lock const & basic_lock::self()const noexcept
+	{
+		return *this;
+	}
+	basic_lock * basic_lock::operator &()noexcept
+	{
+		return this;
+	}
+	basic_lock const * basic_lock::operator &()const noexcept
+	{
+		return this;
+	}
 }

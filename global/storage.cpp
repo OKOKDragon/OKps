@@ -240,21 +240,43 @@ namespace OKps
 		noexcept(std::is_nothrow_copy_constructible_v<std::vector<node>>)
 		:MEMBER_storage(origin.MEMBER_storage)
 	{
+		for (std::size_t i = 0;i < this->MEMBER_storage.size();++i)
+		{
+			this->MEMBER_storage[i].MEMBER_owner = this;
+		}
 	}
 	void directory_tree::operator =(directory_tree const & origin)
 		noexcept(std::is_nothrow_copy_assignable_v<std::vector<node>>)
 	{
-		this->MEMBER_storage = origin.MEMBER_storage;
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_storage = origin.MEMBER_storage;
+			for (std::size_t i = 0;i < this->MEMBER_storage.size();++i)
+			{
+				this->MEMBER_storage[i].MEMBER_owner = this;
+			}
+		}
 	}
 	directory_tree::directory_tree(directory_tree && origin)
 		noexcept(std::is_nothrow_move_constructible_v<std::vector<node>>)
 		:MEMBER_storage(std::move(origin.MEMBER_storage))
 	{
+		for (std::size_t i = 0;i < this->MEMBER_storage.size();++i)
+		{
+			this->MEMBER_storage[i].MEMBER_owner = this;
+		}
 	}
 	void directory_tree::operator =(directory_tree && origin)
 		noexcept(std::is_nothrow_move_assignable_v<std::vector<node>>)
 	{
-		this->MEMBER_storage = std::move(origin.MEMBER_storage);
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_storage = std::move(origin.MEMBER_storage);
+			for (std::size_t i = 0;i < this->MEMBER_storage.size();++i)
+			{
+				this->MEMBER_storage[i].MEMBER_owner = this;
+			}
+		}
 	}
 	directory_tree::node::node(node && origin)
 		noexcept(std::is_nothrow_move_constructible_v<path_type>
@@ -269,10 +291,13 @@ namespace OKps
 		noexcept(std::is_nothrow_move_assignable_v<path_type>
 		and std::is_nothrow_move_assignable_v<std::vector<std::size_t>>)
 	{
-		this->MEMBER_path = std::move(origin.MEMBER_path);
-		this->MEMBER_content = std::move(origin.MEMBER_content);
-		this->MEMBER_owner = origin.MEMBER_owner;
-		origin.MEMBER_owner = nullptr;
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_path = std::move(origin.MEMBER_path);
+			this->MEMBER_content = std::move(origin.MEMBER_content);
+			this->MEMBER_owner = origin.MEMBER_owner;
+			origin.MEMBER_owner = nullptr;
+		}
 	}
 	directory_tree::node::node(node const & origin)
 		noexcept(std::is_nothrow_copy_constructible_v<path_type>
@@ -286,9 +311,12 @@ namespace OKps
 		noexcept(std::is_nothrow_copy_assignable_v<path_type>
 		and std::is_nothrow_copy_assignable_v<std::vector<std::size_t>>)
 	{
-		this->MEMBER_path = origin.MEMBER_path;
-		this->MEMBER_content = origin.MEMBER_content;
-		this->MEMBER_owner = origin.MEMBER_owner;
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_path = origin.MEMBER_path;
+			this->MEMBER_content = origin.MEMBER_content;
+			this->MEMBER_owner = origin.MEMBER_owner;
+		}
 	}
 	directory_tree::directory_tree()
 		noexcept(std::is_nothrow_default_constructible_v<std::vector<node>>)
@@ -339,13 +367,13 @@ namespace OKps
 		}
 		return result;
 	}
-	directory_tree::node const * directory_tree::root()const
+	directory_tree::node const & directory_tree::root()const
 	{
 		if (this->MEMBER_storage.empty())
 		{
 			throw std::logic_error("此对象已失效，禁止访问");
 		}
-		return &(this->MEMBER_storage[0]);
+		return this->MEMBER_storage[0];
 	}
 	directory_tree::directory_tree(path_type && root)
 		:directory_tree(std::move(root), false)
@@ -372,7 +400,10 @@ namespace OKps
 	void directory_tree::refresh_failure::operator =(refresh_failure const & origin)
 		noexcept(std::is_nothrow_copy_assignable_v<std::runtime_error>)
 	{
-		this->MEMBER_error = origin.MEMBER_error;
+		if (this != std::addressof(origin))
+		{
+			this->MEMBER_error = origin.MEMBER_error;
+		}
 	}
 	std::runtime_error directory_tree::refresh_failure::release()const
 		noexcept(std::is_nothrow_copy_constructible_v<std::runtime_error>)

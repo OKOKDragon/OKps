@@ -392,4 +392,42 @@ and noexcept(std::make_shared<marker_type>(std::declval<marked *>())));
 			return this;
 		}
 	};
+
+	/*
+	满足具名要求“可基本锁定”的锁，即使用 lock() 和 unlock() 成员函数表示上锁和解锁。
+	*/
+	class basic_lock
+	{
+	private:
+		std::thread::id MEMBER_thread_id;
+		bool MEMBER_locked_flag;
+	public:
+		basic_lock()
+			noexcept(std::is_nothrow_default_constructible_v<std::thread::id>);
+		/*
+		此析构函数本身不会抛出异常
+		不声明为noexcept的原因是便于派生类自由选择其析构函数是否声明为noexcept
+		*/
+		virtual ~basic_lock();
+		basic_lock(basic_lock const &) = delete;
+		basic_lock(basic_lock &&) = delete;
+		void operator = (basic_lock const &) = delete;
+		void operator =(basic_lock &&) = delete;
+		void lock();
+		void unlock();
+		/*
+		返回锁的所有者线程的编号
+		如果没有上锁，则其值是默认构造的std::thread::id
+		*/
+		std::thread::id const & owner_thread() const noexcept;
+		bool const & is_locked()const noexcept;
+	protected:
+		virtual void lock_implement() = 0;
+		virtual void unlock_implement() = 0;
+	public:
+		basic_lock & self()noexcept;
+		basic_lock const & self()const noexcept;
+		basic_lock * operator &()noexcept;
+		basic_lock const * operator &()const noexcept;
+	};
 }

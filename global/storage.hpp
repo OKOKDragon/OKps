@@ -25,7 +25,7 @@ namespace OKps
 	c++标准规定了std::streampos和std::streamoff足以表示操作系统支持的最大文件大小。
 	标准库文件流的无格式输入输出函数 read 和 write 接受 std::streamsize 类型参数，表示输入或输出的字符数，但并未规定 std::streamsize 也足以表示最大文件大小。
 	故从std::streamoff转换到std::streamsize可能溢出。
-	另一方面，std::filesystem 命名空间中的函数却以 std::uintmax_t 类型表示文件大小，但 std::uintmax_t 是无符号整数，而std::streamoff规定是有符号整数，故它们必然是不同类型，转换时也可能发生溢出。
+	另一方面，std::filesystem 命名空间中的函数却以 std::uintmax_t 类型表示文件大小，但 std::uintmax_t 是无符号整数，而std::streamoff规定是有符号整数，故当一个负的std::streamoff值向std::uintmax_t转换时，也会发生溢出。
 	使用标准库的文件流操作文件，便存在上述多种理论上的溢出风险。此类则在转换时进行检查，若有溢出则抛出异常。
 	*/
 	class stream_position final
@@ -240,7 +240,7 @@ namespace OKps
 		std::vector<node> const & storage()const noexcept;
 	public:
 		//返回根节点
-		node const * root()const;
+		node const & root()const;
 		//路径root是一个既存目录，此类以它为根节点，建立目录结构树
 		directory_tree(path_type const & root);
 		//路径root是一个既存目录，此类以它为根节点，建立目录结构树

@@ -10,53 +10,7 @@
 
 namespace OKps
 {
-    consteval bool is_prime(integer::holder_type const number)noexcept
-    {
-        bool result = false;
-        if (number == 2)
-        {
-            result = true;
-        }
-        else
-        {
-            if (number % 2 == 0)
-            {
-                result = true;
-            }
-            else
-            {
-                for (integer::holder_type i = 3;i < number;i += 2)
-                {
-                    if (number % i == 0)
-                    {
-                        result = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return result;
-    }
-    template<integer::holder_type const length>
-    consteval std::array<integer::holder_type, length> generate_known_prime()noexcept
-    {
-        std::array<integer::holder_type, length> result;
-        if constexpr (length >= 1)
-        {
-            result[0] = 2;
-        }
-        integer::holder_type h = 3;
-        for (std::size_t i = 1;i < length;++i)
-        {
-            while (not is_prime(h))
-            {
-                h += 2;
-            }
-            result[i] = h;
-            h += 2;
-        }
-        return result;
-    }
+
     integer::integer()
         :MEMBER_sign(sign_type::zero)
     {

@@ -15,9 +15,6 @@ namespace OKps
     class code_page final
     {
     private:
-        /*
-        此类采用实现分离的方式，以避免在定义类成员时引入Windows.h中的宏。
-        */
         class implement;
         static std::unique_ptr<implement> const MEMBER_implement;
     public:
@@ -26,6 +23,12 @@ namespace OKps
         此函数将其转换为utf-8编码
         */
         static std::string default_input_convert(std::string const & content);
+        code_page() = delete;
+        ~code_page() = delete;
+        code_page(code_page const &) = delete;
+        code_page(code_page &&) = delete;
+        void operator =(code_page const &) = delete;
+        void operator =(code_page &&) = delete;
     };
 
 }
