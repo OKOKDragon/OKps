@@ -52,13 +52,13 @@ namespace OKps
     {
     }
     integer::divide_result::divide_result(integer && divide, integer && mod)
-        :MEMBER_divide(std::make_unique<integer>(std::move(divide)))
-        , MEMBER_module(std::make_unique<integer>(std::move(mod)))
+        :MEMBER_divide(std::move(divide))
+        , MEMBER_module(std::move(mod))
     {
     }
     integer::divide_result::divide_result(integer const & divide, integer const & mod)
-        :MEMBER_divide(std::make_unique<integer>(divide))
-        , MEMBER_module(std::make_unique<integer>(mod))
+        :MEMBER_divide(divide)
+        , MEMBER_module(mod)
     {
     }
     integer::divide_result integer::divide_and_module(integer const & right)const
@@ -68,11 +68,11 @@ namespace OKps
     }
     integer const & integer::divide_result::divide()const noexcept
     {
-        return *(this->MEMBER_divide);
+        return this->MEMBER_divide;
     }
-    integer const & integer::divide_result::mod()const noexcept
+    integer const & integer::divide_result::module()const noexcept
     {
-        return *(this->MEMBER_module);
+        return this->MEMBER_module;
     }
     integer::divide_result::divide_result(divide_result && origin)noexcept
         :MEMBER_divide(std::move(origin.MEMBER_divide))
@@ -80,8 +80,8 @@ namespace OKps
     {
     }
     integer::divide_result::divide_result(divide_result const & origin)
-        :MEMBER_divide(std::make_unique<integer>(*(origin.MEMBER_divide)))
-        , MEMBER_module(std::make_unique<integer>(*(origin.MEMBER_module)))
+        :MEMBER_divide(origin.MEMBER_divide)
+        , MEMBER_module(origin.MEMBER_module)
     {
     }
     void integer::divide_result::operator =(divide_result && origin)noexcept
@@ -91,8 +91,8 @@ namespace OKps
     }
     void integer::divide_result::operator =(divide_result const & origin)
     {
-        this->MEMBER_divide = std::make_unique<integer>(*(origin.MEMBER_divide));
-        this->MEMBER_module = std::make_unique<integer>(*(origin.MEMBER_module));
+        this->MEMBER_divide = origin.MEMBER_divide;
+        this->MEMBER_module = origin.MEMBER_module;
     }
     integer::number_type integer::INNER_add_number(number_type const & left, number_type const & right)
     {
@@ -993,13 +993,13 @@ namespace OKps
                 throw std::runtime_error("取余运算结果不符合预期。检查实现代码。");
             }
             */
-            if (temp.mod().MEMBER_sign == sign_type::zero)
+            if (temp.module().MEMBER_sign == sign_type::zero)
             {
                 result.push_back(OKps::to_char(0, system));
             }
             else
             {
-                result.push_back(OKps::to_char(temp.mod().MEMBER_number[0], system));
+                result.push_back(OKps::to_char(temp.module().MEMBER_number[0], system));
             }
             ubig = temp.divide();
         }
@@ -1009,6 +1009,9 @@ namespace OKps
         }
         std::reverse(result.begin(), result.end());
         return result;
+    }
+    integer::divide_result::~divide_result()noexcept
+    {
     }
     bool integer::operator >(integer const & right)const noexcept
     {

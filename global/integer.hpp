@@ -13,9 +13,9 @@ namespace OKps
     /*
     无限精度整数
 
-    虽然有很多成熟的数学库，但它们大多数是c语言的，或是几乎完全用c语言风格写的所谓“C with class”而非真正的 C++。
+    虽然有很多成熟的数学库，但它们大多数是c语言的。
     我希望能充分利用C++的运算符重载、类型别名、枚举类、异常和标准库，而不要像c语言一样手动创建和销毁上下文、使用复杂的宏定义和宏函数。
-    因此我从头实现了这个高精度整数类。
+    因此我从头实现了这个高精度整数类，实现方法很大程度上参考了java jdk。
     */
     class integer final
     {
@@ -296,23 +296,7 @@ namespace OKps
         static INNER_divide_result INNER_Knuth_divide(number_type const & left, number_type const & right, bool debug = false);
         static std::pair<integer, integer> INNER_divide_and_module(integer const & left, integer const & right);
     public:
-        class divide_result final
-        {
-            friend class integer;
-        private:
-            std::unique_ptr<integer const> MEMBER_divide;//除法结果，即商
-            std::unique_ptr<integer const> MEMBER_module;//取模结果，即余数
-
-            divide_result(integer && divide, integer && mod);
-            divide_result(integer const & divide, integer const & mod);
-        public:
-            integer const & divide()const noexcept;
-            integer const & mod()const noexcept;
-            divide_result(divide_result && origin)noexcept;
-            divide_result(divide_result const & origin);
-            void operator =(divide_result && origin)noexcept;
-            void operator =(divide_result const & origin);
-        };
+        class divide_result;
         divide_result divide_and_module(integer const & right)const;
 
         void operator +=(integer const & right);
@@ -324,4 +308,22 @@ namespace OKps
         void operator %=(integer const & right);
     };
 
+    class integer::divide_result final
+    {
+        friend class integer;
+    private:
+        integer MEMBER_divide;//除法结果，即商
+        integer MEMBER_module;//取模结果，即余数
+
+        divide_result(integer && divide, integer && mod);
+        divide_result(integer const & divide, integer const & mod);
+    public:
+        integer const & divide()const noexcept;
+        integer const & module()const noexcept;
+        divide_result(divide_result && origin)noexcept;
+        divide_result(divide_result const & origin);
+        void operator =(divide_result && origin)noexcept;
+        void operator =(divide_result const & origin);
+        ~divide_result()noexcept;
+    };
 }
