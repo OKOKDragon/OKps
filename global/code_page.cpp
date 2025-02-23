@@ -62,18 +62,18 @@ namespace OKps
             return this->MEMBER_default_input_code_page;
         }
     };
-    std::unique_ptr<code_page::implement> const code_page::MEMBER_implement = std::make_unique<code_page::implement>();
+    code_page::implement code_page::MEMBER_implement = code_page::implement();
     std::string code_page::default_input_convert(std::string const & content)
     {
-        if (code_page::MEMBER_implement->get_default_input_code_page() == CP_UTF8)
+        if (code_page::MEMBER_implement.get_default_input_code_page() == CP_UTF8)
         {
             return content;
         }
-        int wide_length = ::MultiByteToWideChar(code_page::MEMBER_implement->get_default_input_code_page(), 0, content.c_str(), -1, NULL, 0);
+        int wide_length = ::MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.c_str(), -1, NULL, 0);
         //std::cout << "wide_length=" << wide_length << "\n";
         std::wstring wide_buffer;
         wide_buffer.resize(wide_length);
-        ::MultiByteToWideChar(code_page::MEMBER_implement->get_default_input_code_page(), 0, content.c_str(), content.length(), wide_buffer.data(), wide_length);
+        ::MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.c_str(), content.length(), wide_buffer.data(), wide_length);
 
         int length = ::WideCharToMultiByte(CP_UTF8, 0, wide_buffer.data(), -1, NULL, NULL, NULL, NULL);
         //std::cout << "length=" << length << "\n";

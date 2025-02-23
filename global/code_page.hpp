@@ -2,7 +2,6 @@
 仅在面向windows系统时需要包含此文件。
 */
 
-#include <memory>
 #include <string>
 
 namespace OKps
@@ -16,7 +15,7 @@ namespace OKps
     {
     private:
         class implement;
-        static std::unique_ptr<implement> const MEMBER_implement;
+        static implement MEMBER_implement;
     public:
         /*
         content是以windows系统控制台默认的标准输入采用的编码方式编码的字符串
