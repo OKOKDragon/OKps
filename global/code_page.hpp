@@ -18,7 +18,7 @@ namespace OKps
         static implement MEMBER_implement;
     public:
         /*
-        content是以windows系统控制台默认的标准输入采用的编码方式编码的字符串
+        content是从main函数输入的命令行参数
         此函数将其转换为utf-8编码
         */
         static std::string default_input_convert(std::string const & content);
@@ -28,6 +28,7 @@ namespace OKps
         code_page(code_page &&) = delete;
         void operator =(code_page const &) = delete;
         void operator =(code_page &&) = delete;
+        static std::string UTF_16_to_UTF_8(std::wstring const & content);
     };
 
 }
