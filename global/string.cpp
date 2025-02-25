@@ -99,6 +99,7 @@ and noexcept(std::declval<std::string>().resize(std::declval<std::size_t const>(
     {
         std::locale TEMP_utf_8(".utf-8");
         std::locale::global(TEMP_utf_8);
+        std::filesystem::current_path(code_page::get_process_directory());
         return TEMP_utf_8;
     }
 
@@ -391,9 +392,10 @@ and noexcept(std::declval<std::string>().resize(std::declval<std::size_t const>(
     }
     void echo_command_line(int const argc, char const * const * const argv)
     {
+        std::cout << "当前工作目录 ││ " << std::filesystem::current_path().string() << "\n";
         for (int counter = 0; counter < argc; counter++)
         {
-            std::cout << "命令行参数" << counter << " ││ " << code_page::default_input_convert(argv[counter]) << "\n";
+            std::cout << "命令行参数" << counter << " ││ " << code_page::default_input_to_UTF_8(argv[counter]) << "\n";
         }
     }
     void wait_input(std::string const & hint, char const signal)

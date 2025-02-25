@@ -21,7 +21,7 @@ namespace OKps
         content是从main函数输入的命令行参数
         此函数将其转换为utf-8编码
         */
-        static std::string default_input_convert(std::string const & content);
+        static std::string default_input_to_UTF_8(std::string const & content);
         code_page() = delete;
         ~code_page() = delete;
         code_page(code_page const &) = delete;
@@ -29,6 +29,11 @@ namespace OKps
         void operator =(code_page const &) = delete;
         void operator =(code_page &&) = delete;
         static std::string UTF_16_to_UTF_8(std::wstring const & content);
+        /*
+        获取当前进程相应的可执行文件所在的目录
+        utf-8编码
+        */
+        static std::string get_process_directory();
     };
 
 }

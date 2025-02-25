@@ -65,42 +65,64 @@ namespace OKps
         }
     };
     code_page::implement code_page::MEMBER_implement = code_page::implement();
-    std::string code_page::default_input_convert(std::string const & content)
+    std::string code_page::default_input_to_UTF_8(std::string const & content)
     {
         if (code_page::MEMBER_implement.get_default_input_code_page() == CP_UTF8)
         {
             return content;
         }
-        int wide_length = MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.c_str(), -1, NULL, 0);
+        int content_length = static_cast<base::integer<int>>(base::integer<std::size_t>(content.size())).value();
+        int wide_length = MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.data(), content_length, nullptr, 0);
         //std::cout << "wide_length=" << wide_length << "\n";
         std::wstring wide_buffer;
         wide_buffer.resize(wide_length);
-        MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.c_str(), content.length(), wide_buffer.data(), wide_length);
+        MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.data(), content_length, wide_buffer.data(), wide_length);
 
-        int length = WideCharToMultiByte(CP_UTF8, 0, wide_buffer.data(), -1, NULL, NULL, NULL, NULL);
+        int length = WideCharToMultiByte(CP_UTF8, 0, wide_buffer.data(), wide_length, nullptr, 0, nullptr, nullptr);
         //std::cout << "length=" << length << "\n";
         std::string buffer;
         buffer.resize(length);
 
-        WideCharToMultiByte(CP_UTF8, 0, wide_buffer.data(), wide_length, buffer.data(), length, NULL, NULL);
+        WideCharToMultiByte(CP_UTF8, 0, wide_buffer.data(), wide_length, buffer.data(), length, nullptr, nullptr);
 
         return buffer;
     }
     std::string code_page::UTF_16_to_UTF_8(std::wstring const & content)
     {
+        //WC_ERR_INVALID_CHARS
         std::string result;
         if (content.size() == 0)
         {
             return result;
         }
         int content_length = static_cast<base::integer<int>>(base::integer<std::size_t>(content.size())).value();
-        int length = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, content.data(), content_length, nullptr, 0, nullptr, nullptr);
-        if (length == 0 and GetLastError() == ERROR_NO_UNICODE_TRANSLATION)
-        {
-            throw std::invalid_argument("无法转换");
-        }
+        int length = WideCharToMultiByte(CP_UTF8, 0, content.data(), content_length, nullptr, 0, nullptr, nullptr);
+        //if (length == 0 and GetLastError() == ERROR_NO_UNICODE_TRANSLATION)
+        //{
+            //throw std::invalid_argument("无法转换");
+        //}
         result.resize(length);
-        WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, content.data(), content_length, result.data(), length, nullptr, nullptr);
+        WideCharToMultiByte(CP_UTF8, 0, content.data(), content_length, result.data(), length, nullptr, nullptr);
         return result;
+    }
+    std::string code_page::get_process_directory()
+    {
+        //获取程序路径
+        std::wstring buffer;
+        buffer.resize(MAX_PATH);
+        DWORD result = GetModuleFileNameW(nullptr, buffer.data(), buffer.size());
+        if (result == 0)
+        {
+            throw std::runtime_error("获取进程路径失败");
+        }
+        std::size_t last_slash = buffer.find_last_of(L"\\/");
+        if (last_slash != std::wstring::npos)
+        {
+            return code_page::UTF_16_to_UTF_8(buffer.substr(0, last_slash + 1)); // 包括最后一个斜杠
+        }
+        else
+        {
+            return ""; // 如果没有找到斜杠，返回空字符串}     
+        }
     }
 }
