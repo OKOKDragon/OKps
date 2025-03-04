@@ -8,70 +8,6 @@
 #include ".\string.hpp"
 #include ".\code_page.hpp"
 
-/*
-禁用C4996警告
-c++17弃用了<codecvt>库，但其替代品<text_encoding>在c++26才提上议程
-windows在windows.h中提供了系统函数，可以替代标准库，但我希望此代码跨平台，所以只用标准库
-*/
-//#pragma warning(disable : 4996)
-
-/*
-std::string string::String_to_UTF8(const std::string &str)
-{
-
-    int nwLen = ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, NULL, 0);
-    wchar_t *pwBuf = new wchar_t[nwLen + 1];
-    ZeroMemory(pwBuf, nwLen * 2 + 2);
-
-    ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.length(), pwBuf, nwLen);
-
-    int nLen = ::WideCharToMultiByte(CP_UTF8, 0, pwBuf, -1, NULL, NULL, NULL, NULL);
-
-    char *pBuf = new char[nLen + 1];
-    ZeroMemory(pBuf, nLen + 1);
-
-    ::WideCharToMultiByte(CP_UTF8, 0, pwBuf, nwLen, pBuf, nLen, NULL, NULL);
-
-    std::string retStr(pBuf);
-
-    delete[] pwBuf;
-    delete[] pBuf;
-
-    pwBuf = NULL;
-    pBuf = NULL;
-
-    return retStr;
-}
-
-std::string string::UTF8_to_String(const std::string &s)
-{
-    if (s.empty())
-    {
-        return std::string();
-    }
-
-    std::wstring result;
-
-    int n = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
-    wchar_t *buffer = new wchar_t[n];
-
-    ::MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, buffer, n);
-
-    result = buffer;
-    delete[] buffer;
-
-    std::string result2;
-    int len = WideCharToMultiByte(CP_ACP, 0, result.c_str(), result.size(), NULL, 0, NULL, NULL);
-    char *buffer2 = new char[len + 1];
-    WideCharToMultiByte(CP_ACP, 0, result.c_str(), result.size(), buffer2, len, NULL, NULL);
-    buffer2[len] = '\0';
-    result2.append(buffer2);
-    delete[] buffer2;
-
-    return result2;
-}
-*/
-
 namespace OKps
 {
     char operator ""_utf_8(char8_t const content)noexcept
@@ -98,45 +34,13 @@ and noexcept(std::declval<std::string>().resize(std::declval<std::size_t const>(
     and noexcept(std::locale::global(std::declval<std::locale &>())))
     {
         std::locale TEMP_utf_8(".utf-8");
+        std::wstring process_directory = code_page::get_process_directory();
+        std::filesystem::current_path(process_directory);
         std::locale::global(TEMP_utf_8);
-        std::filesystem::current_path(code_page::get_process_directory());
         return TEMP_utf_8;
     }
 
-/*
-    std::string string::INNER_wide_to_narrow(std::wstring const & origin)
-    {
-
-        wchar_t const * origin_string = &(origin[0]);
-        std::mbstate_t state = std::mbstate_t();
-        std::size_t const result_length = std::wcsrtombs(nullptr, &origin_string, 0, &state);
-        std::string result;
-        result.resize(result_length);
-        std::size_t const convert_result = std::wcsrtombs(&(result[0]), &origin_string, result_length, &state);
-        if (convert_result == static_cast<std::size_t>(-1) and errno == EILSEQ)
-        {
-            throw std::runtime_error(std::strerror(errno));
-        }
-        return result;
-    }
-    std::wstring string::INNER_narrow_wo_wide(std::string const & origin)
-    {
-
-        char const * origin_string = &(origin[0]);
-        std::mbstate_t state = std::mbstate_t();
-        std::size_t const result_length = std::mbsrtowcs(nullptr, &origin_string, 0, &state);
-        std::wstring result;
-        result.resize(result_length);
-        std::size_t const convert_result = std::mbsrtowcs(&(result[0]), &origin_string, result_length, &state);
-        if (convert_result == static_cast<std::size_t>(-1) and errno == EILSEQ)
-        {
-            throw std::runtime_error(std::strerror(errno));
-        }
-        return result;
-    }
-*/
-
-    char to_char(unsigned int const number, number_system const number_base)
+    char to_character(unsigned int const number, number_system const number_base)
     {
         char result;
         switch (number_base)
@@ -197,7 +101,7 @@ and noexcept(std::declval<std::string>().resize(std::declval<std::size_t const>(
         return result;
     }
 
-    unsigned int from_char(char const number, number_system const number_base)
+    unsigned int from_character(char const number, number_system const number_base)
     {
         unsigned int result;
         switch (number_base)
@@ -260,6 +164,17 @@ and noexcept(std::declval<std::string>().resize(std::declval<std::size_t const>(
             }
         }
         return result;
+    }
+    template<>
+    std::size_t to_number<std::size_t>(std::string const & content, number_system const number_base)
+    {
+        base::integer<std::size_t> result(0);
+        base::integer<std::underlying_type_t<number_system>> const base_number(static_cast<std::underlying_type_t<number_system>>(number_base));
+        for (std::size_t i = 0;i < content.size();++i)
+        {
+            result = result * base_number + from_character(content[i]);
+        }
+        return result.value();
     }
     const std::string & command_statement::command() const noexcept
     {

@@ -29,4 +29,11 @@ namespace OKps::sample
     经测试，在windows上，当block_size超过16kb时，第1种方法总是最快，而第3种方法耗时常常达到第1种的十多倍。
     */
     void test_file_output_speed(std::filesystem::path const & file_path, std::size_t const block_count = 1024, std::size_t const block_size = static_cast<std::size_t>(64) * 1024);
+
+    //密码管理器
+    void password_management(
+        std::filesystem::path const & key_path,//密钥文件路径
+        std::filesystem::path const & storage_path,//数据文件路径
+        std::filesystem::path const & temporary_directory//临时目录
+    );
 }

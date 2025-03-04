@@ -10,6 +10,319 @@
 
 namespace OKps::sample
 {
+
+    void password_management(
+        std::filesystem::path const & key_path,
+        std::filesystem::path const & storage_path,
+        std::filesystem::path const & temporary_directory
+    )
+    {
+        crypt::password_pool pool(key_path, storage_path, temporary_directory);
+        std::cout << "密码管理器\n";
+        std::string command_input;
+        bool FLAG_done = false;
+        while (not FLAG_done)
+        {
+            std::cout << "输入命令 ││ ";
+            std::getline(std::cin, command_input);
+            command_statement const command(command_input);
+            if (command.command() == "查询")
+            {
+                if (command.argument_list().size() == 0)
+                {
+                    if (pool.size() == 0)
+                    {
+                        std::cout << "查询结果 ││ 没有条目\n";
+                    }
+                    else
+                    {
+                        std::cout << "查询结果 ││ \n";
+                        for (std::size_t i = 0;i < pool.size();++i)
+                        {
+                            std::cout << "条目[" << i << "]\n"
+                                "名称 │ " << pool[i].name() << "\n"
+                                "账号 │ " << pool[i].account() << "\n"
+                                "密码 │ " << pool[i].password() << "\n";
+                        }
+                    }
+                }
+                else
+                {
+                    std::vector<std::size_t> entry_list;
+                    entry_list.resize(command.argument_list().size());
+                    bool failure = false;
+                    for (std::size_t i = 0;(not failure) and i < entry_list.size();++i)
+                    {
+                        try
+                        {
+                            entry_list[i] = to_number<std::size_t>(command.argument_list()[i]);
+                        }
+                        catch (const std::exception & error)
+                        {
+                            failure = true;
+                            std::cout << "参数错误 ││ “" << command.argument_list()[i] << "”不是有效非负整数\n";
+                        }
+                        if (entry_list[i] >= pool.size())
+                        {
+                            failure = true;
+                            std::cout << "参数错误 ││ 条目[" << command.argument_list()[i] << "]不存在\n";
+                        }
+                    }
+                    if (not failure)
+                    {
+                        std::cout << "查询结果 ││ \n";
+                        for (std::size_t i = 0; i < entry_list.size();++i)
+                        {
+                            std::cout << "条目[" << entry_list[i] << "]\n"
+                                "名称 │ " << pool[entry_list[i]].name() << "\n"
+                                "账号 │ " << pool[entry_list[i]].account() << "\n"
+                                "密码 │ " << pool[entry_list[i]].password() << "\n";
+                        }
+                    }
+                }
+            }
+            else if (command.command() == "添加")
+            {
+                if (command.argument_list().size() < 4)
+                {
+                    std::cout << "参数错误 ││ 至少需要4个参数，其中参数1为名称，参数2为账号，参数3为生成密码的方式。\n";
+                }
+                else
+                {
+                    if (command.argument_list()[2] == "随机")
+                    {
+                        if (command.argument_list().size() < 6)
+                        {
+                            std::cout << "参数错误 ││ 至少需要6个参数。\n"
+                                "参数4应为“是”或“否”，它决定生成的密码中是否含有特殊字符。特殊字符指的是“" << crypt::password_generator::special_character << "”。\n"
+                                "参数5、参数6应为非负整数，它们决定生成的密码长度的范围。\n";
+                        }
+                        else
+                        {
+                            bool failure = false;
+                            std::size_t lower_length;
+                            std::size_t upper_length;
+                            try
+                            {
+                                lower_length = to_number<std::size_t>(command.argument_list()[4]);
+                            }
+                            catch (const std::exception & error)
+                            {
+                                failure = true;
+                                std::cout << "参数错误 ││ 参数5不是有效非负整数。\n";
+                            }
+                            if (not failure)
+                            {
+                                try
+                                {
+                                    upper_length = to_number<std::size_t>(command.argument_list()[5]);
+                                }
+                                catch (const std::exception & error)
+                                {
+                                    failure = true;
+                                    std::cout << "参数错误 ││ 参数6不是有效非负整数。\n";
+                                }
+                            }
+                            if (not failure)
+                            {
+                                std::optional<crypt::password_generator> TEMP_generator;
+                                std::vector<std::string> TEMP_eliminate_list;
+                                TEMP_eliminate_list.resize(command.argument_list().size() - 6);
+                                for (std::size_t i = 0;i < TEMP_eliminate_list.size();++i)
+                                {
+                                    TEMP_eliminate_list[i] = command.argument_list()[i + 6];
+                                }
+                                if (command.argument_list()[3] == "是")
+                                {
+                                    TEMP_generator = crypt::password_generator(lower_length, upper_length, TEMP_eliminate_list, crypt::password_generator::flag_type());
+                                    pool.add(command.argument_list()[0], command.argument_list()[1], *TEMP_generator);
+                                }
+                                else if (command.argument_list()[3] == "否")
+                                {
+                                    TEMP_generator = crypt::password_generator(lower_length, upper_length, TEMP_eliminate_list, crypt::password_generator::flag_type(false, false, false, true));
+                                    pool.add(command.argument_list()[0], command.argument_list()[1], *TEMP_generator);
+                                }
+                                else
+                                {
+                                    std::cout << "参数错误 ││ 参数4应为“是”或“否”，它决定生成的密码中是否含有特殊字符。特殊字符指的是“" << crypt::password_generator::special_character << "”。\n";
+                                }
+                            }
+                        }
+                    }
+                    else if (command.argument_list()[2] == "指定")
+                    {
+                        if (command.argument_list().size() > 4)
+                        {
+                            std::cout << "参数错误 ││ 参数太多。只需要4个参数，其中参数4是你指定的密码。\n";
+                        }
+                        else
+                        {
+                            pool.add(command.argument_list()[0], command.argument_list()[1], command.argument_list()[3]);
+                        }
+                    }
+                    else
+                    {
+                        std::cout << "参数错误 ││ 参数3应为“随机”或“指定”\n";
+                    }
+                }
+            }
+            else if (command.command() == "修改")
+            {
+                if (command.argument_list().size() < 3)
+                {
+                    std::cout << "参数错误 ││ 至少有3个参数。其中参数1指定条目编号，参数2指定要修改的元素。\n";
+                }
+                else
+                {
+                    bool failure = false;
+                    std::size_t entry_number;
+                    try
+                    {
+                        entry_number = to_number<std::size_t>(command.argument_list()[0]);
+                    }
+                    catch (const std::exception & error)
+                    {
+                        failure = true;
+                        std::cout << "参数错误 ││ “" << command.argument_list()[0] << "”不是有效非负整数\n";
+                    }
+                    if (not failure)
+                    {
+                        if (entry_number >= pool.size())
+                        {
+                            failure = true;
+                            std::cout << "参数错误 ││ 条目[" << command.argument_list()[0] << "]不存在\n";
+                        }
+                    }
+                    if (not failure)
+                    {
+                        if (command.argument_list()[1] == "名称")
+                        {
+                            if (command.argument_list().size() > 3)
+                            {
+                                failure = true;
+                                std::cout << "参数错误 ││ 参数太多。应为3个参数，其中参数3是条目的新名称。\n";
+                            }
+                            if (not failure)
+                            {
+                                pool[entry_number].name() = command.argument_list()[2];
+                            }
+                        }
+                        else if (command.argument_list()[1] == "账号")
+                        {
+                            if (command.argument_list().size() > 3)
+                            {
+                                failure = true;
+                                std::cout << "参数错误 ││ 参数太多。应为3个参数，其中参数3是条目的新账号。\n";
+                            }
+                            if (not failure)
+                            {
+                                pool[entry_number].account() = command.argument_list()[2];
+                            }
+                        }
+                        else if (command.argument_list()[1] == "密码")
+                        {
+                            std::cout << "错误 ││ 此功能尚未实现。\n";
+                        }
+                        else
+                        {
+                            failure = true;
+                            std::cout << "参数错误 ││ 条目元素“" << command.argument_list()[1] << "”不存在\n";
+                        }
+                    }
+                }
+            }
+            else if (command.command() == "删除")
+            {
+                if (command.argument_list().size() == 0)
+                {
+                    std::cout << "错误 ││ 没有指定要删除的条目。\n";
+                }
+                else if (command.argument_list().size() == 1)
+                {
+                    std::size_t entry_number;
+                    bool failure = false;
+                    try
+                    {
+                        entry_number = to_number<std::size_t>(command.argument_list()[0]);
+                    }
+                    catch (const std::exception & error)
+                    {
+                        failure = true;
+                        std::cout << "参数错误 ││ “" << command.argument_list()[0] << "”不是有效非负整数\n";
+                    }
+                    if (not failure)
+                    {
+                        if (entry_number >= pool.size())
+                        {
+                            std::cout << "参数错误 ││ 条目[" << command.argument_list()[0] << "]不存在\n";
+                        }
+                        else
+                        {
+                            pool.erase(entry_number);
+                        }
+                    }
+                }
+                else if (command.argument_list().size() == 2)
+                {
+                    std::size_t entry_begin;
+                    std::size_t entry_end;
+                    bool failure = false;
+                    try
+                    {
+                        entry_begin = to_number<std::size_t>(command.argument_list()[0]);
+                    }
+                    catch (const std::exception & error)
+                    {
+                        failure = true;
+                        std::cout << "参数错误 ││ “" << command.argument_list()[0] << "”不是有效非负整数\n";
+                    }
+                    if (not failure)
+                    {
+                        try
+                        {
+                            entry_end = to_number<std::size_t>(command.argument_list()[1]);
+                        }
+                        catch (const std::exception & error)
+                        {
+                            failure = true;
+                            std::cout << "参数错误 ││ “" << command.argument_list()[1] << "”不是有效非负整数\n";
+                        }
+                    }
+                    if (not failure)
+                    {
+                        if (entry_begin > entry_end)
+                        {
+                            std::size_t TEMP_swap = entry_begin;
+                            entry_begin = entry_end;
+                            entry_end = TEMP_swap;
+                        }
+                        if (entry_end >= pool.size())
+                        {
+                            failure = true;
+                            std::cout << "参数错误 ││ 闭区间范围[" << entry_begin << "," << entry_end << "]无效\n";
+                        }
+                    }
+                    if (not failure)
+                    {
+                        pool.erase(entry_begin, entry_end);
+                    }
+                }
+                else
+                {
+                    std::cout << "参数错误 ││ 参数太多。\n";
+                }
+            }
+            else if (command.command() == "退出")
+            {
+                FLAG_done = true;
+            }
+            else
+            {
+                std::cout << "错误 ││ “" << command.command() << "”不是有效命令\n";
+            }
+        }
+
+    }
     void erase_duplicate_files(std::filesystem::path const & dir)
     {
         directory_tree file_tree(dir);

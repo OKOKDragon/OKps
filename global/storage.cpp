@@ -578,7 +578,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 				buffer[i] = data[position];
 				position++;
 			}
-			result.push_back(buffer);
+			result.push_back(std::move(buffer));
 		}
 		return result;
 	}
@@ -1237,7 +1237,7 @@ and noexcept(std::declval<std::vector<std::byte>>().resize(std::declval<std::str
 				TEMP_storage.seekp(this->MEMBER_position_list[position].field_begin());
 				std::string const TEMP_data = data.field_string();
 				TEMP_storage.write(TEMP_data.c_str(), stream_position(TEMP_data.size()));
-				this->MEMBER_position_list[position].length() = stream_position(TEMP_data.size());
+				this->MEMBER_position_list[position].length() = stream_position(data.raw_string().size());
 				if (base::integer<std::size_t>(position) + 1 < this->MEMBER_position_list.size())
 				{
 					this->INNER_move_data(this->MEMBER_position_list[position].end()

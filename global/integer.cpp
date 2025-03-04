@@ -10,7 +10,14 @@
 
 namespace OKps
 {
-
+    integer const integer::one = integer(1, integer::sign_type::positive);
+    integer const integer::two = integer(2, integer::sign_type::positive);
+    integer const integer::zero = integer();
+    integer const integer::three = integer(3, integer::sign_type::positive);
+    integer const integer::negative_one = integer(1, integer::sign_type::negative);
+    integer const integer::eight = integer(8, integer::sign_type::positive);
+    integer const integer::ten = integer(10, integer::sign_type::positive);
+    integer const integer::sixteen = integer(16, integer::sign_type::positive);
     integer::integer()
         :MEMBER_sign(sign_type::zero)
     {
@@ -911,41 +918,64 @@ namespace OKps
         }
         return result;
     }
-    integer::integer(std::string const & input, sign_type const sign, number_system const system)
+    integer::integer(std::string const & input, number_system const system)
         :integer()
     {
-        integer input_base;
+        if (input.empty())
+        {
+            return;
+        }
+        std::size_t number_begin_position = 0;
+        sign_type TEMP_sign = sign_type::positive;
+        if (input[0] == '+')
+        {
+            if (input.size() < 2)
+            {
+                throw std::invalid_argument("格式错误");
+            }
+            number_begin_position = 1;
+        }
+        else if (input[0] == '-')
+        {
+            if (input.size() < 2)
+            {
+                throw std::invalid_argument("格式错误");
+            }
+            TEMP_sign = sign_type::negative;
+            number_begin_position = 1;
+        }
+        integer const * input_base=nullptr;
         switch (system)
         {
             case number_system::bin:
             {
-                input_base = integer(static_cast<value_type>(2), sign_type::positive);
+                input_base = std::addressof(integer::two);
                 break;
             }
             case number_system::dec:
             {
-                input_base = integer(static_cast<value_type>(10), sign_type::positive);
+                input_base = std::addressof(integer::ten);
                 break;
             }
             case number_system::oct:
             {
-                input_base = integer(static_cast<value_type>(8), sign_type::positive);
+                input_base = std::addressof(integer::eight);
                 break;
             }
             case number_system::hex:
             {
-                input_base = integer(static_cast<value_type>(16), sign_type::positive);
+                input_base = std::addressof(integer::sixteen);
                 break;
             }
         }
-        for (size_t i = 0; i < input.size(); ++i)
+        for (size_t i = number_begin_position; i < input.size(); ++i)
         {
-            (*this) = (*this) * input_base;
-            (*this) = (*this) + integer(static_cast<value_type>(OKps::from_char(input[i], system)), sign_type::positive);//如果input有非数字的字符，则会在此处抛出异常
+            (*this) = (*this) * (*input_base);
+            (*this) = (*this) + integer(static_cast<value_type>(OKps::from_character(input[i], system)), sign_type::positive);//如果input有非数字的字符，则会在此处抛出异常
         }
         if (this->MEMBER_sign != sign_type::zero)
         {
-            this->MEMBER_sign = sign;
+            this->MEMBER_sign = TEMP_sign;
         }
     }
     std::string integer::string(number_system const system)const
@@ -954,27 +984,27 @@ namespace OKps
         {
             return "0";
         }
-        integer input_base;
+        integer const * input_base=nullptr;
         switch (system)
         {
             case number_system::bin:
             {
-                input_base = integer(static_cast<value_type>(2), sign_type::positive);
+                input_base = std::addressof(integer::two);
                 break;
             }
             case number_system::dec:
             {
-                input_base = integer(static_cast<value_type>(10), sign_type::positive);
+                input_base = std::addressof(integer::ten);
                 break;
             }
             case number_system::oct:
             {
-                input_base = integer(static_cast<value_type>(8), sign_type::positive);
+                input_base = std::addressof(integer::eight);
                 break;
             }
             case number_system::hex:
             {
-                input_base = integer(static_cast<value_type>(16), sign_type::positive);
+                input_base = std::addressof(integer::sixteen);
                 break;
             }
         }
@@ -986,7 +1016,7 @@ namespace OKps
         std::string result;
         while (ubig > integer())
         {
-            auto temp = ubig.divide_and_module(input_base);
+            auto temp = ubig.divide_and_module(*input_base);
             /*
             if (temp.MEMBER_number.size() > 1 or temp.INNER_compare_number(input_base) != compare_result::smaller)
             {
@@ -995,11 +1025,11 @@ namespace OKps
             */
             if (temp.module().MEMBER_sign == sign_type::zero)
             {
-                result.push_back(OKps::to_char(0, system));
+                result.push_back(OKps::to_character(0, system));
             }
             else
             {
-                result.push_back(OKps::to_char(temp.module().MEMBER_number[0], system));
+                result.push_back(OKps::to_character(temp.module().MEMBER_number[0], system));
             }
             ubig = temp.divide();
         }

@@ -10,6 +10,8 @@
 
 namespace OKps
 {
+    class decimal;
+
     /*
     无限精度整数
 
@@ -19,6 +21,7 @@ namespace OKps
     */
     class integer final
     {
+        friend class decimal;
     public:
         /*
         内置无符号整数类型。
@@ -140,15 +143,13 @@ namespace OKps
 
         /*
         输入字符串，转换为大整数
-        字符串只表示绝对值，符号由sign参数指定
-        字符串的字符排列顺序是人类阅读顺序，也就是以下标0为数字的最高位
-        字符串中所有的字符都必须是表示数字的
-        如果字符串格式错误，抛出异常
-        如果字符串为空，生成值为0的大整数
-        如果字符串有前置0，忽略
-        字符串采用的进制由system参数指定，默认为10进制
+        字符串中所有的字符都是表示数字的，除了开头可以有'+'或'-'表示符号；如果没有符号，则默认为正。
+        如果字符串格式错误，抛出异常。
+        如果字符串为空，生成值为0的大整数。
+        如果字符串有前置0，忽略。
+        字符串采用的进制由system参数指定，默认为10进制。
         */
-        integer(std::string const & input, sign_type const sign, number_system const system = number_system::dec);
+        integer(std::string const & input, number_system const system = number_system::dec);
 
         integer(integer const & origin);
         void operator =(integer const & origin);
@@ -306,6 +307,15 @@ namespace OKps
         void operator *=(integer const & right);
         void operator /=(integer const & right);
         void operator %=(integer const & right);
+
+        static integer const one;
+        static integer const two;
+        static integer const zero;
+        static integer const three;
+        static integer const negative_one;
+        static integer const eight;
+        static integer const ten;
+        static integer const sixteen;
     };
 
     class integer::divide_result final

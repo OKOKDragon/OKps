@@ -83,11 +83,11 @@ namespace OKps::base
 		integer(std::bitset<integer<value_type>::bit_length> const &)
 			noexcept(noexcept(static_cast<bool>((std::declval<std::bitset<integer<value_type>::bit_length> const &>())[std::declval<std::size_t>()])));
 		integer(integer const &)noexcept;
-		integer(integer &&) = delete;
+		integer(integer &&) noexcept;
 		~integer()noexcept;
 
 		void operator =(integer const &)noexcept;
-		void operator =(integer &&)noexcept = delete;
+		void operator =(integer &&)noexcept;
 
 		bool operator ==(integer const &)const noexcept;
 		bool operator !=(integer const &)const noexcept;

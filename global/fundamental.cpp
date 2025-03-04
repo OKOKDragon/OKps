@@ -55,7 +55,16 @@ namespace OKps::base
 			this->MEMBER_value = origin.MEMBER_value;
 		}
 	}
-
+	template<arithmetic_integer value_type>
+	integer<value_type>::integer(integer && origin) noexcept
+		:integer(static_cast<integer const &>(origin))
+	{
+	}
+	template<arithmetic_integer value_type>
+	void integer<value_type>::operator =(integer && origin)noexcept
+	{
+		(*this) = static_cast<integer const &>(origin);
+	}
 	template<arithmetic_integer value_type>
 	bool integer<value_type>::operator ==(integer const & right)const noexcept
 	{

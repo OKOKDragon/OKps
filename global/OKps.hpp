@@ -76,3 +76,4 @@ c++标准库中的异常，除了内存分配失败，就是防各种未定义�
 #include ".\test.hpp"
 #include ".\sample.hpp"
 #include ".\code_page.hpp"
+#include ".\decimal.hpp"

@@ -6,6 +6,8 @@
 
 namespace OKps
 {
+    void echo_command_line(int const argc, char const * const * const argv);
+    class text_encoding;
     /*
     此类记录和管理windows终端的代码页
     当程序初始化时，此类将windows终端的代码页设置为utf-8编码，并记录下修改之前的代码页，以备不时之需。
@@ -13,15 +15,17 @@ namespace OKps
     */
     class code_page final
     {
+        friend void echo_command_line(int const argc, char const * const * const argv);
+        friend class text_encoding;
     private:
         class implement;
         static implement MEMBER_implement;
-    public:
         /*
         content是从main函数输入的命令行参数
         此函数将其转换为utf-8编码
         */
         static std::string default_input_to_UTF_8(std::string const & content);
+    public:
         code_page() = delete;
         ~code_page() = delete;
         code_page(code_page const &) = delete;
@@ -29,11 +33,12 @@ namespace OKps
         void operator =(code_page const &) = delete;
         void operator =(code_page &&) = delete;
         static std::string UTF_16_to_UTF_8(std::wstring const & content);
+    private:
         /*
         获取当前进程相应的可执行文件所在的目录
-        utf-8编码
+        返回windows系统默认编码的宽字符串
         */
-        static std::string get_process_directory();
+        static std::wstring get_process_directory();
     };
 
 }

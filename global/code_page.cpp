@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <stdexcept>
-#include <iostream>
+#include <locale>
+
 #include ".\fundamental.hpp"
 #include ".\code_page.hpp"
 
@@ -9,6 +10,7 @@ namespace OKps
     class code_page::implement final
     {
         static_assert(std::is_same_v<wchar_t const *, LPCWSTR>);
+        static_assert(std::is_same_v<wchar_t *, LPWSTR>);
     private:
         //windows系统控制台默认的输入代码页
         UINT MEMBER_default_input_code_page;
@@ -42,7 +44,6 @@ namespace OKps
             {
                 throw std::runtime_error("无法设置标准输入代码页");
             }
-            //std::cout << "原代码页是(" << this->MEMBER_default_input_code_page << "," << this->MEMBER_default_output_code_page << ")\n";
         }
         ~implement()
         {
@@ -73,13 +74,11 @@ namespace OKps
         }
         int content_length = static_cast<base::integer<int>>(base::integer<std::size_t>(content.size())).value();
         int wide_length = MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.data(), content_length, nullptr, 0);
-        //std::cout << "wide_length=" << wide_length << "\n";
         std::wstring wide_buffer;
         wide_buffer.resize(wide_length);
         MultiByteToWideChar(code_page::MEMBER_implement.get_default_input_code_page(), 0, content.data(), content_length, wide_buffer.data(), wide_length);
 
         int length = WideCharToMultiByte(CP_UTF8, 0, wide_buffer.data(), wide_length, nullptr, 0, nullptr, nullptr);
-        //std::cout << "length=" << length << "\n";
         std::string buffer;
         buffer.resize(length);
 
@@ -105,7 +104,7 @@ namespace OKps
         WideCharToMultiByte(CP_UTF8, 0, content.data(), content_length, result.data(), length, nullptr, nullptr);
         return result;
     }
-    std::string code_page::get_process_directory()
+    std::wstring code_page::get_process_directory()
     {
         //获取程序路径
         std::wstring buffer;
@@ -118,11 +117,11 @@ namespace OKps
         std::size_t last_slash = buffer.find_last_of(L"\\/");
         if (last_slash != std::wstring::npos)
         {
-            return code_page::UTF_16_to_UTF_8(buffer.substr(0, last_slash + 1)); // 包括最后一个斜杠
+            return buffer.substr(0, last_slash + 1); // 包括最后一个斜杠
         }
         else
         {
-            return ""; // 如果没有找到斜杠，返回空字符串}     
+            return L""; // 如果没有找到斜杠，返回空字符串}     
         }
     }
 }
